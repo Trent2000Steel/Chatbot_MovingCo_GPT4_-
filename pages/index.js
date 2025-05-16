@@ -6,9 +6,9 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [ctaTriggered, setCtaTriggered] = useState(false);
   const bottomRef = useRef(null);
 
-  // Auto-sequence intro and first question
   useEffect(() => {
     const intro = { from: 'bot', text: "No forms. No waiting. I’ll give you a real long-distance price range right here in chat." };
     const question1 = { from: 'bot', text: "Where are you moving from?" };
@@ -21,7 +21,6 @@ export default function Home() {
     return () => clearTimeout(delay);
   }, []);
 
-  // Auto-scroll to latest message
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -30,6 +29,21 @@ export default function Home() {
 
   function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function handleCTA() {
+    setMessages(prev => [
+      ...prev,
+      { from: 'bot', text: "Here’s how we do it differently:" },
+      { from: 'bot', text: "• You pay a flat rate—after we verify everything
+• Only vetted movers
+• Concierge, not call center
+• Photos in advance
+• Timeline protected, money-back guaranteed" },
+      { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
+      { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
+    ]);
+    setCtaTriggered(true);
   }
 
   async function sendMessage(e) {
@@ -58,16 +72,34 @@ export default function Home() {
 
     if (data.reply) {
       const replyText = data.reply;
-
-      // Break into parts
-      const parts = replyText.split(/(?=Here’s what I’ve got|1\. Check|Your long-distance quote is|\[ Show Me How It Works \])/g);
+      const parts = replyText.split(/(?=Here’s what I’ve got|Checking route|Your long-distance quote is|If that price point fits|\[ Show Me How It Works \])/g);
 
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i].trim();
-        if (part) {
+
+        if (part === "[ Show Me How It Works ]") {
+          setMessages(prev => [...prev, { from: 'cta' }]);
+        } else if (part) {
           setMessages(prev => [...prev, { from: 'bot', text: part }]);
-          await delay(1200); // 1.2 second pause between parts
         }
+
+        await delay(1300);
+      }
+
+      // Add soft urgency after the quote
+      if (replyText.includes("Your long-distance quote is")) {
+        await delay(1200);
+        setMessages(prev => [...prev, {
+          from: 'bot',
+          text: "These rates reflect current route and fuel data—and may shift soon depending on availability."
+        }]);
+        await delay(1200);
+        setMessages(prev => [...prev, {
+          from: 'bot',
+          text: "If that price point fits, I’ll walk you through how we verify and lock it in using the MoveSafe Method™—our calm, professional system for moving long distance without surprises."
+        }]);
+        await delay(1200);
+        setMessages(prev => [...prev, { from: 'cta' }]);
       }
     } else {
       setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
@@ -125,19 +157,37 @@ export default function Home() {
           flexDirection: 'column',
           paddingBottom: '12px'
         }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{
-              maxWidth: '75%',
-              margin: '6px 0',
-              padding: '14px 18px',
-              borderRadius: '14px',
-              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
-              alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
-              lineHeight: '1.5'
-            }}>
-              {msg.text}
-            </div>
-          ))}
+          {messages.map((msg, i) =>
+            msg.from === 'cta' ? (
+              <div key={i} style={{ alignSelf: 'center', marginTop: '12px' }}>
+                <button
+                  onClick={handleCTA}
+                  style={{
+                    fontSize: '16px',
+                    padding: '12px 24px',
+                    backgroundColor: '#0070f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px'
+                  }}
+                >
+                  Show Me How It Works
+                </button>
+              </div>
+            ) : (
+              <div key={i} style={{
+                maxWidth: '75%',
+                margin: '6px 0',
+                padding: '14px 18px',
+                borderRadius: '14px',
+                backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
+                alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
+                lineHeight: '1.5'
+              }}>
+                {msg.text}
+              </div>
+            )
+          )}
           <div ref={bottomRef} />
         </div>
 
