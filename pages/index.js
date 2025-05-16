@@ -6,7 +6,7 @@ function TypingDots() {
   return (
     <div style={{ padding: '14px 18px', fontStyle: 'italic', color: '#888' }}>
       <span className="typing">...</span>
-      <style jsx>{`
+      <style jsx>{\`
         .typing {
           display: inline-block;
           overflow: hidden;
@@ -17,7 +17,7 @@ function TypingDots() {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
         }
-      `}</style>
+      \`}</style>
     </div>
   );
 }
@@ -58,7 +58,7 @@ export default function Home() {
     setLoading(true);
 
     const openaiMessages = [
-      { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ as described in the backend system prompt." },
+      { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ and quote using the pattern: First recap the move in bullet-style clarity. Then wait 2 seconds with 'typing' animation. Then provide a realistic price range like: Your long-distance quote is: $3,200–$3,800" },
       ...newMessages.map(msg => ({
         role: msg.from === 'user' ? 'user' : 'assistant',
         content: msg.text
@@ -75,19 +75,20 @@ export default function Home() {
 
     if (data.reply) {
       const replyText = data.reply;
-      const parts = replyText.split(/(?=Here’s what I’ve got|Checking route|Filtering movers|Cross-referencing|Your long-distance quote is|If that price point fits|\[ Show Me How It Works \])/g);
-      for (let i = 0; i < parts.length; i++) {
-        const part = parts[i].trim();
-        if (!part) continue;
-        setShowTyping(true);
-        await delay(1000);
-        setShowTyping(false);
-        if (part === "[ Show Me How It Works ]") {
-          setMessages(prev => [...prev, { from: 'cta' }]);
-        } else {
-          setMessages(prev => [...prev, { from: 'bot', text: part }]);
-        }
-        await delay(600);
+      const parts = replyText.split(/(?=Your long-distance quote is)/g);
+      const recapPart = parts[0]?.trim();
+      const quotePart = parts[1]?.trim();
+
+      if (recapPart) {
+        setMessages(prev => [...prev, { from: 'bot', text: recapPart }]);
+      }
+
+      setShowTyping(true);
+      await delay(2000);
+      setShowTyping(false);
+
+      if (quotePart) {
+        setMessages(prev => [...prev, { from: 'bot', text: quotePart }]);
       }
     } else {
       setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
@@ -144,37 +145,19 @@ export default function Home() {
           flexDirection: 'column',
           paddingBottom: '12px'
         }}>
-          {messages.map((msg, i) =>
-            msg.from === 'cta' ? (
-              <div key={i} style={{ alignSelf: 'center', marginTop: '12px' }}>
-                <button
-                  onClick={() => alert("CTA clicked")}
-                  style={{
-                    fontSize: '16px',
-                    padding: '12px 24px',
-                    backgroundColor: '#0070f3',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px'
-                  }}
-                >
-                  Show Me How It Works
-                </button>
-              </div>
-            ) : (
-              <div key={i} style={{
-                maxWidth: '75%',
-                margin: '6px 0',
-                padding: '14px 18px',
-                borderRadius: '14px',
-                backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
-                alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
-                lineHeight: '1.5'
-              }}>
-                {msg.text}
-              </div>
-            )
-          )}
+          {messages.map((msg, i) => (
+            <div key={i} style={{
+              maxWidth: '75%',
+              margin: '6px 0',
+              padding: '14px 18px',
+              borderRadius: '14px',
+              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
+              alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
+              lineHeight: '1.5'
+            }}>
+              {msg.text}
+            </div>
+          ))}
           {showTyping && <TypingDots />}
           <div ref={bottomRef} />
         </div>
