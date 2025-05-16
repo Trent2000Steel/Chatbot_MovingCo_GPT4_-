@@ -28,6 +28,10 @@ export default function Home() {
     }
   }, [messages]);
 
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   async function sendMessage(e) {
     e.preventDefault();
     if (!input.trim()) return;
@@ -51,8 +55,20 @@ export default function Home() {
     });
 
     const data = await res.json();
+
     if (data.reply) {
-      setMessages([...newMessages, { from: 'bot', text: data.reply }]);
+      const replyText = data.reply;
+
+      // Break into parts
+      const parts = replyText.split(/(?=Here’s what I’ve got|1\. Check|Your long-distance quote is|\[ Show Me How It Works \])/g);
+
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i].trim();
+        if (part) {
+          setMessages(prev => [...prev, { from: 'bot', text: part }]);
+          await delay(1200); // 1.2 second pause between parts
+        }
+      }
     } else {
       setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
     }
