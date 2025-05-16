@@ -6,17 +6,18 @@ function TypingDots() {
   return (
     <div style={{ padding: '14px 18px', fontStyle: 'italic', color: '#888' }}>
       <span className="typing">...</span>
-      <style jsx>{`
+      <style jsx>{\`
         .typing {
           display: inline-block;
           overflow: hidden;
           animation: blink 1s steps(1) infinite;
         }
+
         @keyframes blink {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
         }
-      `}</style>
+      \`}</style>
     </div>
   );
 }
@@ -26,6 +27,7 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
+  const [ctaTriggered, setCtaTriggered] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -73,7 +75,12 @@ export default function Home() {
         await delay(2000);
         setShowTyping(false);
         if (data.quote) {
-          setMessages(prev => [...prev, { from: 'bot', text: data.quote }]);
+          const parts = data.quote.split('[ Show Me How It Works ]');
+          setMessages(prev => [
+            ...prev,
+            { from: 'bot', text: parts[0].trim() },
+            ...(parts[1] !== undefined ? [{ from: 'cta' }] : [])
+          ]);
         }
       } else {
         setMessages(prev => [...prev, { from: 'bot', text: "Something went wrong." }]);
@@ -83,6 +90,15 @@ export default function Home() {
     }
 
     setLoading(false);
+  }
+
+  function handleCTA() {
+    setMessages(prev => [
+      ...prev,
+      { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
+      { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
+    ]);
+    setCtaTriggered(true);
   }
 
   return (
@@ -134,17 +150,32 @@ export default function Home() {
           paddingBottom: '12px'
         }}>
           {messages.map((msg, i) => (
-            <div key={i} style={{
-              maxWidth: '75%',
-              margin: '6px 0',
-              padding: '14px 18px',
-              borderRadius: '14px',
-              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
-              alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
-              lineHeight: '1.5'
-            }}>
-              {msg.text}
-            </div>
+            msg.from === 'cta' ? (
+              <button key={i} onClick={handleCTA} style={{
+                alignSelf: 'center',
+                margin: '12px 0',
+                padding: '14px 24px',
+                fontSize: '16px',
+                backgroundColor: '#0070f3',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px'
+              }}>
+                Show Me How It Works
+              </button>
+            ) : (
+              <div key={i} style={{
+                maxWidth: '75%',
+                margin: '6px 0',
+                padding: '14px 18px',
+                borderRadius: '14px',
+                backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
+                alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
+                lineHeight: '1.5'
+              }}>
+                {msg.text}
+              </div>
+            )
           ))}
           {showTyping && <TypingDots />}
           <div ref={bottomRef} />
