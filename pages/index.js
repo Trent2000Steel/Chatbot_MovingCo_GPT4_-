@@ -2,14 +2,33 @@
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
+function TypingDots() {
+  return (
+    <div style={{ padding: '14px 18px', fontStyle: 'italic', color: '#888' }}>
+      <span className="typing">...</span>
+      <style jsx>{\`
+        .typing {
+          display: inline-block;
+          overflow: hidden;
+          vertical-align: middle;
+          width: 1em;
+          animation: blink 1s steps(1) infinite;
+        }
+
+        @keyframes blink {
+          0%, 100% { opacity: 0; }
+          50% { opacity: 1; }
+        }
+      \`}</style>
+    </div>
+  );
+}
+
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [ctaTriggered, setCtaTriggered] = useState(false);
-  const [step, setStep] = useState(null);
-  const formData = useRef({});
-
+  const [showTyping, setShowTyping] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -28,67 +47,20 @@ export default function Home() {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, showTyping]);
 
   function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  function handleCTA() {
-    setMessages(prev => [
-      ...prev,
-      { from: 'bot', text: "Here’s how we do it differently:" },
-      { from: 'bot', text: "You pay a flat rate—after we verify everything" },
-      { from: 'bot', text: "Only vetted movers" },
-      { from: 'bot', text: "Concierge, not call center" },
-      { from: 'bot', text: "Photos in advance" },
-      { from: 'bot', text: "Timeline protected, money-back guaranteed" },
-      { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
-      { from: 'bot', text: "To lock in your date and concierge review, we’ll reserve your move with an $85 deposit." },
-      { from: 'bot', text: "What’s your full name to get started?" }
-    ]);
-    setStep('name');
-    setCtaTriggered(true);
   }
 
   async function sendMessage(e) {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMsg = { from: 'user', text: input };
-    setMessages(prev => [...prev, userMsg]);
+    const newMessages = [...messages, { from: 'user', text: input }];
+    setMessages(newMessages);
     setInput('');
     setLoading(true);
-
-    if (step) {
-      if (step === 'name') {
-        formData.current.name = input;
-        setMessages(prev => [...prev, { from: 'bot', text: "Great. What’s your best email address?" }]);
-        setStep('email');
-      } else if (step === 'email') {
-        formData.current.email = input;
-        setMessages(prev => [...prev, { from: 'bot', text: "And what’s the best phone number to reach you at?" }]);
-        setStep('phone');
-      } else if (step === 'phone') {
-        formData.current.phone = input;
-        setMessages(prev => [...prev, { from: 'bot', text: "Lastly, can you confirm both your pickup and delivery addresses?" }]);
-        setStep('addresses');
-      } else if (step === 'addresses') {
-        formData.current.addresses = input;
-        setMessages(prev => [
-          ...prev,
-          { from: 'bot', text: "Thanks! Everything’s ready to go." },
-          { from: 'bot', text: "Click below to continue to secure payment and lock in your MoveSafe™ reservation." },
-          { from: 'bot', text: "[ Continue to Secure Payment ]" }
-        ]);
-        setStep(null);
-      }
-
-      setLoading(false);
-      return;
-    }
-
-    const newMessages = [...messages, userMsg];
 
     const openaiMessages = [
       { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ as described in the backend system prompt." },
@@ -108,33 +80,22 @@ export default function Home() {
 
     if (data.reply) {
       const replyText = data.reply;
-      const parts = replyText.split(/(?=Here’s what I’ve got|Checking route|Your long-distance quote is|If that price point fits|\[ Show Me How It Works \])/g);
+      const parts = replyText.split(/(?=Here’s what I’ve got|Checking route|Filtering movers|Cross-referencing|Your long-distance quote is|If that price point fits|\[ Show Me How It Works \])/g);
 
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i].trim();
+        if (!part) continue;
+
+        setShowTyping(true);
+        await delay(1000);
+        setShowTyping(false);
 
         if (part === "[ Show Me How It Works ]") {
           setMessages(prev => [...prev, { from: 'cta' }]);
-        } else if (part) {
+        } else {
           setMessages(prev => [...prev, { from: 'bot', text: part }]);
         }
-
-        await delay(1300);
-      }
-
-      if (replyText.includes("Your long-distance quote is") && !replyText.includes("[ Show Me How It Works ]")) {
-        await delay(1200);
-        setMessages(prev => [...prev, {
-          from: 'bot',
-          text: "These rates reflect current route and fuel data—and may shift soon depending on availability."
-        }]);
-        await delay(1200);
-        setMessages(prev => [...prev, {
-          from: 'bot',
-          text: "If that price point fits, I’ll walk you through how we verify and lock it in using the MoveSafe Method™—our calm, professional system for moving long distance without surprises."
-        }]);
-        await delay(1200);
-        setMessages(prev => [...prev, { from: 'cta' }]);
+        await delay(600);
       }
     } else {
       setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
@@ -195,7 +156,7 @@ export default function Home() {
             msg.from === 'cta' ? (
               <div key={i} style={{ alignSelf: 'center', marginTop: '12px' }}>
                 <button
-                  onClick={handleCTA}
+                  onClick={() => alert("CTA clicked")}
                   style={{
                     fontSize: '16px',
                     padding: '12px 24px',
@@ -222,6 +183,7 @@ export default function Home() {
               </div>
             )
           )}
+          {showTyping && <TypingDots />}
           <div ref={bottomRef} />
         </div>
 
