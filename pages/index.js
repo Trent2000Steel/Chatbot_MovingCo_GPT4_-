@@ -36,10 +36,10 @@ export default function Home() {
       ...prev,
       { from: 'bot', text: "Here’s how we do it differently:" },
       { from: 'bot', text: "• You pay a flat rate—after we verify everything
-• Only vetted movers
-• Concierge, not call center
-• Photos in advance
-• Timeline protected, money-back guaranteed" },
+ Only vetted movers
+ Concierge, not call center
+ Photos in advance
+Timeline protected, money-back guaranteed" },
       { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
       { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
     ]);
