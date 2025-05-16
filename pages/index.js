@@ -10,8 +10,6 @@ function TypingDots() {
         .typing {
           display: inline-block;
           overflow: hidden;
-          vertical-align: middle;
-          width: 1em;
           animation: blink 1s steps(1) infinite;
         }
 
@@ -34,12 +32,10 @@ export default function Home() {
   useEffect(() => {
     const intro = { from: 'bot', text: "No forms. No waiting. I’ll give you a real long-distance price range right here in chat." };
     const question1 = { from: 'bot', text: "Where are you moving from?" };
-
     setMessages([intro]);
     const delay = setTimeout(() => {
       setMessages([intro, question1]);
     }, 1000);
-
     return () => clearTimeout(delay);
   }, []);
 
@@ -56,7 +52,6 @@ export default function Home() {
   async function sendMessage(e) {
     e.preventDefault();
     if (!input.trim()) return;
-
     const newMessages = [...messages, { from: 'user', text: input }];
     setMessages(newMessages);
     setInput('');
@@ -81,15 +76,12 @@ export default function Home() {
     if (data.reply) {
       const replyText = data.reply;
       const parts = replyText.split(/(?=Here’s what I’ve got|Checking route|Filtering movers|Cross-referencing|Your long-distance quote is|If that price point fits|\[ Show Me How It Works \])/g);
-
       for (let i = 0; i < parts.length; i++) {
         const part = parts[i].trim();
         if (!part) continue;
-
         setShowTyping(true);
         await delay(1000);
         setShowTyping(false);
-
         if (part === "[ Show Me How It Works ]") {
           setMessages(prev => [...prev, { from: 'cta' }]);
         } else {
