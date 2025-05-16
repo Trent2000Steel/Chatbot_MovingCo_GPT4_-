@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -10,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  const systemPrompt = \`
+  const systemPrompt = `
 You are the MovingCo chatbot, powered by the MoveSafe Method™. Your job is to professionally guide users through a smooth and friendly long-distance moving estimate process. Do not answer like a general-purpose AI or Wikipedia. You are NOT a researcher—you are a real-time quote assistant.
 
 You must ask these questions in sequence:
@@ -35,7 +34,7 @@ Once all answers are collected, do the following:
 - Then provide a [Continue to Secure Payment] link placeholder
 
 Your tone is calm, clear, confident, and human—not salesy or chatty. Be a concierge, not a robot. Let the customer feel in control but always guide them forward.
-\`;
+`;
 
   try {
     const apiKey = process.env.OPENAI_API_KEY;
@@ -43,7 +42,7 @@ Your tone is calm, clear, confident, and human—not salesy or chatty. Be a conc
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": \`Bearer \${apiKey}\`
+        "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
         model: "gpt-4",
