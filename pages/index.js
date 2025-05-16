@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
@@ -6,7 +5,7 @@ function TypingDots() {
   return (
     <div style={{ padding: '14px 18px', fontStyle: 'italic', color: '#888' }}>
       <span className="typing">...</span>
-      <style jsx>{\`
+      <style jsx>{`
         .typing {
           display: inline-block;
           overflow: hidden;
@@ -17,7 +16,7 @@ function TypingDots() {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
         }
-      \`}</style>
+      `}</style>
     </div>
   );
 }
@@ -58,7 +57,10 @@ export default function Home() {
     setLoading(true);
 
     const openaiMessages = [
-      { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ and quote using the pattern: First recap the move in bullet-style clarity. Then wait 2 seconds with 'typing' animation. Then provide a realistic price range like: Your long-distance quote is: $3,200–$3,800" },
+      {
+        role: "system",
+        content: "You are the MovingCo chatbot. First, recap the move in clear bullet-style format. Then pause with typing indicator for 2 seconds. Then return a realistic quote in this format: 'Your long-distance quote is: $3,200–$3,800'"
+      },
       ...newMessages.map(msg => ({
         role: msg.from === 'user' ? 'user' : 'assistant',
         content: msg.text
