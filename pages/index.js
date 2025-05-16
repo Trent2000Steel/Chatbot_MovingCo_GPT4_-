@@ -6,7 +6,7 @@ function TypingDots() {
   return (
     <div style={{ padding: '14px 18px', fontStyle: 'italic', color: '#888' }}>
       <span className="typing">...</span>
-      <style jsx>{\`
+      <style jsx>{`
         .typing {
           display: inline-block;
           overflow: hidden;
@@ -17,7 +17,7 @@ function TypingDots() {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
         }
-      \`}</style>
+      `}</style>
     </div>
   );
 }
