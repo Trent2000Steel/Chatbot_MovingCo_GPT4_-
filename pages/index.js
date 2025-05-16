@@ -7,6 +7,9 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [ctaTriggered, setCtaTriggered] = useState(false);
+  const [step, setStep] = useState(null);
+  const formData = useRef({});
+
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -41,8 +44,10 @@ export default function Home() {
       { from: 'bot', text: "Photos in advance" },
       { from: 'bot', text: "Timeline protected, money-back guaranteed" },
       { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
-      { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
+      { from: 'bot', text: "To lock in your date and concierge review, we’ll reserve your move with an $85 deposit." },
+      { from: 'bot', text: "What’s your full name to get started?" }
     ]);
+    setStep('name');
     setCtaTriggered(true);
   }
 
@@ -50,9 +55,40 @@ export default function Home() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { from: 'user', text: input }];
-    setMessages(newMessages);
+    const userMsg = { from: 'user', text: input };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
     setLoading(true);
+
+    if (step) {
+      if (step === 'name') {
+        formData.current.name = input;
+        setMessages(prev => [...prev, { from: 'bot', text: "Great. What’s your best email address?" }]);
+        setStep('email');
+      } else if (step === 'email') {
+        formData.current.email = input;
+        setMessages(prev => [...prev, { from: 'bot', text: "And what’s the best phone number to reach you at?" }]);
+        setStep('phone');
+      } else if (step === 'phone') {
+        formData.current.phone = input;
+        setMessages(prev => [...prev, { from: 'bot', text: "Lastly, can you confirm both your pickup and delivery addresses?" }]);
+        setStep('addresses');
+      } else if (step === 'addresses') {
+        formData.current.addresses = input;
+        setMessages(prev => [
+          ...prev,
+          { from: 'bot', text: "Thanks! Everything’s ready to go." },
+          { from: 'bot', text: "Click below to continue to secure payment and lock in your MoveSafe™ reservation." },
+          { from: 'bot', text: "[ Continue to Secure Payment ]" }
+        ]);
+        setStep(null);
+      }
+
+      setLoading(false);
+      return;
+    }
+
+    const newMessages = [...messages, userMsg];
 
     const openaiMessages = [
       { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ as described in the backend system prompt." },
@@ -86,7 +122,7 @@ export default function Home() {
         await delay(1300);
       }
 
-      if (replyText.includes("Your long-distance quote is")) {
+      if (replyText.includes("Your long-distance quote is") && !replyText.includes("[ Show Me How It Works ]")) {
         await delay(1200);
         setMessages(prev => [...prev, {
           from: 'bot',
@@ -104,7 +140,6 @@ export default function Home() {
       setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
     }
 
-    setInput('');
     setLoading(false);
   }
 
