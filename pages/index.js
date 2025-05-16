@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
@@ -11,7 +12,6 @@ function TypingDots() {
           overflow: hidden;
           animation: blink 1s steps(1) infinite;
         }
-
         @keyframes blink {
           0%, 100% { opacity: 0; }
           50% { opacity: 1; }
@@ -56,44 +56,30 @@ export default function Home() {
     setInput('');
     setLoading(true);
 
-    const openaiMessages = [
-      {
-        role: "system",
-        content: "You are the MovingCo chatbot. First, recap the move in clear bullet-style format. Then pause with typing indicator for 2 seconds. Then return a realistic quote in this format: 'Your long-distance quote is: $3,200–$3,800'"
-      },
-      ...newMessages.map(msg => ({
-        role: msg.from === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      }))
-    ];
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages.map(msg => ({
+          role: msg.from === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }))})
+      });
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: openaiMessages })
-    });
-
-    const data = await res.json();
-
-    if (data.reply) {
-      const replyText = data.reply;
-      const parts = replyText.split(/(?=Your long-distance quote is)/g);
-      const recapPart = parts[0]?.trim();
-      const quotePart = parts[1]?.trim();
-
-      if (recapPart) {
-        setMessages(prev => [...prev, { from: 'bot', text: recapPart }]);
+      const data = await res.json();
+      if (data.recap) {
+        setMessages(prev => [...prev, { from: 'bot', text: data.recap }]);
+        setShowTyping(true);
+        await delay(2000);
+        setShowTyping(false);
+        if (data.quote) {
+          setMessages(prev => [...prev, { from: 'bot', text: data.quote }]);
+        }
+      } else {
+        setMessages(prev => [...prev, { from: 'bot', text: "Something went wrong." }]);
       }
-
-      setShowTyping(true);
-      await delay(2000);
-      setShowTyping(false);
-
-      if (quotePart) {
-        setMessages(prev => [...prev, { from: 'bot', text: quotePart }]);
-      }
-    } else {
-      setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
+    } catch (err) {
+      setMessages(prev => [...prev, { from: 'bot', text: "Server error. Please try again." }]);
     }
 
     setLoading(false);
