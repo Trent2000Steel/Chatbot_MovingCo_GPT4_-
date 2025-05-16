@@ -3,10 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message } = req.body;
+  const { messages } = req.body;
 
-  if (!message) {
-    return res.status(400).json({ error: 'Message is required' });
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'Messages array is required' });
   }
 
   const systemPrompt = `
@@ -48,7 +48,7 @@ Your tone is calm, clear, confident, and human—not salesy or chatty. Be a conc
         model: "gpt-4",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: message }
+          ...messages
         ],
         temperature: 0.7
       })
