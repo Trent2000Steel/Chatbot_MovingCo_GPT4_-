@@ -35,11 +35,11 @@ export default function Home() {
     setMessages(prev => [
       ...prev,
       { from: 'bot', text: "Here’s how we do it differently:" },
-      { from: 'bot', text: "• You pay a flat rate—after we verify everything
- Only vetted movers
- Concierge, not call center
- Photos in advance
-Timeline protected, money-back guaranteed" },
+      { from: 'bot', text: "You pay a flat rate—after we verify everything" },
+      { from: 'bot', text: "Only vetted movers" },
+      { from: 'bot', text: "Concierge, not call center" },
+      { from: 'bot', text: "Photos in advance" },
+      { from: 'bot', text: "Timeline protected, money-back guaranteed" },
       { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
       { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
     ]);
@@ -86,7 +86,6 @@ Timeline protected, money-back guaranteed" },
         await delay(1300);
       }
 
-      // Add soft urgency after the quote
       if (replyText.includes("Your long-distance quote is")) {
         await delay(1200);
         setMessages(prev => [...prev, {
