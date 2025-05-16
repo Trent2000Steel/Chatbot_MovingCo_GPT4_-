@@ -28,11 +28,19 @@ export default function Home() {
     setMessages(newMessages);
     setLoading(true);
 
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input })
-    });
+const openaiMessages = [
+  { role: "system", content: "You are the MovingCo chatbot. Follow the MoveSafe Method™ as described in the backend system prompt." },
+  ...newMessages.map(msg => ({
+    role: msg.from === 'user' ? 'user' : 'assistant',
+    content: msg.text
+  }))
+];
+
+const res = await fetch('/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ messages: openaiMessages })
+});
 
     const data = await res.json();
     if (data.reply) {
