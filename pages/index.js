@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
 export default function Home() {
@@ -8,14 +8,11 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          from: 'bot',
-          text: "Hello there! I'm your MovingCo AI Concierge. It's my pleasure to help you plan your upcoming move. Could you share where you're moving from and to, along with your estimated move date and size of your home?"
-        }
-      ]);
-    }
+    const opening = {
+      from: 'bot',
+      text: "Hello there! I'm your MovingCo AI Concierge. It's my pleasure to help you plan your upcoming move. Could you share where you're moving from and to, along with your estimated move date and size of your home?"
+    };
+    setMessages([opening]);
   }, []);
 
   useEffect(() => {
@@ -32,18 +29,10 @@ export default function Home() {
     setMessages(newMessages);
     setLoading(true);
 
-    const openaiMessages = [
-      { role: "system", content: "You are the MovingCo chatbot. Your job is to close high-quality long-distance moving clients by providing quotes, answering questions, and collecting the $85 deposit to reserve their move. Be calm, clear, and professional." },
-      ...newMessages.map(msg => ({
-        role: msg.from === 'user' ? 'user' : 'assistant',
-        content: msg.text
-      }))
-    ];
-
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: openaiMessages })
+      body: JSON.stringify({ message: input })
     });
 
     const data = await res.json();
@@ -59,31 +48,27 @@ export default function Home() {
 
   return (
     <div style={{
-      fontFamily: 'sans-serif',
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh'
+      height: '100vh',
+      fontFamily: 'sans-serif'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
-      <header style={{ padding: '12px', textAlign: 'center' }}>
-        <img
-          src="/movingco-header-logo.png"
-          alt="MovingCo Logo"
-          style={{ width: '100%', maxWidth: '600px', margin: '0 auto', display: 'block' }}
-        />
-        <div style={{ marginTop: '12px', fontSize: '14px', fontWeight: 'bold' }}>
-          MoveSafe Verified™
-        </div>
-        <div style={{ fontSize: '13px', color: '#555' }}>
-          We take the risk. If we can’t deliver what we promised, you get your money back.
-          <br />
-          No forms. No delays. No surprises.
-        </div>
-        <div style={{ marginTop: '8px', fontSize: '13px', color: '#333' }}>
-          24/7 Quotes & Booking, Powered by AI
+      <header style={{
+        textAlign: 'center',
+        padding: '8px',
+        backgroundColor: '#fff',
+        borderBottom: '1px solid #ccc'
+      }}>
+        <img src="/movingco-header-logo.png" alt="MovingCo Logo" style={{ maxWidth: '100%', height: 'auto' }} />
+        <div style={{ marginTop: '10px', fontSize: '14px' }}>
+          <strong>MoveSafe Verified™</strong>
+          <p style={{ margin: '4px 0' }}>We take the risk. If we can’t deliver what we promised, you get your money back.</p>
+          <p style={{ margin: '4px 0' }}>No forms. No delays. No surprises.</p>
+          <p style={{ fontWeight: 500 }}>24/7 Quotes & Booking, Powered by AI</p>
         </div>
       </header>
 
@@ -93,28 +78,42 @@ export default function Home() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '12px',
-        maxWidth: '700px',
         margin: '0 auto',
         width: '100%',
-        borderTop: '1px solid #eee'
+        maxWidth: '700px',
+        border: '1px solid #ddd',
+        borderRadius: '12px',
+        backgroundColor: '#fff',
+        boxShadow: '0 0 8px rgba(0,0,0,0.05)',
+        overflow: 'hidden'
       }}>
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          paddingBottom: '12px'
+        }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
-              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
+              maxWidth: '70%',
+              margin: '6px 0',
               padding: '12px 16px',
               borderRadius: '12px',
-              marginBottom: '8px',
-              maxWidth: '70%',
+              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
               alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end'
             }}>
               {msg.text}
             </div>
           ))}
-          <div ref={bottomRef}></div>
+          <div ref={bottomRef} />
         </div>
 
-        <form onSubmit={sendMessage} style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+        <form onSubmit={sendMessage} style={{
+          display: 'flex',
+          gap: '8px',
+          paddingTop: '8px'
+        }}>
           <input
             type="text"
             value={input}
@@ -139,10 +138,14 @@ export default function Home() {
         </form>
       </main>
 
-      <footer style={{ fontSize: '12px', color: '#666', textAlign: 'center', padding: '12px 0' }}>
-        Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout
-        <br />
-        <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a>
+      <footer style={{
+        textAlign: 'center',
+        fontSize: '12px',
+        paddingBottom: '8px',
+        color: '#666'
+      }}>
+        <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
+        <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
       </footer>
     </div>
   );
