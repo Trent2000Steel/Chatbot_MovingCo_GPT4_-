@@ -10,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     const opening = {
       from: 'bot',
-      text: "Hello there! I'm your MovingCo AI Concierge. It's my pleasure to help you plan your upcoming move. Could you share where you're moving from and to, along with your estimated move date and size of your home?"
+      text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?"
     };
     setMessages([opening]);
   }, []);
@@ -50,25 +50,41 @@ export default function Home() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh',
-      fontFamily: 'sans-serif'
+      minHeight: '100vh',
+      fontFamily: 'sans-serif',
+      background: '#fff'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
-      <header style={{
-        textAlign: 'center',
-        padding: '8px',
-        backgroundColor: '#fff',
-        borderBottom: '1px solid #ccc'
-      }}>
-        <img src="/movingco-header-logo.png" alt="MovingCo Logo" style={{ maxWidth: '100%', height: 'auto' }} />
-        <div style={{ marginTop: '10px', fontSize: '14px' }}>
-          <strong>MoveSafe Verified™</strong>
-          <p style={{ margin: '4px 0' }}>We take the risk. If we can’t deliver what we promised, you get your money back.</p>
-          <p style={{ margin: '4px 0' }}>No forms. No delays. No surprises.</p>
-          <p style={{ fontWeight: 500 }}>24/7 Quotes & Booking, Powered by AI</p>
+      <header style={{ textAlign: 'center', padding: '16px 12px 8px' }}>
+        <img
+          src="/movingco-logo.png"
+          alt="MovingCo Logo"
+          style={{ width: '220px', height: 'auto', maxWidth: '100%', margin: '0 auto 12px', display: 'block' }}
+        />
+        <div style={{
+          backgroundColor: '#f5f5f5',
+          padding: '12px 16px',
+          borderRadius: '8px',
+          marginBottom: '8px',
+          display: 'inline-block'
+        }}>
+          <strong style={{ display: 'block', fontSize: '15px' }}>MoveSafe Verified™</strong>
+          <p style={{
+            margin: '4px 0 0',
+            fontSize: '13px',
+            lineHeight: '1.4',
+            color: '#333'
+          }}>
+            We take the risk. If we can’t deliver what we promised, you get your money back.
+            <br />
+            <em>No forms. No delays. No surprises.</em>
+          </p>
+        </div>
+        <div style={{ fontSize: '13px', marginTop: '6px', color: '#333' }}>
+          24/7 Quotes & Booking, Powered by AI
         </div>
       </header>
 
@@ -78,14 +94,9 @@ export default function Home() {
         flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '12px',
-        margin: '0 auto',
-        width: '100%',
         maxWidth: '700px',
-        border: '1px solid #ddd',
-        borderRadius: '12px',
-        backgroundColor: '#fff',
-        boxShadow: '0 0 8px rgba(0,0,0,0.05)',
-        overflow: 'hidden'
+        margin: '0 auto',
+        width: '100%'
       }}>
         <div style={{
           flex: 1,
@@ -96,12 +107,13 @@ export default function Home() {
         }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
-              maxWidth: '70%',
+              maxWidth: '75%',
               margin: '6px 0',
-              padding: '12px 16px',
-              borderRadius: '12px',
+              padding: '14px 18px',
+              borderRadius: '14px',
               backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
-              alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end'
+              alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
+              lineHeight: '1.5'
             }}>
               {msg.text}
             </div>
@@ -121,17 +133,19 @@ export default function Home() {
             placeholder="Type your message..."
             style={{
               flex: 1,
-              padding: '12px',
+              padding: '14px',
               borderRadius: '8px',
-              border: '1px solid #ccc'
+              border: '1px solid #ccc',
+              fontSize: '16px'
             }}
           />
           <button type="submit" disabled={loading} style={{
-            padding: '12px 16px',
+            padding: '14px 18px',
             borderRadius: '8px',
             backgroundColor: '#0070f3',
             color: '#fff',
-            border: 'none'
+            border: 'none',
+            fontSize: '16px'
           }}>
             {loading ? '...' : 'Send'}
           </button>
@@ -141,7 +155,7 @@ export default function Home() {
       <footer style={{
         textAlign: 'center',
         fontSize: '12px',
-        paddingBottom: '8px',
+        padding: '12px 0',
         color: '#666'
       }}>
         <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
