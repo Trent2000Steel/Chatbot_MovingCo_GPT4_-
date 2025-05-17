@@ -26,17 +26,10 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showTyping, setShowTyping] = useState(false);
-  const [ctaTriggered, setCtaTriggered] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    const intro = { from: 'bot', text: "No forms. No waiting. I’ll give you a real long-distance price range right here in chat." };
-    const question1 = { from: 'bot', text: "Where are you moving from?" };
-    setMessages([intro]);
-    const delay = setTimeout(() => {
-      setMessages([intro, question1]);
-    }, 1000);
-    return () => clearTimeout(delay);
+    sendStartMessage();
   }, []);
 
   useEffect(() => {
@@ -47,6 +40,24 @@ export default function Home() {
 
   function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function sendStartMessage() {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [{ role: 'user', content: '__start' }] })
+      });
+      const data = await res.json();
+      if (data.reply) {
+        setMessages([{ from: 'bot', text: data.reply }]);
+      }
+    } catch {
+      setMessages([{ from: 'bot', text: 'Something went wrong loading the chat.' }]);
+    }
+    setLoading(false);
   }
 
   async function sendMessage(e) {
@@ -68,23 +79,17 @@ export default function Home() {
       });
 
       const data = await res.json();
-      if (data.recap) {
-        setMessages(prev => [...prev, { from: 'bot', text: data.recap }]);
-        setShowTyping(true);
-        await delay(2000);
-        setShowTyping(false);
-        if (data.quote) {
-          const parts = data.quote.split('[ Show Me How It Works ]');
-          setMessages(prev => [
-            ...prev,
-            { from: 'bot', text: parts[0].trim() },
-            ...(parts[1] !== undefined ? [{ from: 'cta' }] : [])
-          ]);
-        }
+      if (data.reply) {
+        const parts = data.reply.split('[ Show Me How It Works ]');
+        setMessages(prev => [
+          ...prev,
+          { from: 'bot', text: parts[0].trim() },
+          ...(parts[1] !== undefined ? [{ from: 'cta' }] : [])
+        ]);
       } else {
         setMessages(prev => [...prev, { from: 'bot', text: "Something went wrong." }]);
       }
-    } catch (err) {
+    } catch {
       setMessages(prev => [...prev, { from: 'bot', text: "Server error. Please try again." }]);
     }
 
@@ -97,7 +102,6 @@ export default function Home() {
       { from: 'bot', text: "This is the MoveSafe Method™. Calm. Clear. Controlled." },
       { from: 'bot', text: "Let’s reserve your move. What’s your full name?" }
     ]);
-    setCtaTriggered(true);
   }
 
   return (
