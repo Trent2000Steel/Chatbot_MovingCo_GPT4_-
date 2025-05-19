@@ -8,11 +8,16 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    const opening = {
-      from: 'bot',
-      text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?"
+    const fetchInitialMessage = async () => {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'Generate a warm, helpful opening line to begin the MovingCo AI concierge chat.' })
+      });
+      const data = await res.json();
+      setMessages([{ from: 'bot', text: data.reply || "Hi, how can I help with your move today?" }]);
     };
-    setMessages([opening]);
+    fetchInitialMessage();
   }, []);
 
   useEffect(() => {
@@ -36,11 +41,7 @@ export default function Home() {
     });
 
     const data = await res.json();
-    if (data.reply) {
-      setMessages([...newMessages, { from: 'bot', text: data.reply }]);
-    } else {
-      setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
-    }
+    setMessages([...newMessages, { from: 'bot', text: data.reply || "Something went wrong." }]);
 
     setInput('');
     setLoading(false);
@@ -51,39 +52,32 @@ export default function Home() {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      fontFamily: "'Inter', 'Helvetica Neue', sans-serif",
-      background: '#fff'
+      fontFamily: 'sans-serif',
+      backgroundColor: '#fff'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
-      {/* HEADER BLOCK */}
       <header style={{
         textAlign: 'center',
-        padding: '20px 12px 10px',
-        backgroundColor: '#f9f9f9'
+        padding: '16px 12px 8px'
       }}>
-        <div style={{
-          maxWidth: '360px',
-          margin: '0 auto',
-          background: '#fff',
-          padding: '16px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
-        }}>
-          <img
-            src="/header.png"
-            alt="MovingCo Logo"
-            style={{ width: '100%', height: 'auto', marginBottom: '16px' }}
-          />
-          <div style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>
-            24/7 Quotes & Booking, Powered by AI
-          </div>
-        </div>
+        <img
+          src="/movinglogo.png"
+          alt="MovingCo Logo"
+          style={{
+            width: '100%',
+            maxWidth: '380px',
+            height: 'auto',
+            display: 'block',
+            margin: '0 auto',
+            borderRadius: '12px',
+            boxShadow: '0 0 12px rgba(0, 0, 0, 0.05)'
+          }}
+        />
       </header>
 
-      {/* CHAT SECTION */}
       <main style={{
         flex: 1,
         display: 'flex',
@@ -117,7 +111,6 @@ export default function Home() {
           <div ref={bottomRef} />
         </div>
 
-        {/* INPUT BAR */}
         <form onSubmit={sendMessage} style={{
           display: 'flex',
           gap: '8px',
@@ -149,7 +142,6 @@ export default function Home() {
         </form>
       </main>
 
-      {/* FOOTER */}
       <footer style={{
         textAlign: 'center',
         fontSize: '12px',
