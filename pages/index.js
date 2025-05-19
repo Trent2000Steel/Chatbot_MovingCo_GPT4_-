@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
@@ -10,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     const opening = {
       from: 'bot',
-      text: 'Hi, how can I help with your move today?'
+      text: "Hi, how can I help with your move today?"
     };
     setMessages([opening]);
   }, []);
@@ -59,32 +60,21 @@ export default function Home() {
       </Head>
 
       <header style={{
-        textAlign: 'center',
-        padding: '12px 8px',
-        background: '#fafafa',
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)'
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '16px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '12px',
+        margin: '12px auto 0',
+        maxWidth: '95%',
+        height: '68vh'
       }}>
-        <div style={{
-          maxWidth: '500px',
-          margin: '0 auto',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          backgroundColor: '#fff'
-        }}>
-          <img
-            src="/movinglogo.png"
-            alt="MovingCo Logo"
-            style={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: '360px',
-              objectFit: 'contain'
-            }}
-          />
-        </div>
-        <div style={{ fontSize: '13px', marginTop: '6px', color: '#333' }}>
-          24/7 Quotes & Booking, Powered by AI
-        </div>
+        <img
+          src="/movinglogo.png"
+          alt="MovingCo Logo and Trust Badge"
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+        />
       </header>
 
       <main style={{
@@ -107,12 +97,12 @@ export default function Home() {
           {messages.map((msg, i) => (
             <div key={i} style={{
               maxWidth: '75%',
-              margin: '8px 0',
+              margin: '6px 0',
               padding: '14px 18px',
               borderRadius: '16px',
-              fontSize: '15px',
               backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
               alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
+              fontSize: '15px',
               lineHeight: '1.5'
             }}>
               {msg.text}
@@ -136,7 +126,7 @@ export default function Home() {
               padding: '14px',
               borderRadius: '8px',
               border: '1px solid #ccc',
-              fontSize: '16px'
+              fontSize: '15px'
             }}
           />
           <button type="submit" disabled={loading} style={{
@@ -145,7 +135,7 @@ export default function Home() {
             backgroundColor: '#0070f3',
             color: '#fff',
             border: 'none',
-            fontSize: '16px'
+            fontSize: '15px'
           }}>
             {loading ? '...' : 'Send'}
           </button>
