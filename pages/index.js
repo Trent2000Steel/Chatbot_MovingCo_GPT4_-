@@ -8,11 +8,12 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    const opening = {
-      from: 'bot',
-      text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?"
-    };
-    setMessages([opening]);
+    setMessages([
+      {
+        from: 'bot',
+        text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?",
+      }
+    ]);
   }, []);
 
   useEffect(() => {
@@ -36,12 +37,7 @@ export default function Home() {
     });
 
     const data = await res.json();
-    if (data.reply) {
-      setMessages([...newMessages, { from: 'bot', text: data.reply }]);
-    } else {
-      setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
-    }
-
+    setMessages([...newMessages, { from: 'bot', text: data.reply || "Something went wrong." }]);
     setInput('');
     setLoading(false);
   }
@@ -52,70 +48,45 @@ export default function Home() {
       flexDirection: 'column',
       minHeight: '100vh',
       fontFamily: 'sans-serif',
-      backgroundColor: '#f4f4f4'
+      background: '#fff'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
-      <header style={{
-        textAlign: 'center',
-        padding: '16px 0 10px',
-        backgroundColor: '#fff',
-        borderBottom: '1px solid #ddd'
-      }}>
+      {/* Header Logo */}
+      <header style={{ padding: '24px 16px 8px', textAlign: 'center' }}>
         <img
-          src="/movingco-logo-header.png"
+          src="/header.png"
           alt="MovingCo Logo"
-          style={{ maxWidth: '300px', width: '90%', height: 'auto', margin: '0 auto' }}
+          style={{ maxWidth: '100%', height: 'auto', width: '280px', marginBottom: '16px' }}
         />
+        <img
+          src="/movesafe-badge.png"
+          alt="MoveSafe Verified"
+          style={{ maxWidth: '100%', height: 'auto', width: '320px', marginBottom: '12px' }}
+        />
+        <div style={{ fontSize: '14px', color: '#444' }}>
+          24/7 Quotes & Booking, Powered by AI
+        </div>
       </header>
 
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        padding: '24px 16px 12px',
-        backgroundColor: '#f4f4f4'
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '16px',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-          textAlign: 'center',
-          maxWidth: '360px',
-          width: '100%'
-        }}>
-          <img
-            src="/movesafe-badge.png"
-            alt="MoveSafe Verified"
-            style={{ maxWidth: '100%', height: 'auto', marginBottom: '8px' }}
-          />
-          <div style={{ fontSize: '13px', color: '#444' }}>
-            24/7 Quotes & Booking, Powered by AI
-          </div>
-        </div>
-      </div>
-
+      {/* Chat Area */}
       <main style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         padding: '12px',
-        maxWidth: '700px',
+        maxWidth: '720px',
         margin: '0 auto',
         width: '100%'
       }}>
         <div style={{
           flex: 1,
-          backgroundColor: '#fff',
-          borderRadius: '12px',
-          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
-          padding: '16px',
           overflowY: 'auto',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          paddingBottom: '12px'
         }}>
           {messages.map((msg, i) => (
             <div key={i} style={{
@@ -123,11 +94,9 @@ export default function Home() {
               margin: '6px 0',
               padding: '14px 18px',
               borderRadius: '14px',
-              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#0070f3',
-              color: msg.from === 'bot' ? '#000' : '#fff',
+              backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
               alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
-              lineHeight: '1.5',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+              lineHeight: '1.5'
             }}>
               {msg.text}
             </div>
@@ -138,7 +107,7 @@ export default function Home() {
         <form onSubmit={sendMessage} style={{
           display: 'flex',
           gap: '8px',
-          paddingTop: '12px'
+          paddingTop: '8px'
         }}>
           <input
             type="text"
@@ -166,13 +135,12 @@ export default function Home() {
         </form>
       </main>
 
+      {/* Footer */}
       <footer style={{
         textAlign: 'center',
         fontSize: '12px',
-        padding: '12px 0',
-        color: '#666',
-        borderTop: '1px solid #ddd',
-        backgroundColor: '#f9f9f9'
+        padding: '16px 0',
+        color: '#666'
       }}>
         <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
         <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
