@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
@@ -8,16 +9,11 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    const fetchInitialMessage = async () => {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Generate a warm, helpful opening line to begin the MovingCo AI concierge chat.' })
-      });
-      const data = await res.json();
-      setMessages([{ from: 'bot', text: data.reply || "Hi, how can I help with your move today?" }]);
+    const opening = {
+      from: 'bot',
+      text: "Hi, how can I help with your move today?"
     };
-    fetchInitialMessage();
+    setMessages([opening]);
   }, []);
 
   useEffect(() => {
@@ -41,7 +37,11 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setMessages([...newMessages, { from: 'bot', text: data.reply || "Something went wrong." }]);
+    if (data.reply) {
+      setMessages([...newMessages, { from: 'bot', text: data.reply }]);
+    } else {
+      setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
+    }
 
     setInput('');
     setLoading(false);
@@ -52,30 +52,39 @@ export default function Home() {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      fontFamily: 'sans-serif',
-      backgroundColor: '#fff'
+      fontFamily: '"Segoe UI", "Helvetica Neue", sans-serif',
+      fontSize: '14px',
+      background: '#fff'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
       <header style={{
-        textAlign: 'center',
-        padding: '16px 12px 8px'
+        padding: '20px 12px 0',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '0 0 16px 16px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+        textAlign: 'center'
       }}>
         <img
           src="/movinglogo.png"
           alt="MovingCo Logo"
           style={{
             width: '100%',
-            maxWidth: '380px',
+            maxWidth: '340px',
             height: 'auto',
-            display: 'block',
-            margin: '0 auto',
-            borderRadius: '12px',
-            boxShadow: '0 0 12px rgba(0, 0, 0, 0.05)'
+            margin: '0 auto 12px',
+            display: 'block'
           }}
         />
+        <div style={{
+          fontSize: '13px',
+          color: '#555',
+          marginBottom: '6px'
+        }}>
+          24/7 Quotes & Booking, Powered by AI
+        </div>
       </header>
 
       <main style={{
@@ -99,7 +108,7 @@ export default function Home() {
             <div key={i} style={{
               maxWidth: '75%',
               margin: '6px 0',
-              padding: '14px 18px',
+              padding: '12px 16px',
               borderRadius: '14px',
               backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
               alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
@@ -123,19 +132,21 @@ export default function Home() {
             placeholder="Type your message..."
             style={{
               flex: 1,
-              padding: '14px',
+              padding: '12px',
               borderRadius: '8px',
               border: '1px solid #ccc',
-              fontSize: '16px'
+              fontSize: '14px'
             }}
           />
           <button type="submit" disabled={loading} style={{
-            padding: '14px 18px',
+            padding: '12px 18px',
             borderRadius: '8px',
             backgroundColor: '#0070f3',
             color: '#fff',
             border: 'none',
-            fontSize: '16px'
+            fontSize: '14px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
           }}>
             {loading ? '...' : 'Send'}
           </button>
@@ -144,7 +155,7 @@ export default function Home() {
 
       <footer style={{
         textAlign: 'center',
-        fontSize: '12px',
+        fontSize: '11px',
         padding: '12px 0',
         color: '#666'
       }}>
