@@ -8,12 +8,11 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    setMessages([
-      {
-        from: 'bot',
-        text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?",
-      }
-    ]);
+    const opening = {
+      from: 'bot',
+      text: "Welcome to MovingCo. I’m your AI concierge—ready to walk you through your move. Where are you moving from?"
+    };
+    setMessages([opening]);
   }, []);
 
   useEffect(() => {
@@ -37,7 +36,12 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setMessages([...newMessages, { from: 'bot', text: data.reply || "Something went wrong." }]);
+    if (data.reply) {
+      setMessages([...newMessages, { from: 'bot', text: data.reply }]);
+    } else {
+      setMessages([...newMessages, { from: 'bot', text: "Something went wrong." }]);
+    }
+
     setInput('');
     setLoading(false);
   }
@@ -47,37 +51,46 @@ export default function Home() {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      fontFamily: 'sans-serif',
+      fontFamily: "'Inter', 'Helvetica Neue', sans-serif",
       background: '#fff'
     }}>
       <Head>
         <title>MovingCo Chat</title>
       </Head>
 
-      {/* Header Logo */}
-      <header style={{ padding: '24px 16px 8px', textAlign: 'center' }}>
-        <img
-          src="/header.png"
-          alt="MovingCo Logo"
-          style={{ maxWidth: '100%', height: 'auto', width: '280px', marginBottom: '16px' }}
-        />
-        <img
-          src="/movesafe-badge.png"
-          alt="MoveSafe Verified"
-          style={{ maxWidth: '100%', height: 'auto', width: '320px', marginBottom: '12px' }}
-        />
-        <div style={{ fontSize: '14px', color: '#444' }}>
-          24/7 Quotes & Booking, Powered by AI
+      {/* HEADER BLOCK */}
+      <header style={{
+        textAlign: 'center',
+        padding: '20px 12px 10px',
+        backgroundColor: '#f9f9f9'
+      }}>
+        <div style={{
+          maxWidth: '360px',
+          margin: '0 auto',
+          background: '#fff',
+          padding: '16px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+        }}>
+          <img
+            src="/header.png"
+            alt="MovingCo Logo"
+            style={{ width: '100%', height: 'auto', marginBottom: '16px' }}
+          />
+          <div style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>
+            24/7 Quotes & Booking, Powered by AI
+          </div>
         </div>
       </header>
 
-      {/* Chat Area */}
+      {/* CHAT SECTION */}
       <main style={{
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'space-between',
         padding: '12px',
-        maxWidth: '720px',
+        maxWidth: '700px',
         margin: '0 auto',
         width: '100%'
       }}>
@@ -104,6 +117,7 @@ export default function Home() {
           <div ref={bottomRef} />
         </div>
 
+        {/* INPUT BAR */}
         <form onSubmit={sendMessage} style={{
           display: 'flex',
           gap: '8px',
@@ -135,11 +149,11 @@ export default function Home() {
         </form>
       </main>
 
-      {/* Footer */}
+      {/* FOOTER */}
       <footer style={{
         textAlign: 'center',
         fontSize: '12px',
-        padding: '16px 0',
+        padding: '12px 0',
         color: '#666'
       }}>
         <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
