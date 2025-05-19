@@ -44,22 +44,16 @@ STEP 3: Recap in bullets:
 • Help:  
 • Special Items:  
 
-STEP 4: Quote
-Use the formula (do not show math):
-- $1.20/mi base
-- +$300 per bedroom
-- +$250 for loading or unloading, $500 for both
-- +$300 for special items
-- Min: $2,000
-- Add 10% buffer for range
+Immediately follow this recap with:  
+"Give me a second to run this through our system…"
 
-Say:
-“Based on similar moves, your quote range would fall between $X and $Y.”
+Then simulate a thoughtful delay and automatically provide the quote:
+“Alright—based on similar moves, your quote range would fall between $X and $Y. That includes verified help, flat-rate transport, and coordination.”
 
-STEP 5: Soft Close
+STEP 4: Soft Close
 “This range reflects real bookings. If that feels fair, I can walk you through locking in your date with a refundable $85 deposit.”
 
-STEP 6: Collect Details
+STEP 5: Collect Details
 Get:
 - Full name
 - Email
