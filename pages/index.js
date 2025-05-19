@@ -58,35 +58,30 @@ export default function Home() {
         <title>MovingCo Chat</title>
       </Head>
 
-      <header style={{ textAlign: 'center', padding: '16px 12px 8px' }}>
+      <header style={{
+        textAlign: 'center',
+        padding: '12px',
+        backgroundColor: '#ffffff',
+        borderBottom: '1px solid #eee'
+      }}>
         <img
-          src="/movingco-logo.png"
+          src="/movingco-header-logo.png"
           alt="MovingCo Logo"
-          style={{ width: '220px', height: 'auto', maxWidth: '100%', margin: '0 auto 12px', display: 'block' }}
+          style={{ maxWidth: '240px', width: '100%', height: 'auto', margin: '0 auto' }}
         />
-        <div style={{
-          backgroundColor: '#f5f5f5',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '8px',
-          display: 'inline-block'
-        }}>
-          <strong style={{ display: 'block', fontSize: '15px' }}>MoveSafe Verified™</strong>
-          <p style={{
-            margin: '4px 0 0',
-            fontSize: '13px',
-            lineHeight: '1.4',
-            color: '#333'
-          }}>
-            We take the risk. If we can’t deliver what we promised, you get your money back.
-            <br />
-            <em>No forms. No delays. No surprises.</em>
-          </p>
-        </div>
-        <div style={{ fontSize: '13px', marginTop: '6px', color: '#333' }}>
-          24/7 Quotes & Booking, Powered by AI
-        </div>
       </header>
+
+      <div style={{
+        padding: '16px 12px 8px',
+        textAlign: 'center',
+        backgroundColor: '#f9f9f9'
+      }}>
+        <img
+          src="/movesafe-badge.png"
+          alt="MoveSafe Verified"
+          style={{ maxWidth: '260px', width: '100%', height: 'auto', margin: '0 auto' }}
+        />
+      </div>
 
       <main style={{
         flex: 1,
@@ -156,7 +151,9 @@ export default function Home() {
         textAlign: 'center',
         fontSize: '12px',
         padding: '12px 0',
-        color: '#666'
+        color: '#666',
+        borderTop: '1px solid #eee',
+        backgroundColor: '#fafafa'
       }}>
         <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
         <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
