@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 
@@ -11,7 +10,7 @@ export default function Home() {
   useEffect(() => {
     const opening = {
       from: 'bot',
-      text: "Hi, how can I help with your move today?"
+      text: 'Hi, how can I help with your move today?'
     };
     setMessages([opening]);
   }, []);
@@ -52,8 +51,7 @@ export default function Home() {
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      fontFamily: '"Segoe UI", "Helvetica Neue", sans-serif',
-      fontSize: '14px',
+      fontFamily: 'Segoe UI, Helvetica Neue, sans-serif',
       background: '#fff'
     }}>
       <Head>
@@ -61,28 +59,30 @@ export default function Home() {
       </Head>
 
       <header style={{
-        padding: '20px 12px 0',
-        backgroundColor: '#f9f9f9',
-        borderRadius: '0 0 16px 16px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-        textAlign: 'center'
+        textAlign: 'center',
+        padding: '12px 8px',
+        background: '#fafafa',
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)'
       }}>
-        <img
-          src="/movinglogo.png"
-          alt="MovingCo Logo"
-          style={{
-            width: '100%',
-            maxWidth: '340px',
-            height: 'auto',
-            margin: '0 auto 12px',
-            display: 'block'
-          }}
-        />
         <div style={{
-          fontSize: '13px',
-          color: '#555',
-          marginBottom: '6px'
+          maxWidth: '500px',
+          margin: '0 auto',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          backgroundColor: '#fff'
         }}>
+          <img
+            src="/movinglogo.png"
+            alt="MovingCo Logo"
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: '360px',
+              objectFit: 'contain'
+            }}
+          />
+        </div>
+        <div style={{ fontSize: '13px', marginTop: '6px', color: '#333' }}>
           24/7 Quotes & Booking, Powered by AI
         </div>
       </header>
@@ -107,9 +107,10 @@ export default function Home() {
           {messages.map((msg, i) => (
             <div key={i} style={{
               maxWidth: '75%',
-              margin: '6px 0',
-              padding: '12px 16px',
-              borderRadius: '14px',
+              margin: '8px 0',
+              padding: '14px 18px',
+              borderRadius: '16px',
+              fontSize: '15px',
               backgroundColor: msg.from === 'bot' ? '#f1f1f1' : '#d1e7ff',
               alignSelf: msg.from === 'bot' ? 'flex-start' : 'flex-end',
               lineHeight: '1.5'
@@ -132,21 +133,19 @@ export default function Home() {
             placeholder="Type your message..."
             style={{
               flex: 1,
-              padding: '12px',
+              padding: '14px',
               borderRadius: '8px',
               border: '1px solid #ccc',
-              fontSize: '14px'
+              fontSize: '16px'
             }}
           />
           <button type="submit" disabled={loading} style={{
-            padding: '12px 18px',
+            padding: '14px 18px',
             borderRadius: '8px',
             backgroundColor: '#0070f3',
             color: '#fff',
             border: 'none',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+            fontSize: '16px'
           }}>
             {loading ? '...' : 'Send'}
           </button>
@@ -155,7 +154,7 @@ export default function Home() {
 
       <footer style={{
         textAlign: 'center',
-        fontSize: '11px',
+        fontSize: '12px',
         padding: '12px 0',
         color: '#666'
       }}>
