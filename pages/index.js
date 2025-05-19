@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 
@@ -9,7 +8,23 @@ export default function Home() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    setMessages([{ from: "bot", text: "Hi, how can I help with your move today?" }]);
+    async function startChat() {
+      setLoading(true);
+      setMessages([{ from: "bot", text: "..." }]); // Show typing dots initially
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "START_CHAT" }),
+        });
+        const data = await res.json();
+        setMessages([{ from: "bot", text: data.reply || "Welcome to MovingCo." }]);
+      } catch (err) {
+        setMessages([{ from: "bot", text: "Something went wrong loading the chat." }]);
+      }
+      setLoading(false);
+    }
+    startChat();
   }, []);
 
   useEffect(() => {
@@ -20,7 +35,7 @@ export default function Home() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { from: "user", text: input }];
+    const newMessages = [...messages, { from: "user", text: input }, { from: "bot", text: "..." }];
     setMessages(newMessages);
     setLoading(true);
 
@@ -32,9 +47,11 @@ export default function Home() {
       });
 
       const data = await res.json();
-      setMessages([...newMessages, { from: "bot", text: data.reply || "Something went wrong." }]);
+      const updated = [...newMessages.slice(0, -1), { from: "bot", text: data.reply || "Something went wrong." }];
+      setMessages(updated);
     } catch (err) {
-      setMessages([...newMessages, { from: "bot", text: "Something went wrong." }]);
+      const fallback = [...newMessages.slice(0, -1), { from: "bot", text: "Something went wrong." }];
+      setMessages(fallback);
     }
 
     setInput("");
@@ -53,7 +70,7 @@ export default function Home() {
         <title>MovingCo Chat</title>
       </Head>
 
-      {/* Header section with readable image */}
+      {/* Header section */}
       <div style={{
         width: "100%",
         maxHeight: "65vh",
