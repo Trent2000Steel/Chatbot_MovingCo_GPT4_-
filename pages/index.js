@@ -10,16 +10,17 @@ export default function Home() {
   useEffect(() => {
     async function startChat() {
       setLoading(true);
-      setMessages([{ from: "bot", text: "..." }]); // Show typing dots initially
+      const history = [{ role: "user", content: "START_CHAT" }];
+      setMessages([{ from: "bot", text: "..." }]);
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "START_CHAT" }),
+          body: JSON.stringify({ messages: history }),
         });
         const data = await res.json();
         setMessages([{ from: "bot", text: data.reply || "Welcome to MovingCo." }]);
-      } catch (err) {
+      } catch {
         setMessages([{ from: "bot", text: "Something went wrong loading the chat." }]);
       }
       setLoading(false);
@@ -39,17 +40,24 @@ export default function Home() {
     setMessages(newMessages);
     setLoading(true);
 
+    const formattedMessages = newMessages
+      .filter((msg) => msg.text && msg.from)
+      .map((msg) => ({
+        role: msg.from === "bot" ? "assistant" : "user",
+        content: msg.text,
+      }));
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ messages: formattedMessages }),
       });
 
       const data = await res.json();
       const updated = [...newMessages.slice(0, -1), { from: "bot", text: data.reply || "Something went wrong." }];
       setMessages(updated);
-    } catch (err) {
+    } catch {
       const fallback = [...newMessages.slice(0, -1), { from: "bot", text: "Something went wrong." }];
       setMessages(fallback);
     }
@@ -70,7 +78,6 @@ export default function Home() {
         <title>MovingCo Chat</title>
       </Head>
 
-      {/* Header section */}
       <div style={{
         width: "100%",
         maxHeight: "65vh",
@@ -92,7 +99,6 @@ export default function Home() {
         />
       </div>
 
-      {/* Chat area */}
       <main style={{
         flex: 1,
         maxWidth: "800px",
