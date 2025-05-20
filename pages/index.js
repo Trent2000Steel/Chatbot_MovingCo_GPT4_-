@@ -169,6 +169,36 @@ export default function Home() {
               fontSize: "15px"
             }}>
               {msg.text}
+              {msg.text.includes('[CTA]') && (
+                <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={() => handleCtaClick("Yes, Reserve My Move")}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      backgroundColor: '#28a745',
+                      color: '#fff',
+                      border: 'none',
+                      fontSize: '14px'
+                    }}
+                  >
+                    Yes, Reserve My Move
+                  </button>
+                  <button
+                    onClick={() => handleCtaClick("I Have More Questions First")}
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      backgroundColor: '#ffc107',
+                      color: '#000',
+                      border: 'none',
+                      fontSize: '14px'
+                    }}
+                  >
+                    I Have More Questions First
+                  </button>
+                </div>
+              )
             </div>
           ))}
           <div ref={bottomRef} />
@@ -216,4 +246,13 @@ export default function Home() {
       </footer>
     </div>
   );
+}
+
+
+function handleCtaClick(option) {
+  const event = new Event('submit', { bubbles: true, cancelable: true });
+  const form = document.querySelector('form');
+  const input = document.querySelector('input[type="text"]');
+  input.value = option;
+  form.dispatchEvent(event);
 }
