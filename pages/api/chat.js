@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Invalid request format." });
   }
 
-  const lastMessage = messages[messages.length - 1].content;
+  const lastMessage = messages[messages.length - 1].content.trim().toLowerCase();
   if (typeof lastMessage !== "string" || lastMessage.length > 1000) {
     return res.status(400).json({ error: "Invalid message format." });
   }
@@ -108,6 +108,29 @@ RULES:
 You are the voice of MovingCo. They’re not just booking a move—they’re buying peace of mind.
     `.trim();
 
+    const baseMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages
+    ];
+
+    const isQuoteResponse = messages.some(msg =>
+      msg.role === "assistant" &&
+      msg.content.toLowerCase().includes("moves like this usually fall between")
+    );
+
+    // Handle CTA clicks manually
+    if (lastMessage.includes("yes, reserve my move")) {
+      return res.status(200).json({
+        reply: "Perfect. I’ll just need your full name, email, phone, pickup address, and delivery address. Then I’ll send over the secure deposit link to reserve your move."
+      });
+    }
+
+    if (lastMessage.includes("i have more questions")) {
+      return res.status(200).json({
+        reply: "Of course—ask me anything. I’m here to make this simple. Just know we only book 10 spots per day per route, so I’d love to hold your place if this is a fit."
+      });
+    }
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -116,10 +139,7 @@ You are the voice of MovingCo. They’re not just booking a move—they’re buy
       },
       body: JSON.stringify({
         model: "gpt-4",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...messages
-        ],
+        messages: baseMessages,
         temperature: 0.7
       })
     });
@@ -130,7 +150,12 @@ You are the voice of MovingCo. They’re not just booking a move—they’re buy
       throw new Error(data?.error?.message || "API error");
     }
 
-    const reply = data.choices?.[0]?.message?.content;
+    let reply = data.choices?.[0]?.message?.content || "";
+
+    if (reply.includes("Moves like this usually fall between")) {
+      reply += "\n\n[CTA] Yes, Reserve My Move | I Have More Questions First";
+    }
+
     return res.status(200).json({ reply });
   } catch (error) {
     console.error("Chat API error:", error);
