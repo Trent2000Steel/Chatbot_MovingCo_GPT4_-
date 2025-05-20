@@ -1,13 +1,6 @@
 
-import { OpenAI } from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const RATE_LIMIT = 50;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
-
 global.ipStore = global.ipStore || {};
 
 export default async function handler(req, res) {
@@ -17,10 +10,10 @@ export default async function handler(req, res) {
 
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-  // Simple in-memory rate limiting
+  // Rate limiting
   const now = Date.now();
   global.ipStore[ip] = global.ipStore[ip] || [];
-  global.ipStore[ip] = global.ipStore[ip].filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW);
+  global.ipStore[ip] = global.ipStore[ip].filter(ts => now - ts < RATE_LIMIT_WINDOW);
 
   if (global.ipStore[ip].length >= RATE_LIMIT) {
     return res.status(429).json({ error: "Too many requests. Please try again tomorrow." });
@@ -40,35 +33,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: `
 You are a professional moving concierge for MovingCo. Keep all responses under 3 short sentences. 
 Speak like someone who has booked hundreds of moves. Avoid robotic phrases. 
 Your job is to quote, build trust, and guide the user to place an $85 deposit to reserve their move. 
 That deposit includes a Move Review Call where a human confirms inventory and locks in the flat rate. 
 Always be clear, calm, and conversational. You are not a bot—you are the human face of MovingCo.
 `
-        },
-        ...messages
-      ],
-      temperature: 0.7,
+          },
+          ...messages
+        ],
+        temperature: 0.7
+      })
     });
 
-    const reply = completion.choices[0]?.message?.content;
+    const data = await response.json();
 
-    // Optional webhook/email notification placeholder
-    // if (reply.includes("Perfect. Here’s your secure link")) {
-    //   await fetch("https://your-webhook-url.com", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ user: ip, message: "New booking initiated" })
-    //   });
-    // }
+    if (!response.ok) {
+      throw new Error(data?.error?.message || "API error");
+    }
 
+    const reply = data.choices?.[0]?.message?.content;
     return res.status(200).json({ reply });
   } catch (error) {
     console.error("Chat API error:", error);
