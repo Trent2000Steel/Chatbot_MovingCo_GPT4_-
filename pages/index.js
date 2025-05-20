@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 
@@ -32,6 +33,10 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const injectMessage = (text) => {
+    setMessages((prev) => [...prev, { from: "bot", text }]);
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -55,15 +60,54 @@ export default function Home() {
       });
 
       const data = await res.json();
-      const updated = [...newMessages.slice(0, -1), { from: "bot", text: data.reply || "Something went wrong." }];
+      const reply = data.reply || "Something went wrong.";
+      const updated = [...newMessages.slice(0, -1), { from: "bot", text: reply }];
       setMessages(updated);
+
+      if (reply.includes("Here's the recap")) {
+        // pacing message
+        setTimeout(() => {
+          injectMessage("Give me a sec—I’m checking route pricing and mover availability...");
+          setTimeout(() => {
+            getQuoteOnly(formattedMessages);
+          }, 2000);
+        }, 500);
+      }
     } catch {
-      const fallback = [...newMessages.slice(0, -1), { from: "bot", text: "Something went wrong." }];
+      const fallback = [...messages, { from: "bot", text: "Something went wrong." }];
       setMessages(fallback);
     }
 
     setInput("");
     setLoading(false);
+  };
+
+  const getQuoteOnly = async (msgHistory) => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...msgHistory,
+            {
+              role: "user",
+              content: "Give me a confident quote based on the move details above. Include MoveSafe Method benefits and a short testimonial. Keep it under 3 short sentences.",
+            },
+          ],
+        }),
+      });
+
+      const data = await res.json();
+      const quote = data.reply || "Something went wrong retrieving the quote.";
+      setMessages((prev) => [
+        ...prev,
+        { from: "bot", text: quote },
+        { from: "bot", text: "[CTA] Yes, Reserve My Move | I Have More Questions First" },
+      ]);
+    } catch {
+      setMessages((prev) => [...prev, { from: "bot", text: "Something went wrong retrieving the quote." }]);
+    }
   };
 
   return (
