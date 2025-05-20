@@ -39,50 +39,42 @@ export default async function handler(req, res) {
   const allInfoCollected = hasName && hasEmail && hasPhone && hasPickup && hasDrop;
 
   try {
-    // CTA logic
     if (last.includes("yes, reserve my move")) {
       return res.status(200).json({
-        reply: "Perfect. Let’s get you booked. Please provide your full name like this:
-Name: John Doe"
+        reply: "Perfect. Let’s get you booked. Please provide your full name like this: Name: John Doe"
       });
     }
 
     if (!hasName) {
       return res.status(200).json({
-        reply: "Got it. What’s your email?
-Email: you@example.com"
+        reply: "Got it. What’s your email? Format: Email: you@example.com"
       });
     }
 
     if (!hasEmail) {
       return res.status(200).json({
-        reply: "Thanks. What’s the best phone number to reach you?
-Phone: (555) 123-4567"
+        reply: "Thanks. What’s the best phone number to reach you? Format: Phone: (555) 123-4567"
       });
     }
 
     if (!hasPhone) {
       return res.status(200).json({
-        reply: "Great. What’s the full pickup address?
-Pickup Address: 123 Main St, Dallas, TX"
+        reply: "Great. What’s the full pickup address? Format: Pickup Address: 123 Main St, Dallas, TX"
       });
     }
 
     if (!hasPickup) {
       return res.status(200).json({
-        reply: "Thanks. And what’s the delivery address?
-Delivery Address: 456 Elm St, Phoenix, AZ"
+        reply: "Thanks. And what’s the delivery address? Format: Delivery Address: 456 Elm St, Phoenix, AZ"
       });
     }
 
     if (!hasDrop) {
       return res.status(200).json({
-        reply: `Perfect. Everything looks good. You can reserve your move now with the $85 deposit here:
-${stripeLink}`
+        reply: `Perfect. Everything looks good. You can reserve your move now with the $85 deposit here: ${stripeLink}`
       });
     }
 
-    // Question deflection logic
     if (last.includes("i have more questions")) {
       return res.status(200).json({
         reply: "Of course—ask me anything. I’m here to make this simple. Just know we only book 10 spots per day per route, so I’d love to hold your place if this is a fit."
