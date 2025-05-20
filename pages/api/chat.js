@@ -3,7 +3,7 @@ const RATE_LIMIT = 50;
 const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000;
 global.ipStore = global.ipStore || {};
 
-const stripeLink = "https://your-stripe-checkout-link.com"; // Replace with your real Stripe link
+const stripeLink = "https://your-stripe-checkout-link.com"; // Replace with real Stripe URL
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -30,13 +30,17 @@ export default async function handler(req, res) {
 
   const last = messages[messages.length - 1].content.trim().toLowerCase();
 
+  if (last === "start_chat") {
+    return res.status(200).json({
+      reply: "No forms. No waiting. I’ll quote your move right here in chat. Where are you moving from?"
+    });
+  }
+
   const hasName = messages.some(m => m.content.toLowerCase().includes("name:"));
   const hasEmail = messages.some(m => m.content.toLowerCase().includes("email:"));
   const hasPhone = messages.some(m => m.content.toLowerCase().includes("phone:"));
   const hasPickup = messages.some(m => m.content.toLowerCase().includes("pickup address:"));
   const hasDrop = messages.some(m => m.content.toLowerCase().includes("delivery address:"));
-
-  const allInfoCollected = hasName && hasEmail && hasPhone && hasPickup && hasDrop;
 
   try {
     if (last.includes("yes, reserve my move")) {
