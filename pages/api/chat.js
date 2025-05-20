@@ -1,6 +1,6 @@
 
 const RATE_LIMIT = 50;
-const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000; // 24 hours
+const RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000;
 global.ipStore = global.ipStore || {};
 
 export default async function handler(req, res) {
@@ -10,7 +10,6 @@ export default async function handler(req, res) {
 
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
-  // Rate limiting
   const now = Date.now();
   global.ipStore[ip] = global.ipStore[ip] || [];
   global.ipStore[ip] = global.ipStore[ip].filter(ts => now - ts < RATE_LIMIT_WINDOW);
@@ -66,10 +65,12 @@ YOUR FLOW:
 
 4. Recap in bullet form.
 
-5. Add a delay/pacing line:
+5. After the recap, say:
 > “Give me a sec—I’m checking pricing history and top-rated carrier availability for your route…”
 
-6. Then quote like this:
+Immediately follow this line with the quote in the same message. Do not pause. Do not wait for confirmation.
+
+6. Quote like this:
 > “Moves like this usually fall between $X and $Y depending on final inventory and access.”
 > “That includes our MoveSafe Method™—you get verified trusted movers, quality shipping partners, and one point of contact from start to finish.”
 
