@@ -33,8 +33,79 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const injectMessage = (text) => {
-    setMessages((prev) => [...prev, { from: "bot", text }]);
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const newMessages = [...messages, { from: "user", text: input }, { from: "bot", text: "..." }];
+    setMessages(newMessages);
+    setLoading(true);
+
+    const formattedMessages = newMessages
+      .filter((msg) => msg.text && msg.from)
+      .map((msg) => ({
+        role: msg.from === "bot" ? "assistant" : "user",
+        content: msg.text,
+      }));
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: formattedMessages }),
+      });
+
+      const data = await res.json();
+      const reply = data.reply || "Something went wrong.";
+      const updated = [...newMessages.slice(0, -1), { from: "bot", text: reply }];
+      setMessages(updated);
+
+      // recap detection trigger
+      const isRecap = reply.toLowerCase().includes("here's what i got") || reply.toLowerCase().includes("recap:");
+
+      if (isRecap) {
+        setTimeout(() => {
+          setMessages((prev) => [...prev, { from: "bot", text: "Give me a sec—I’m checking pricing history and top-rated carrier availability for your route…" }]);
+          setTimeout(() => {
+            getQuoteOnly(formattedMessages);
+          }, 2000);
+        }, 800);
+      }
+
+    } catch {
+      setMessages([...messages, { from: "bot", text: "Something went wrong." }]);
+    }
+
+    setInput("");
+    setLoading(false);
+  };
+
+  const getQuoteOnly = async (msgHistory) => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...msgHistory,
+            {
+              role: "user",
+              content: "Now give me a confident quote range with the MoveSafe Method and a testimonial. Keep it under 3 sentences.",
+            },
+          ],
+        }),
+      });
+
+      const data = await res.json();
+      const quote = data.reply || "Something went wrong retrieving the quote.";
+      setMessages((prev) => [
+        ...prev,
+        { from: "bot", text: quote },
+        { from: "bot", text: "[CTA] Yes, Reserve My Move | I Have More Questions First" }
+      ]);
+    } catch {
+      setMessages((prev) => [...prev, { from: "bot", text: "Something went wrong retrieving the quote." }]);
+    }
   };
 
   const handleCtaClick = async (choice) => {
@@ -64,40 +135,6 @@ export default function Home() {
       setMessages([...messages, { from: "bot", text: "Something went wrong." }]);
     }
 
-    setLoading(false);
-  };
-
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const newMessages = [...messages, { from: "user", text: input }, { from: "bot", text: "..." }];
-    setMessages(newMessages);
-    setLoading(true);
-
-    const formattedMessages = newMessages
-      .filter((msg) => msg.text && msg.from)
-      .map((msg) => ({
-        role: msg.from === "bot" ? "assistant" : "user",
-        content: msg.text,
-      }));
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: formattedMessages }),
-      });
-
-      const data = await res.json();
-      const reply = data.reply || "Something went wrong.";
-      const updated = [...newMessages.slice(0, -1), { from: "bot", text: reply }];
-      setMessages(updated);
-    } catch {
-      setMessages([...messages, { from: "bot", text: "Something went wrong." }]);
-    }
-
-    setInput("");
     setLoading(false);
   };
 
