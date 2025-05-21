@@ -101,7 +101,15 @@ If user clicks “Yes, Reserve My Move”, ask for:
 - Name, Email, Phone, Pickup address, Delivery address
 Then show Stripe link.
 
+
+If the user says something like "Now give me a confident quote range..." or "What’s the quote?", respond immediately with:
+- Price range
+- MoveSafe Method™ benefits
+- 1 testimonial
+- End with: [CTA] Yes, Reserve My Move | I Have More Questions First
+
 Never skip steps. Never talk like a bot.
+
   `.trim();
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
