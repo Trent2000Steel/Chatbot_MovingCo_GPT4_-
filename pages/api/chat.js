@@ -143,5 +143,11 @@ Never skip steps. Never talk like a bot.
     reply += "\n\n[CTA] Yes, Reserve My Move | I Have More Questions First";
   }
 
+    if (
+    reply.trim().toLowerCase().endsWith("yes, reserve my move | i have more questions first") &&
+    !reply.includes("[CTA]")
+  ) {
+    reply = "[CTA] " + reply.trim();
+  }
   return res.status(200).json({ reply });
 }
