@@ -1,7 +1,7 @@
 
 export default async function handler(req, res) {
   try {
-    const stripeLink = "https://your-stripe-checkout-link.com"; // Replace this with your real Stripe URL
+    const stripeLink = "https://your-stripe-checkout-link.com";
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     const { messages } = req.body;
 
@@ -12,14 +12,12 @@ export default async function handler(req, res) {
     const lastMessage = messages[messages.length - 1]?.content || "";
     const last = lastMessage.trim().toLowerCase();
 
-    // START_CHAT handling
     if (last === "start_chat") {
       return res.status(200).json({
         reply: "No forms. No waiting. I’ll quote your move right here in chat. Where are you moving from?"
       });
     }
 
-    // Quote-only override logic
     if (last.startsWith("now give me a confident quote")) {
       const quoteReply = [
         "Moves like this usually fall between $2,000 and $3,000 depending on final inventory and access.",
@@ -31,7 +29,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ reply: quoteReply });
     }
 
-    // Contact info capture logic
     const hasName = messages.some(m => m.content.toLowerCase().includes("name:"));
     const hasEmail = messages.some(m => m.content.toLowerCase().includes("email:"));
     const hasPhone = messages.some(m => m.content.toLowerCase().includes("phone:"));
@@ -66,8 +63,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // GPT fallback quote flow
-    const systemPrompt = \`
+    const systemPrompt = `
 You are a professional moving concierge for MovingCo. Speak like a calm expert who has booked thousands of long-distance moves. Keep replies under 3 short sentences.
 
 ---
@@ -92,7 +88,7 @@ If user says “I Have More Questions First”, respond warmly and reinforce ben
 If GPT forgets [CTA], but message ends in “Yes, Reserve My Move | I Have More Questions First”, backend should wrap it.
 
 Never break tone. Never wait for user input after pacing line. Never skip the MoveSafe Method or CTA.
-\`.trim();
+`.trim();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -113,7 +109,6 @@ Never break tone. Never wait for user input after pacing line. Never skip the Mo
     const data = await response.json();
     let reply = data.choices?.[0]?.message?.content || "Something went wrong.";
 
-    // Ensure CTA is wrapped correctly
     if (
       reply.toLowerCase().includes("yes, reserve my move | i have more questions first") &&
       !reply.includes("[CTA]")
