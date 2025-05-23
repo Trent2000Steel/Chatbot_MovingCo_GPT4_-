@@ -77,7 +77,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const systemPrompt = \`
+    const systemPrompt = `
 You are a professional moving concierge for MovingCo. Speak like a calm expert who has booked thousands of long-distance moves.
 
 Flow:
@@ -89,7 +89,7 @@ Flow:
 - Then quote range, MoveSafe Method, review call, and CTA
 - If Yes to Reserve: Collect name, email, phone, pickup, and delivery. Then show Stripe link and push lead to Slack.
 - Never promise final pricing, insurance, or coverage. That happens during the concierge call.
-\`.trim();
+`.trim();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
