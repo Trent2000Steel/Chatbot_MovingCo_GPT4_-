@@ -1,29 +1,29 @@
 
+// pages/api/chat.js
+
 export default async function handler(req, res) {
   try {
-    const stripeLink = "https://your-stripe-checkout-link.com";
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+    const slackWebhook = "https://hooks.slack.com/services/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";
     const { messages } = req.body;
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ reply: "Invalid request format." });
     }
 
-    const lastMessage = messages[messages.length - 1]?.content || "";
-    const last = lastMessage.trim().toLowerCase();
+    const last = messages[messages.length - 1].content.trim().toLowerCase();
 
     if (last === "start_chat") {
       return res.status(200).json({
-        reply: "No forms. No waiting. I’ll quote your move right here in chat. Where are you moving from?"
+        reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat. Where are you moving from?"
       });
     }
 
     if (last.startsWith("now give me a confident quote")) {
       const quoteReply = [
-        "Moves like this usually fall between $2,000 and $3,000 depending on final inventory and access.",
-        "That includes our MoveSafe Method™—you get verified trusted movers, quality shipping partners, and one point of contact from start to finish.",
-        "You’ll also get a live Move Review Call with an experienced moving professional who finalizes your inventory and locks in your flat rate.",
-        "\"Everything was organized before move day. That was the difference.\" – Angela M.",
+        "Thanks—based on recent moves just like this, here’s your estimated price range:",
+        "$1,900 – $2,300",
+        "Includes verified crews, coordinated freight, and your own concierge to finalize the details.",
         "[CTA] Yes, Reserve My Move | I Have More Questions First"
       ].join("\n\n");
       return res.status(200).json({ reply: quoteReply });
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
     if (last.includes("yes, reserve my move")) {
       return res.status(200).json({
-        reply: "Perfect. Let’s get you booked. Please provide your full name like this: Name: John Doe"
+        reply: "Great. Let’s get you booked. Please provide your full name like this: Name: John Doe"
       });
     }
 
@@ -46,11 +46,11 @@ export default async function handler(req, res) {
     }
 
     if (hasName && hasEmail && !hasPhone) {
-      return res.status(200).json({ reply: "Thanks. What’s the best phone number to reach you? Format: Phone: (555) 123-4567" });
+      return res.status(200).json({ reply: "Thanks. What’s your phone number? Format: Phone: (555) 123-4567" });
     }
 
     if (hasName && hasEmail && hasPhone && !hasPickup) {
-      return res.status(200).json({ reply: "Great. What’s the full pickup address? Format: Pickup Address: 123 Main St, Dallas, TX" });
+      return res.status(200).json({ reply: "Perfect. What’s the full pickup address? Format: Pickup Address: 123 Main St, Dallas, TX" });
     }
 
     if (hasName && hasEmail && hasPhone && hasPickup && !hasDrop) {
@@ -58,37 +58,38 @@ export default async function handler(req, res) {
     }
 
     if (hasName && hasEmail && hasPhone && hasPickup && hasDrop) {
+      const name = messages.find(m => m.content.toLowerCase().includes("name:"))?.content.split(":")[1].trim();
+      const email = messages.find(m => m.content.toLowerCase().includes("email:"))?.content.split(":")[1].trim();
+      const phone = messages.find(m => m.content.toLowerCase().includes("phone:"))?.content.split(":")[1].trim();
+      const pickup = messages.find(m => m.content.toLowerCase().includes("pickup address:"))?.content.split(":")[1].trim();
+      const delivery = messages.find(m => m.content.toLowerCase().includes("delivery address:"))?.content.split(":")[1].trim();
+
+      const slackMessage = `*New Move Lead*:\n*Name:* ${name}\n*Email:* ${email}\n*Phone:* ${phone}\n*Move:* ${pickup} → ${delivery}\n*Lead Type:* Confirmed via chatbot`;
+
+      await fetch(slackWebhook, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: slackMessage })
+      });
+
       return res.status(200).json({
         reply: `Perfect. Everything looks good. You can reserve your move now with the $85 deposit here: ${stripeLink}`
       });
     }
 
-    const systemPrompt = `
-You are a professional moving concierge for MovingCo. Speak like a calm expert who has booked thousands of long-distance moves. Keep replies under 3 short sentences.
+    const systemPrompt = \`
+You are a professional moving concierge for MovingCo. Speak like a calm expert who has booked thousands of long-distance moves.
 
----
-
-QUOTE FLOW:
-- Collect origin, destination, home size, move date, load/unload help, and special items.
+Flow:
+- Collect origin, destination, home size, move date, load/unload help, and special items
 - Ask: “Is this a fresh start, job move, or something else?”
-- Recap the move in bullets.
-- Say: “Give me a sec—I’m checking pricing history and top-rated carrier availability for your route…”
-- Then quote:
-  - Price range
-  - MoveSafe Method™ benefits
-  - Move Review Call explanation
-  - 1 testimonial
-  - End with:
-    [CTA] Yes, Reserve My Move | I Have More Questions First
-
-If user says “Yes, Reserve My Move”, trigger contact info capture in order: name, email, phone, pickup, delivery. After all, show Stripe link.
-
-If user says “I Have More Questions First”, respond warmly and reinforce benefits.
-
-If GPT forgets [CTA], but message ends in “Yes, Reserve My Move | I Have More Questions First”, backend should wrap it.
-
-Never break tone. Never wait for user input after pacing line. Never skip the MoveSafe Method or CTA.
-`.trim();
+- Recap the move in bullets
+- Confirm: “Does everything look right?” → [Yes | No]
+- Ask: “Ready to run your estimate?” → [Yes | Not Yet]
+- Then quote range, MoveSafe Method, review call, and CTA
+- If Yes to Reserve: Collect name, email, phone, pickup, and delivery. Then show Stripe link and push lead to Slack.
+- Never promise final pricing, insurance, or coverage. That happens during the concierge call.
+\`.trim();
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -102,7 +103,7 @@ Never break tone. Never wait for user input after pacing line. Never skip the Mo
           { role: "system", content: systemPrompt },
           ...messages
         ],
-        temperature: 0.7
+        temperature: 0.6
       })
     });
 
