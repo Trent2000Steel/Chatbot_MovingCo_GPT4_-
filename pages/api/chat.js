@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   const next = (text, phase = null, buttons = null) => {
     if (phase !== null) session.phase = phase;
     return res.status(200).json({
-      response: text,
+      reply: text,
       buttons
     });
   };
