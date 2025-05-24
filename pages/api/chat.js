@@ -6,7 +6,13 @@ export default async function handler(req, res) {
   const { sessionId, message } = req.body;
   if (!sessions[sessionId]) sessions[sessionId] = { phase: 0, data: {} };
 
-  const session = sessions[sessionId];
+  let session = sessions[sessionId];
+
+  if (!session || userInput === "start_chat") {
+    sessions[sessionId] = { phase: 0, data: {} };
+    session = sessions[sessionId];
+  }
+
   const userInput = (message || "").trim().toLowerCase();
 
   const reply = (text, phase = null, buttons = null) => {
