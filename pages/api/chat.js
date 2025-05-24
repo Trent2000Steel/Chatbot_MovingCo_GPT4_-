@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   }
 
   const session = sessions[sessionId];
-  const userInput = (message || '').trim();
+  const userInput = message.trim();
 
   const next = (text, phase = null, buttons = null) => {
     if (phase !== null) session.phase = phase;
@@ -30,8 +30,7 @@ export default async function handler(req, res) {
 
   switch (session.phase) {
     case 0:
-      session.phase = 1;
-      return next("Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?");
+      return next("Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?", 1);
     case 1:
       session.data.origin = userInput;
       session.phase = 2;
