@@ -1,6 +1,10 @@
 let sessions = {};
 
+
 export default async function handler(req, res) {
+  console.log("API hit at /api/chat");
+  console.log("Request body:", req.body);
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -97,7 +101,9 @@ End with:\n
 Generate an estimated price range using realistic examples and the MoveSafe Method.`;
 
         try {
-          const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+          
+console.log("Calling GPT...");
+const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -113,6 +119,7 @@ Generate an estimated price range using realistic examples and the MoveSafe Meth
           });
 
           const data = await gptResponse.json();
+console.log('GPT raw response:', data);
           const quoteText = data.choices[0].message.content.trim();
           session.phase = 11;
           return next(quoteText, 11, ["Yes, Reserve My Move", "I Have More Questions First"]);
