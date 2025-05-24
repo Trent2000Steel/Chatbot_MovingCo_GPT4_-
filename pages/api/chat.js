@@ -1,9 +1,3 @@
-import { OpenAI } from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
 let sessions = {};
 
 export default async function handler(req, res) {
@@ -33,9 +27,7 @@ export default async function handler(req, res) {
   switch (session.phase) {
     case 0:
       session.phase = 1;
-      return next(
-        "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?"
-      );
+      return next("Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?");
     case 1:
       session.data.origin = userInput;
       session.phase = 2;
@@ -63,7 +55,8 @@ export default async function handler(req, res) {
     case 7:
       session.data.reason = userInput;
       session.phase = 8;
-      const recap = `Let’s recap your move:\n
+      return next(
+        `Let’s recap your move:\n
 - Origin: ${session.data.origin}
 - Destination: ${session.data.destination}
 - Home Size: ${session.data.homeSize}
@@ -71,8 +64,8 @@ export default async function handler(req, res) {
 - Load/Unload Help: ${session.data.loadHelp}
 - Special Items: ${session.data.specialItems}
 - Reason: ${session.data.reason}\n
-Does everything look right?`;
-      return next(recap, 8, ["Yes, Looks Good", "No, Needs Fixing"]);
+Does everything look right?`, 8, ["Yes, Looks Good", "No, Needs Fixing"]
+      );
     case 8:
       if (/yes/i.test(userInput)) {
         session.phase = 9;
@@ -83,6 +76,7 @@ Does everything look right?`;
     case 9:
       if (/yes/i.test(userInput)) {
         session.phase = 10;
+
         const systemPrompt = `You are a professional moving concierge for MovingCo.\n
 You’ve booked thousands of long-distance moves using the MoveSafe Method™.\n
 Your tone is calm, helpful, and experienced—not robotic or pushy.\n
@@ -102,17 +96,30 @@ End with:\n
 - Reason: ${session.data.reason}\n
 Generate an estimated price range using realistic examples and the MoveSafe Method.`;
 
-        const gptResponse = await openai.chat.completions.create({
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt }
-          ]
-        });
+        try {
+          const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+              model: "gpt-4",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt }
+              ]
+            })
+          });
 
-        const quoteText = gptResponse.choices[0].message.content.trim();
-        session.phase = 11;
-        return next(quoteText, 11, ["Yes, Reserve My Move", "I Have More Questions First"]);
+          const data = await gptResponse.json();
+          const quoteText = data.choices[0].message.content.trim();
+          session.phase = 11;
+          return next(quoteText, 11, ["Yes, Reserve My Move", "I Have More Questions First"]);
+        } catch (err) {
+          console.error("Quote fetch failed", err);
+          return next("Something went wrong while generating your quote. Please try again later.");
+        }
       } else {
         return next("No worries—let me know when you're ready.");
       }
