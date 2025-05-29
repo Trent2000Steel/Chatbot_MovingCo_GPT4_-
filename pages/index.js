@@ -77,6 +77,29 @@ export default function Home() {
           </div>
         </div>
       );
+    } else if (msg.content.startsWith("STRIPE_LINK:")) {
+      const link = msg.content.replace("STRIPE_LINK:", "").trim();
+      return (
+        <div key={idx} style={{ margin: "12px 0", textAlign: "center" }}>
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-block",
+              padding: "12px 24px",
+              borderRadius: "6px",
+              background: "#28a745",
+              color: "#fff",
+              fontSize: "16px",
+              textDecoration: "none",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+            }}
+          >
+            Reserve My Move Now ($85)
+          </a>
+        </div>
+      );
     } else {
       return (
         <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
