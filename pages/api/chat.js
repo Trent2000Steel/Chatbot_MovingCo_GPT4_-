@@ -91,7 +91,7 @@ Ready for me to run your estimate?`,
       case 11:
         if (/yes/.test(userInput)) {
           session.phase = 12;
-          const systemPrompt = `You are a professional moving concierge for MovingCo.\nProvide a SHORT, clear price estimate as a range (e.g., $2,000–$4,000), followed by 2-3 bullet point highlights (MoveSafe Method, live review call, no insurance promises). End with [CTA] Yes, Reserve My Move | I Have More Questions First.`;
+          const systemPrompt = `You are a professional moving concierge for MovingCo.\nProvide a SHORT, clear price estimate as a range (e.g., $2,000–$4,000), followed by this structure:\n- Tell the customer they can reserve right now for $85\n- Explain that after booking, they’ll have a live Move Review Call with a professional who will review photos and lock in a guaranteed flat rate\n- Reassure them that this ensures no surprises or hidden fees. End with no more than 3 clear bullet points. Do NOT include [CTA] or buttons inside the message.`;
           const userPrompt = `Move details:\nFrom: ${session.data.originCity}, ${session.data.originState}\nTo: ${session.data.destinationCity}, ${session.data.destinationState}\nSpace: ${session.data.spaceType} (${session.data.sizeDetail})\nDate: ${session.data.moveDate}\nHelp: ${session.data.loadHelp}\nSpecial Items: ${session.data.specialItemList}\nReason: ${session.data.reason}`;
 
           const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -111,11 +111,7 @@ Ready for me to run your estimate?`,
 
           const data = await gptResponse.json();
           let quote = data.choices?.[0]?.message?.content?.trim() || "";
-          if (!quote.toLowerCase().includes("yes, reserve my move")) {
-            quote = `QUOTE:\n${quote}\n\n[CTA] Yes, Reserve My Move | I Have More Questions First`;
-          }
-
-          return reply(quote, 13, ["Yes, Reserve My Move", "I Have More Questions First"]);
+          return reply(`QUOTE:\n${quote}`, 13, ["Yes, Reserve My Move", "I Have More Questions First"]);
         } else {
           return reply("No problem! Go ahead and tell me what you’d like to add or update.");
         }
