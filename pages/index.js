@@ -55,11 +55,13 @@ export default function Home() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
       <header style={{ padding: "15px", background: "#f8f9fa", textAlign: "center" }}>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-          <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ maxWidth: "180px", height: "auto" }} />
-          <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ maxWidth: "140px", height: "auto" }} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ maxWidth: "200px", height: "auto" }} />
+          <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ maxWidth: "180px", height: "auto" }} />
         </div>
-        <p style={{ marginTop: "10px", fontSize: "16px" }}>MoveSafe Method™ – Trusted Coordination for Your Long-Distance Move</p>
+        <p style={{ marginTop: "10px", fontSize: "16px" }}>
+          MoveSafe Method™ – Trusted Coordination for Your Long-Distance Move
+        </p>
       </header>
 
       <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
