@@ -6,18 +6,19 @@ export default async function handler(req, res) {
   const { sessionId, message } = req.body;
   const userInput = (message || "").trim().toLowerCase();
 
-  if (!sessions[sessionId] || userInput === "start_chat") {
+  if (!sessions[sessionId]) {
     sessions[sessionId] = { phase: 0, data: {} };
   }
   const session = sessions[sessionId];
 
-  console.log("Phase:", session.phase);
-  console.log("User input:", userInput);
-  console.log("Session data (before):", session.data);
+  if (userInput === "start_chat") {
+    return res.status(200).json({
+      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?"
+    });
+  }
 
   const reply = (text, phase = null, buttons = null) => {
     if (phase !== null) session.phase = phase;
-    console.log("Replying with phase:", session.phase);
     return res.status(200).json({
       reply: text,
       buttons: Array.isArray(buttons) ? buttons : undefined
@@ -27,10 +28,7 @@ export default async function handler(req, res) {
   try {
     switch (session.phase) {
       case 0:
-        return reply(
-          "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?",
-          1
-        );
+        return reply("Where are you moving from?", 1);
       case 1:
         session.data.origin = userInput;
         return reply("Great! And where are you moving to?", 2);
@@ -97,7 +95,6 @@ Does everything look right?`,
           });
 
           const data = await gptResponse.json();
-          console.log("GPT response:", data);
           let quote = data.choices?.[0]?.message?.content?.trim() || "";
           if (!quote.toLowerCase().includes("yes, reserve my move")) {
             quote += "\n\n[CTA] Yes, Reserve My Move | I Have More Questions First";
