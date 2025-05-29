@@ -54,17 +54,22 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{ padding: "15px", background: "#f8f9fa", textAlign: "center" }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ maxWidth: "200px", height: "auto" }} />
-          <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ maxWidth: "180px", height: "auto" }} />
-        </div>
-        <p style={{ marginTop: "10px", fontSize: "16px" }}>
-          MoveSafe Method™ – Trusted Coordination for Your Long-Distance Move
-        </p>
+      <header style={{ background: "#f8f9fa", textAlign: "center" }}>
+        <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ width: "100%", height: "auto" }} />
+        <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ width: "100%", height: "auto" }} />
       </header>
 
-      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <main
+        className="chat-container"
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          border: "1px solid #ccc",
+          margin: "10px"
+        }}
+      >
         <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "#fafafa" }}>
           {messages.map((msg, idx) =>
             msg.content === "start_chat" ? null : (
