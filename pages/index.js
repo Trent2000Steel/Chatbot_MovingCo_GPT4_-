@@ -124,6 +124,7 @@ export default function Home() {
                   onClick={() => handleButtonClick(btn)}
                   style={{
                     marginRight: "8px",
+                    marginTop: "4px",
                     padding: "6px 12px",
                     borderRadius: "6px",
                     border: "none",
