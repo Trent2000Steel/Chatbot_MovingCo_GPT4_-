@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -8,8 +7,10 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const generateSessionId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
+
   useEffect(() => {
-    const existingId = sessionStorage.getItem("sessionId") || uuidv4();
+    const existingId = sessionStorage.getItem("sessionId") || generateSessionId();
     sessionStorage.setItem("sessionId", existingId);
     setSessionId(existingId);
     sendMessage("start_chat");
