@@ -1,230 +1,124 @@
-
 import { useState, useEffect, useRef } from "react";
-import Head from "next/head";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [sessionId, setSessionId] = useState("");
   const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    async function startChat() {
-      setLoading(true);
-      const history = [{ role: "user", content: "START_CHAT" }];
-      setMessages([{ from: "bot", text: "..." }]);
-      try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: history }),
-        });
-        const data = await res.json();
-        setMessages([{ from: "bot", text: data.reply || "Welcome to MovingCo." }]);
-      } catch {
-        setMessages([{ from: "bot", text: "Something went wrong loading the chat." }]);
-      }
-      setLoading(false);
-    }
-    startChat();
+    const existingId = sessionStorage.getItem("sessionId") || uuidv4();
+    sessionStorage.setItem("sessionId", existingId);
+    setSessionId(existingId);
+    sendMessage("start_chat");
   }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    const newMessages = [...messages, { from: "user", text: input }, { from: "bot", text: "..." }];
-    setMessages(newMessages);
+  const sendMessage = async (text) => {
+    if (!text) return;
     setLoading(true);
-
-    const formattedMessages = newMessages
-      .filter((msg) => msg.text && msg.from)
-      .map((msg) => ({
-        role: msg.from === "bot" ? "assistant" : "user",
-        content: msg.text,
-      }));
+    setMessages((prev) => [...prev, { role: "user", content: text }]);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: formattedMessages }),
+        body: JSON.stringify({ sessionId, message: text })
       });
-
       const data = await res.json();
-      const reply = data.reply || "Something went wrong.";
-      const updated = [...newMessages.slice(0, -1), { from: "bot", text: reply }];
-      setMessages(updated);
-
-      // recap detection trigger
-      const isRecap = reply.toLowerCase().includes("here's what i got") || reply.toLowerCase().includes("recap:");
-
-      if (isRecap) {
-        setTimeout(() => {
-          setMessages((prev) => [...prev, { from: "bot", text: "Give me a sec—I’m checking pricing history and top-rated carrier availability for your route…" }]);
-          setTimeout(() => {
-            getQuoteOnly(formattedMessages);
-          }, 2000);
-        }, 800);
-      }
-
-    } catch {
-      setMessages([...messages, { from: "bot", text: "Something went wrong." }]);
+      setMessages((prev) => [...prev, { role: "bot", content: data.reply, buttons: data.buttons }]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [...prev, { role: "bot", content: "Something went wrong. Please try again." }]);
     }
-
+    setLoading(false);
     setInput("");
-    setLoading(false);
   };
 
-  const getQuoteOnly = async (msgHistory) => {
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [
-            ...msgHistory,
-            {
-              role: "user",
-              content: "Now give me a confident quote range with the MoveSafe Method and a testimonial. Keep it under 3 sentences.",
-            },
-          ],
-        }),
-      });
-
-      const data = await res.json();
-      const quote = data.reply || "Something went wrong retrieving the quote.";
-      setMessages((prev) => [
-        ...prev,
-        { from: "bot", text: quote },
-        { from: "bot", text: "[CTA] Yes, Reserve My Move | I Have More Questions First" }
-      ]);
-    } catch {
-      setMessages((prev) => [...prev, { from: "bot", text: "Something went wrong retrieving the quote." }]);
-    }
+  const handleButtonClick = (btnText) => {
+    sendMessage(btnText);
   };
 
-  const handleCtaClick = async (choice) => {
-    const newMessages = [...messages, { from: "user", text: choice }, { from: "bot", text: "..." }];
-    setMessages(newMessages);
-    setLoading(true);
-
-    const formattedMessages = newMessages
-      .filter((msg) => msg.text && msg.from)
-      .map((msg) => ({
-        role: msg.from === "bot" ? "assistant" : "user",
-        content: msg.text,
-      }));
-
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: formattedMessages }),
-      });
-
-      const data = await res.json();
-      const reply = data.reply || "Something went wrong.";
-      const updated = [...newMessages.slice(0, -1), { from: "bot", text: reply }];
-      setMessages(updated);
-    } catch {
-      setMessages([...messages, { from: "bot", text: "Something went wrong." }]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      sendMessage(input.trim());
     }
-
-    setLoading(false);
   };
 
   return (
-    <div style={{ fontFamily: "'Segoe UI', sans-serif", display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Head>
-        <title>MovingCo Chat</title>
-      </Head>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <header style={{ padding: "10px", background: "#f0f0f0", textAlign: "center" }}>
+        <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ maxWidth: "200px", marginBottom: "10px" }} />
+        <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ maxWidth: "150px", marginBottom: "10px" }} />
+      </header>
 
-      <main style={{ flex: 1, maxWidth: "800px", margin: "0 auto", width: "100%", padding: "16px", display: "flex", flexDirection: "column" }}>
-        <div style={{ flex: 1, overflowY: "auto", paddingBottom: "16px" }}>
-          {messages.map((msg, i) => (
-            <div key={i} style={{
-              alignSelf: msg.from === "bot" ? "flex-start" : "flex-end",
-              background: msg.from === "bot" ? "#f1f1f1" : "#d0ebff",
-              padding: "12px 16px",
-              borderRadius: "18px",
-              margin: "8px 0",
-              maxWidth: "80%",
-              fontSize: "15px",
-              position: "relative"
-            }}>
-              {msg.text.includes("[CTA]") ? msg.text.replace("[CTA]", "").trim() : msg.text}
-              {msg.text.includes("[CTA]") && (
-                <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
-                  <button
-                    onClick={() => handleCtaClick("Yes, Reserve My Move")}
-                    style={{
-                      padding: "10px 16px",
-                      borderRadius: "8px",
-                      backgroundColor: "#28a745",
-                      color: "#fff",
-                      border: "none",
-                      fontSize: "14px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Yes, Reserve My Move
-                  </button>
-                  <button
-                    onClick={() => handleCtaClick("I Have More Questions First")}
-                    style={{
-                      padding: "10px 16px",
-                      borderRadius: "8px",
-                      backgroundColor: "#ffc107",
-                      color: "#000",
-                      border: "none",
-                      fontSize: "14px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    I Have More Questions First
-                  </button>
+      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "10px", background: "#fafafa" }}>
+          {messages.map((msg, idx) => (
+            <div key={idx} style={{ margin: "10px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
+              <div
+                className="bubble"
+                style={{
+                  display: "inline-block",
+                  padding: "12px 16px",
+                  margin: "8px",
+                  borderRadius: "20px",
+                  background: msg.role === "user" ? "#d1e7dd" : "#e2e3e5",
+                  maxWidth: "70%"
+                }}
+              >
+                {msg.content}
+              </div>
+              {msg.buttons && (
+                <div style={{ marginTop: "5px" }}>
+                  {msg.buttons.map((btn, bIdx) => (
+                    <button
+                      key={bIdx}
+                      onClick={() => handleButtonClick(btn)}
+                      style={{
+                        marginRight: "5px",
+                        padding: "5px 10px",
+                        borderRadius: "5px",
+                        border: "none",
+                        background: "#0d6efd",
+                        color: "#fff",
+                        cursor: "pointer"
+                      }}
+                    >
+                      {btn}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
           ))}
-          <div ref={bottomRef} />
+          <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={sendMessage} style={{ display: "flex", gap: "10px", padding: "10px 0" }}>
+        <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "10px", background: "#f0f0f0" }}>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            style={{
-              flex: 1,
-              padding: "14px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              fontSize: "16px"
-            }}
+            style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
           />
-          <button type="submit" disabled={loading} style={{
-            padding: "14px 18px",
-            borderRadius: "8px",
-            backgroundColor: "#0070f3",
-            color: "#fff",
-            border: "none",
-            fontSize: "16px"
-          }}>
-            {loading ? "..." : "Send"}
+          <button type="submit" disabled={loading} style={{ marginLeft: "5px", padding: "10px", borderRadius: "5px", background: "#0d6efd", color: "#fff", border: "none" }}>
+            Send
           </button>
         </form>
       </main>
 
-      <footer style={{ textAlign: "center", fontSize: "12px", color: "#666", padding: "10px 0" }}>
-        <p>Verified Movers · Flat-Rate Guarantee · Concierge Support · Secure Checkout</p>
-        <p><a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
+      <footer style={{ padding: "10px", background: "#f0f0f0", textAlign: "center", fontSize: "12px" }}>
+        <a href="/terms" style={{ marginRight: "10px" }}>Terms of Service</a> |
+        <a href="/privacy" style={{ marginLeft: "10px" }}>Privacy Policy</a>
+        <p style={{ marginTop: "5px" }}>&copy; 2025 MovingCo. All rights reserved.</p>
       </footer>
     </div>
   );
