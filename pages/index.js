@@ -55,8 +55,7 @@ export default function Home() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
       <header style={{ background: "#f8f9fa", textAlign: "center" }}>
-        <img src="/Movingcompany1.PNG" alt="MovingCo Logo" style={{ width: "100%", height: "auto" }} />
-        <img src="/Movingcompany2.PNG" alt="MoveSafe Verified" style={{ width: "100%", height: "auto" }} />
+        <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
       </header>
 
       <main
@@ -67,6 +66,8 @@ export default function Home() {
           flexDirection: "column",
           overflow: "hidden",
           border: "1px solid #ccc",
+          borderRadius: "10px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
           margin: "10px"
         }}
       >
@@ -116,7 +117,7 @@ export default function Home() {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "12px", background: "#f0f0f0" }}>
+        <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "12px", background: "#f0f0f0", borderTop: "1px solid #ccc" }}>
           <input
             type="text"
             value={input}
