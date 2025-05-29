@@ -13,8 +13,8 @@ export default async function handler(req, res) {
 
   if (userInput === "start_chat") {
     return res.status(200).json({
-      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?",
-      buttons: null
+      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nWhere are you moving from?",
+      buttons: ["Texas", "California", "New York", "Other (type)"]
     });
   }
 
@@ -30,15 +30,17 @@ export default async function handler(req, res) {
     switch (session.phase) {
       case 0:
         session.data.origin = userInput;
-        return reply("Great! And where are you moving to?", 1);
+        return reply("Great! And where are you moving to?", 1, ["Texas", "California", "Arizona", "Other (type)"]);
       case 1:
         session.data.destination = userInput;
-        return reply("Awesome! What’s the size of your home?", 2, [
-          "Studio", "1-Bed", "2-Bed", "3-Bed", "4+ Bed"
+        return reply("Awesome! What type of space are you moving?", 2, [
+          "Apartment", "Storage Unit", "Office", "Full Home"
         ]);
       case 2:
         session.data.homeSize = userInput;
-        return reply("Got it! What date are you planning to move?", 3);
+        return reply("Got it! What date are you planning to move?", 3, [
+          "Exact Date (type)", "Not Sure Yet"
+        ]);
       case 3:
         session.data.moveDate = userInput;
         return reply("Will you need help with loading and unloading?", 4, [
@@ -46,21 +48,17 @@ export default async function handler(req, res) {
         ]);
       case 4:
         session.data.loadHelp = userInput;
-        return reply("Any special or fragile items? (TVs, artwork, instruments, etc.)", 5, [
-          "Yes", "No"
-        ]);
+        return reply("Any special or fragile items?", 5, ["Yes", "No"]);
       case 5:
         session.data.specialItems = userInput;
-        return reply("What’s the reason for your move?", 6, [
-          "Job", "Family", "Fresh start", "Other"
-        ]);
+        return reply("What’s the reason for your move?", 6, ["Job", "Family", "Fresh start", "Other"]);
       case 6:
         session.data.reason = userInput;
         return reply(
-          `Got it! Here’s what I’m preparing your quote on:\n
+          `Here’s what I’m preparing your quote on:\n
 - Origin: ${session.data.origin}
 - Destination: ${session.data.destination}
-- Home Size: ${session.data.homeSize}
+- Space: ${session.data.homeSize}
 - Move Date: ${session.data.moveDate}
 - Help: ${session.data.loadHelp}
 - Special Items: ${session.data.specialItems}
@@ -72,8 +70,8 @@ Ready for me to run your estimate?`,
       case 7:
         if (/yes/.test(userInput)) {
           session.phase = 8;
-          const systemPrompt = `You are a professional moving concierge for MovingCo.\nEstimate price range based on size, route, and services. Lean low to avoid sticker shock. Include MoveSafe Method, explain Move Review Call, no insurance promises. End with [CTA] Yes, Reserve My Move | I Have More Questions First.`;
-          const userPrompt = `Move details:\nFrom: ${session.data.origin}\nTo: ${session.data.destination}\nHome Size: ${session.data.homeSize}\nDate: ${session.data.moveDate}\nHelp: ${session.data.loadHelp}\nSpecial Items: ${session.data.specialItems}\nReason: ${session.data.reason}`;
+          const systemPrompt = `You are a professional moving concierge for MovingCo.\nProvide a SHORT, clear price estimate as a range (e.g., $2,000–$4,000), followed by 2-3 bullet point highlights (MoveSafe Method, live review call, no insurance promises). End with [CTA] Yes, Reserve My Move | I Have More Questions First.`;
+          const userPrompt = `Move details:\nFrom: ${session.data.origin}\nTo: ${session.data.destination}\nSpace: ${session.data.homeSize}\nDate: ${session.data.moveDate}\nHelp: ${session.data.loadHelp}\nSpecial Items: ${session.data.specialItems}\nReason: ${session.data.reason}`;
 
           const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
@@ -128,12 +126,12 @@ Ready for me to run your estimate?`,
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            text: `*New Move Lead*\nName: ${session.data.name}\nEmail: ${session.data.email}\nPhone: ${session.data.phone}\nFrom: ${session.data.pickup}\nTo: ${session.data.dropoff}\nDate: ${session.data.moveDate}\nHome Size: ${session.data.homeSize}\nQuote Flow: Completed\nStripe Link Sent: ✅`
+            text: `*New Move Lead*\nName: ${session.data.name}\nEmail: ${session.data.email}\nPhone: ${session.data.phone}\nFrom: ${session.data.pickup}\nTo: ${session.data.dropoff}\nDate: ${session.data.moveDate}\nSpace: ${session.data.homeSize}\nQuote Flow: Completed\nStripe Link Sent: ✅`
           })
         });
 
         return reply(
-          `Perfect. Everything looks good! You can reserve your move now with the $85 deposit:\n${stripeLink}\n\nAfter payment, we’ll schedule your Move Review Call with a seasoned coordinator to finalize your flat rate.`,
+          `Perfect! You can reserve your move now with the $85 deposit below. After payment, we’ll schedule your Move Review Call to finalize your flat rate.\n\nSTRIPE_LINK: ${stripeLink}`,
           999
         );
       default:
