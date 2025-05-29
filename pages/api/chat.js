@@ -13,7 +13,8 @@ export default async function handler(req, res) {
 
   if (userInput === "start_chat") {
     return res.status(200).json({
-      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?"
+      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nNo forms. No waiting. I’ll give you a real quote right here in chat.\n\nWhere are you moving from?",
+      buttons: null
     });
   }
 
@@ -28,55 +29,50 @@ export default async function handler(req, res) {
   try {
     switch (session.phase) {
       case 0:
-        return reply("Where are you moving from?", 1);
-      case 1:
         session.data.origin = userInput;
-        return reply("Great! And where are you moving to?", 2);
-      case 2:
+        return reply("Great! And where are you moving to?", 1);
+      case 1:
         session.data.destination = userInput;
-        return reply("Fantastic. What’s the size of your home? (e.g. 2-bedroom apartment)", 3);
-      case 3:
+        return reply("Awesome! What’s the size of your home?", 2, [
+          "Studio", "1-Bed", "2-Bed", "3-Bed", "4+ Bed"
+        ]);
+      case 2:
         session.data.homeSize = userInput;
-        return reply("Got it. What date are you planning to move?", 4);
-      case 4:
+        return reply("Got it! What date are you planning to move?", 3);
+      case 3:
         session.data.moveDate = userInput;
-        return reply("Will you need help with loading and unloading?", 5, [
-          "Yes", "No", "Just loading", "Just unloading"
+        return reply("Will you need help with loading and unloading?", 4, [
+          "Load only", "Unload only", "Both"
+        ]);
+      case 4:
+        session.data.loadHelp = userInput;
+        return reply("Any special or fragile items? (TVs, artwork, instruments, etc.)", 5, [
+          "Yes", "No"
         ]);
       case 5:
-        session.data.loadHelp = userInput;
-        return reply("Any special or fragile items? (TVs, artwork, instruments, etc.)", 6);
-      case 6:
         session.data.specialItems = userInput;
-        return reply("What’s the reason for your move? (Job relocation, fresh start, etc.)", 7);
-      case 7:
+        return reply("What’s the reason for your move?", 6, [
+          "Job", "Family", "Fresh start", "Other"
+        ]);
+      case 6:
         session.data.reason = userInput;
         return reply(
-          `Let’s recap your move:\n
+          `Got it! Here’s what I’m preparing your quote on:\n
 - Origin: ${session.data.origin}
 - Destination: ${session.data.destination}
 - Home Size: ${session.data.homeSize}
 - Move Date: ${session.data.moveDate}
-- Load/Unload Help: ${session.data.loadHelp}
+- Help: ${session.data.loadHelp}
 - Special Items: ${session.data.specialItems}
 - Reason: ${session.data.reason}\n
-Does everything look right?`,
-          8,
-          ["Yes, Looks Good", "No, Needs Fixing"]
+Ready for me to run your estimate?`,
+          7,
+          ["Yes, Run the Estimate", "I Need to Add Something"]
         );
-      case 8:
+      case 7:
         if (/yes/.test(userInput)) {
-          return reply("Great! Are you ready for me to run your estimate now?", 9, [
-            "Yes, Run the Estimate",
-            "Not Yet"
-          ]);
-        } else {
-          return reply("No problem—just tell me what you'd like to update.");
-        }
-      case 9:
-        if (/yes/.test(userInput)) {
-          session.phase = 10;
-          const systemPrompt = `You are a professional moving concierge for MovingCo.\nEstimate price range based on size, route, and services. Lean low to avoid sticker shock. Include MoveSafe Method, explain Move Review Call, no full insurance or liability promises. End with [CTA] Yes, Reserve My Move | I Have More Questions First.`;
+          session.phase = 8;
+          const systemPrompt = `You are a professional moving concierge for MovingCo.\nEstimate price range based on size, route, and services. Lean low to avoid sticker shock. Include MoveSafe Method, explain Move Review Call, no insurance promises. End with [CTA] Yes, Reserve My Move | I Have More Questions First.`;
           const userPrompt = `Move details:\nFrom: ${session.data.origin}\nTo: ${session.data.destination}\nHome Size: ${session.data.homeSize}\nDate: ${session.data.moveDate}\nHelp: ${session.data.loadHelp}\nSpecial Items: ${session.data.specialItems}\nReason: ${session.data.reason}`;
 
           const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -97,34 +93,34 @@ Does everything look right?`,
           const data = await gptResponse.json();
           let quote = data.choices?.[0]?.message?.content?.trim() || "";
           if (!quote.toLowerCase().includes("yes, reserve my move")) {
-            quote += "\n\n[CTA] Yes, Reserve My Move | I Have More Questions First";
+            quote = `QUOTE:\n${quote}\n\n[CTA] Yes, Reserve My Move | I Have More Questions First`;
           }
 
-          return reply(quote, 11, ["Yes, Reserve My Move", "I Have More Questions First"]);
+          return reply(quote, 9, ["Yes, Reserve My Move", "I Have More Questions First"]);
         } else {
-          return reply("No problem—just let me know when you’re ready.");
+          return reply("No problem! Go ahead and tell me what you’d like to add or update.");
         }
-      case 11:
+      case 9:
         if (userInput.includes("reserve")) {
-          return reply("Great. Let’s get you booked. What’s your full name?", 12);
+          return reply("Great! Let’s get you booked. What’s your full name?", 10);
         }
         if (userInput.includes("questions")) {
           return reply("Of course—ask me anything. I’m here to help you feel confident before moving forward.");
         }
         break;
-      case 12:
+      case 10:
         session.data.name = userInput;
-        return reply("Thanks. What’s your email address?", 13);
-      case 13:
+        return reply("Thanks! What’s your email address?", 11);
+      case 11:
         session.data.email = userInput;
-        return reply("And your phone number?", 14);
-      case 14:
+        return reply("And your phone number?", 12);
+      case 12:
         session.data.phone = userInput;
-        return reply("Pickup address?", 15);
-      case 15:
+        return reply("What’s the pickup address?", 13);
+      case 13:
         session.data.pickup = userInput;
-        return reply("Delivery address?", 16);
-      case 16:
+        return reply("And the delivery address?", 14);
+      case 14:
         session.data.dropoff = userInput;
 
         const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -137,7 +133,7 @@ Does everything look right?`,
         });
 
         return reply(
-          `Perfect. Everything looks good. You can reserve your move now with the $85 deposit:\n${stripeLink}\n\nAfter payment, we’ll schedule your Move Review Call with a seasoned coordinator to finalize your flat rate.`,
+          `Perfect. Everything looks good! You can reserve your move now with the $85 deposit:\n${stripeLink}\n\nAfter payment, we’ll schedule your Move Review Call with a seasoned coordinator to finalize your flat rate.`,
           999
         );
       default:
