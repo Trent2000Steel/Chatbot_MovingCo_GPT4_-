@@ -32,12 +32,15 @@ export default function Home() {
         body: JSON.stringify({ sessionId, message: text })
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "bot", content: data.reply, buttons: data.buttons }]);
+      setTimeout(() => {
+        setMessages((prev) => [...prev, { role: "bot", content: data.reply, buttons: data.buttons }]);
+        setLoading(false);
+      }, 800); // simulate typing delay
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { role: "bot", content: "Something went wrong. Please try again." }]);
+      setLoading(false);
     }
-    setLoading(false);
     setInput("");
   };
 
@@ -49,6 +52,71 @@ export default function Home() {
     e.preventDefault();
     if (input.trim()) {
       sendMessage(input.trim());
+    }
+  };
+
+  const renderMessage = (msg, idx) => {
+    if (msg.content.startsWith("QUOTE:")) {
+      return (
+        <div key={idx} style={{ margin: "12px 0", textAlign: "left" }}>
+          <div
+            style={{
+              border: "2px solid #0d6efd",
+              backgroundColor: "#f8f9fa",
+              borderRadius: "10px",
+              padding: "20px",
+              fontSize: "18px",
+              color: "#333",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              maxWidth: "80%",
+              margin: "0 auto"
+            }}
+          >
+            <strong>Official Estimate:</strong><br />
+            {msg.content.replace("QUOTE:", "").trim()}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
+          <div
+            style={{
+              display: "inline-block",
+              padding: "14px 18px",
+              margin: "6px",
+              borderRadius: "20px",
+              fontSize: "16px",
+              background: msg.role === "user" ? "#cce5ff" : "#e2e3e5",
+              maxWidth: "75%"
+            }}
+          >
+            {msg.content}
+          </div>
+          {msg.buttons && (
+            <div style={{ marginTop: "8px" }}>
+              {msg.buttons.map((btn, bIdx) => (
+                <button
+                  key={bIdx}
+                  onClick={() => handleButtonClick(btn)}
+                  style={{
+                    marginRight: "8px",
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    border: "none",
+                    background: "#0d6efd",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontSize: "14px"
+                  }}
+                >
+                  {btn}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      );
     }
   };
 
@@ -72,47 +140,9 @@ export default function Home() {
         }}
       >
         <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "#fafafa" }}>
-          {messages.map((msg, idx) =>
-            msg.content === "start_chat" ? null : (
-              <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
-                <div
-                  className="bubble"
-                  style={{
-                    display: "inline-block",
-                    padding: "14px 18px",
-                    margin: "6px",
-                    borderRadius: "20px",
-                    fontSize: "16px",
-                    background: msg.role === "user" ? "#cce5ff" : "#e2e3e5",
-                    maxWidth: "75%"
-                  }}
-                >
-                  {msg.content}
-                </div>
-                {msg.buttons && (
-                  <div style={{ marginTop: "8px" }}>
-                    {msg.buttons.map((btn, bIdx) => (
-                      <button
-                        key={bIdx}
-                        onClick={() => handleButtonClick(btn)}
-                        style={{
-                          marginRight: "8px",
-                          padding: "6px 12px",
-                          borderRadius: "6px",
-                          border: "none",
-                          background: "#0d6efd",
-                          color: "#fff",
-                          cursor: "pointer",
-                          fontSize: "14px"
-                        }}
-                      >
-                        {btn}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
+          {messages.map((msg, idx) => msg.content === "start_chat" ? null : renderMessage(msg, idx))}
+          {loading && (
+            <div style={{ margin: "12px 0", textAlign: "left", fontStyle: "italic", color: "#666" }}>...</div>
           )}
           <div ref={messagesEndRef} />
         </div>
