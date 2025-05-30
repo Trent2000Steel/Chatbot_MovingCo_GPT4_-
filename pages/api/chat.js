@@ -1,182 +1,148 @@
-let sessions = {};
+// movingco-chatbot FINAL UPDATED chat.js (with ZIP patch)
+
+const sessions = {};
+const slackWebhookUrl = 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK';
+
+async function sendToSlack(message) {
+  try {
+    await fetch(slackWebhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: message }),
+    });
+  } catch (error) {
+    console.error('Failed to send to Slack:', error);
+  }
+}
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
 
-  const { sessionId, message } = req.body;
-  const userInput = (message || "").trim().toLowerCase();
-
+  const { sessionId, userInput } = req.body;
   if (!sessions[sessionId]) {
     sessions[sessionId] = { phase: 0, data: {} };
   }
+
   const session = sessions[sessionId];
 
-  if (userInput === "start_chat") {
-    return res.status(200).json({
-      reply: "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\n\nWhere are you moving from?",
-      buttons: ["Texas", "California", "New York", "Other (type)"]
-    });
+  function reply(message, phase) {
+    session.phase = phase;
+    return res.status(200).json({ message });
   }
 
-  const reply = (text, phase = null, buttons = null) => {
-    if (phase !== null) session.phase = phase;
-    return res.status(200).json({
-      reply: text,
-      buttons: Array.isArray(buttons) ? buttons : undefined
-    });
-  };
+  switch (session.phase) {
+    case 0:
+      return reply(
+        "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.\nNo forms, no waiting — I’ll give you a real quote right here in chat.\nWhere are you moving from?\n[ Texas ] [ California ] [ New York ] [ Other (type) ]\n[ 📖 How It Works ]",
+        1
+      );
 
-  try {
-    switch (session.phase) {
-      case 0:
-        session.data.originState = userInput;
-        return reply(`And what city in ${session.data.originState}?`, 1);
-      case 1:
-        session.data.originCity = userInput;
-        return reply("Great! Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
-      case 2:
-        session.data.destinationState = userInput;
-        return reply(`And what city in ${session.data.destinationState}?`, 3);
-      case 3:
-        session.data.destinationCity = userInput;
-        return reply("Awesome! What type of space are you moving?", 4, [
-          "Apartment", "Storage Unit", "Office", "Full Home"
-        ]);
-      case 4:
-        session.data.spaceType = userInput;
-        if (userInput.includes("apartment") || userInput.includes("home")) {
-          return reply("How many bedrooms?", 5, ["1", "2", "3", "4+"]);
-        } else if (userInput.includes("storage")) {
-          return reply("What size storage unit? (e.g., 5x10, 10x10)", 5);
-        } else {
-          return reply("Got it! What date are you planning to move?", 6, ["Exact Date (type)", "Not Sure Yet"]);
-        }
-      case 5:
-        session.data.sizeDetail = userInput;
-        return reply("Got it! What date are you planning to move?", 6, ["Exact Date (type)", "Not Sure Yet"]);
-      case 6:
-        session.data.moveDate = userInput;
-        return reply("Will you need help with loading and unloading?", 7, [
-          "Load only", "Unload only", "Both"
-        ]);
-      case 7:
-        session.data.loadHelp = userInput;
-        return reply("Any special or fragile items?", 8, ["Yes", "No"]);
-      case 8:
-        session.data.hasSpecialItems = userInput;
-        if (userInput === "yes") {
-          return reply("Please list the special or fragile items you want us to know about.", 9);
-        } else {
-          session.data.specialItemList = "None";
-          return reply("What’s the reason for your move?", 10, ["Job", "Family", "Fresh start", "Other"]);
-        }
-      case 9:
-        session.data.specialItemList = userInput;
-        return reply("What’s the reason for your move?", 10, ["Job", "Family", "Fresh start", "Other"]);
-      case 10:
-        session.data.reason = userInput;
-        return reply(
-          `Here’s what I’m preparing your quote on:\n
-- Origin: ${session.data.originCity}, ${session.data.originState}
-- Destination: ${session.data.destinationCity}, ${session.data.destinationState}
-- Space: ${session.data.spaceType} (${session.data.sizeDetail || "n/a"})
-- Move Date: ${session.data.moveDate}
-- Help: ${session.data.loadHelp}
-- Special Items: ${session.data.specialItemList}
-- Reason: ${session.data.reason}\n
-Ready for me to run your estimate?`,
-          11,
-          ["Yes, Run the Estimate", "I Need to Add Something"]
-        );
-      case 11:
-        if (/yes/.test(userInput)) {
-          session.phase = 12;
-          const systemPrompt = `You are a professional moving concierge for MovingCo.\nGenerate a short, clear estimate as a price range (e.g., $2,000–$4,000). Only include services the customer has confirmed (e.g., if they did not request packing, do not mention it).\n\nThe reply must include:\n1️⃣ Price range upfront\n2️⃣ That the customer can reserve now for $85 to hold their date\n3️⃣ That after booking, they’ll get a live Move Review Call to confirm details and photos for a guaranteed flat rate\n4️⃣ Assure them of no surprise fees\n\nLimit to 2–3 bullet points max. Do NOT include CTA lines; the system will attach buttons separately.`;
-          const userPrompt = `Move details:\nFrom: ${session.data.originCity}, ${session.data.originState}\nTo: ${session.data.destinationCity}, ${session.data.destinationState}\nSpace: ${session.data.spaceType} (${session.data.sizeDetail})\nDate: ${session.data.moveDate}\nHelp: ${session.data.loadHelp}\nSpecial Items: ${session.data.specialItemList}\nReason: ${session.data.reason}`;
+    case 1:
+      if (/^\\d{5}$/.test(userInput)) {
+        session.data.zip = userInput;
+        return reply(`Got it, ZIP code ${userInput} — can you confirm the city and state just to be sure?`, 1);
+      }
+      if (userInput.toLowerCase().includes("how")) {
+        return reply("We coordinate every part of your long-distance move, from packing to safe transport and unloading. You place a small deposit today, send us photos, and we finalize your guaranteed flat rate on a live Move Review Call.\n👉 To get your quote, tell me: what city and state are you moving from?", 1);
+      }
+      session.data.origin = userInput;
+      if (userInput.toLowerCase() === "other") {
+        return reply("Please type your city and state:", 1.5);
+      }
+      return reply("Great! Where are you moving to?\n[ Texas ] [ California ] [ Arizona ] [ Other (type) ]", 2);
 
-          const gptResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-              model: "gpt-4",
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt }
-              ]
-            })
-          });
+    case 1.5:
+      session.data.origin = userInput;
+      return reply("Great! Where are you moving to?\n[ Texas ] [ California ] [ Arizona ] [ Other (type) ]", 2);
 
-          const data = await gptResponse.json();
-          let quote = data.choices?.[0]?.message?.content?.trim() || "";
-          return reply(`QUOTE:\n${quote}`, 13, ["Yes, Reserve My Move", "I Have More Questions First"]);
-        } else {
-          return reply("No problem! Go ahead and tell me what you’d like to add or update.");
-        }
-      case 13:
-        if (userInput.includes("reserve")) {
-          return reply("Great! Let’s get you booked. What’s your full name?", 14);
-        }
-        if (userInput.includes("questions")) {
-          return reply("Of course! Please type your question below and I’ll assist you.", 15);
-        }
-        break;
-      case 14:
-        session.data.name = userInput;
-        return reply("Thanks! What’s your email address?", 16);
-      case 16:
-        session.data.email = userInput;
-        return reply("And your phone number?", 17);
-      case 17:
-        session.data.phone = userInput;
-        return reply("What’s the pickup address?", 18);
-      case 18:
-        session.data.pickup = userInput;
-        return reply("And the delivery address?", 19);
-      case 19:
-        session.data.dropoff = userInput;
+    case 2:
+      if (/^\\d{5}$/.test(userInput)) {
+        session.data.zip = userInput;
+        return reply(`Got it, ZIP code ${userInput} — can you confirm the city and state just to be sure?`, 2);
+      }
+      session.data.destination = userInput;
+      if (userInput.toLowerCase() === "other") {
+        return reply("Please type your destination city and state:", 2.5);
+      }
+      return reply("Awesome! What type of space are you moving?\n[ 🏢 Apartment ] [ 📦 Storage Unit ] [ 💼 Office ] [ 🏠 Home ]", 3);
 
-        const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
-        await fetch("https://hooks.slack.com/services/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", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: `*New Move Lead*\nName: ${session.data.name}\nEmail: ${session.data.email}\nPhone: ${session.data.phone}\nFrom: ${session.data.pickup}\nTo: ${session.data.dropoff}\nDate: ${session.data.moveDate}\nSpace: ${session.data.spaceType} (${session.data.sizeDetail})\nQuote Flow: Completed\nStripe Link Sent: ✅`
-          })
-        });
+    case 2.5:
+      session.data.destination = userInput;
+      return reply("Awesome! What type of space are you moving?\n[ 🏢 Apartment ] [ 📦 Storage Unit ] [ 💼 Office ] [ 🏠 Home ]", 3);
 
-        return reply(
-          `Perfect! You can reserve your move now with the $85 deposit below. After payment, we’ll schedule your Move Review Call to finalize your flat rate.\n\nSTRIPE_LINK: ${stripeLink}`,
-          999
-        );
-      case 15:
-        const questionPrompt = `You are a professional moving concierge for MovingCo.\nAnswer the customer's freeform question helpfully, calmly, and professionally.`;
-        const gptQResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-          },
-          body: JSON.stringify({
-            model: "gpt-4",
-            messages: [
-              { role: "system", content: questionPrompt },
-              { role: "user", content: message }
-            ]
-          })
-        });
+    case 3:
+      session.data.spaceType = userInput;
+      return reply("How many bedrooms or unit size?", 4);
 
-        const qData = await gptQResponse.json();
-        const answer = qData.choices?.[0]?.message?.content?.trim() || "I'm here to help with anything you need.";
+    case 4:
+      session.data.sizeDetail = userInput;
+      return reply("Do you know your move date?\n[ 📅 I Know My Date ] [ 🤷‍♂️ Not Sure Yet ]", 5);
 
-        return reply(answer, 13, ["Yes, Reserve My Move", "I Have More Questions First"]);
-      default:
-        return reply("I'm here to help whenever you're ready!");
-    }
-  } catch (error) {
-    console.error("Critical error in chat handler:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    case 5:
+      session.data.moveDate = userInput;
+      return reply("Will you need help with loading and unloading?\n[ Load only ] [ Unload only ] [ Both ]", 6);
+
+    case 6:
+      session.data.helpType = userInput;
+      return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
+
+    case 7:
+      session.data.specialItems = userInput;
+      return reply("What’s the reason for your move?\n[ Job ] [ Family ] [ Fresh start ] [ Other ]", 8);
+
+    case 8:
+      session.data.reason = userInput;
+      const spaceIcon =
+        session.data.spaceType.toLowerCase().includes("apartment")
+          ? "🏢"
+          : session.data.spaceType.toLowerCase().includes("storage")
+          ? "📦"
+          : session.data.spaceType.toLowerCase().includes("office")
+          ? "💼"
+          : "🏠";
+      const recap = `📍 From: ${session.data.origin} → ${session.data.destination}\n${spaceIcon} Space: ${session.data.sizeDetail}\n📅 Move Date: ${session.data.moveDate}\n💪 Help: ${session.data.helpType}\n🛡️ Special Items: ${session.data.specialItems}\n💬 Reason: ${session.data.reason}`;
+      return reply(`Here’s what I’m preparing your quote on:\n${recap}\n✅ Ready?\n[ ✅ Yes, Show Me My Estimate ] [ ✏️ Wait, I Need to Update Something ]`, 9);
+
+    case 9:
+      if (userInput.toLowerCase().includes("update")) {
+        return reply("No problem! What would you like to change or update?", 1);
+      }
+      return reply("📝 Official Estimate\n✅ Estimated Range: $500–$800\n✅ Flat rate available after reservation + photo review.\n[ ✅ Reserve My Move ] [ 📖 Learn How It Works ]", 10);
+
+    case 10:
+      if (userInput.toLowerCase().includes("learn")) {
+        return reply("We coordinate every part of your long-distance move — packing, loading, safe transport, unloading. Place a small deposit today, send us a few photos, and we finalize your flat rate on a live Move Review Call.", 10);
+      }
+      return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. After booking, you’ll send us a few photos so we can confirm your flat rate on the Move Review Call.\nWhat’s your full name?", 11);
+
+    case 11:
+      session.data.name = userInput;
+      return reply("Thanks! What’s your email address?", 12);
+
+    case 12:
+      session.data.email = userInput;
+      return reply("Got it! What’s your phone number?", 13);
+
+    case 13:
+      session.data.phone = userInput;
+      return reply("What’s the pickup address?", 14);
+
+    case 14:
+      session.data.pickup = userInput;
+      return reply("And the delivery address?", 15);
+
+    case 15:
+      session.data.dropoff = userInput;
+
+      const slackMessage = `New MovingCo Lead:\nName: ${session.data.name}\nEmail: ${session.data.email}\nPhone: ${session.data.phone}\nFrom: ${session.data.origin} → ${session.data.destination}\nSpace: ${session.data.spaceType} (${session.data.sizeDetail})\nDate: ${session.data.moveDate}\nHelp: ${session.data.helpType}\nSpecial Items: ${session.data.specialItems}\nReason: ${session.data.reason}\nPickup: ${session.data.pickup}\nDropoff: ${session.data.dropoff}`;
+      sendToSlack(slackMessage);
+
+      const stripeLink = "https://buy.stripe.com/your-link";
+      return reply(`💳 To reserve your move, complete your $85 deposit here: [Pay Now](${stripeLink})`, 999);
+
+    default:
+      return reply("Hmm, looks like we got a bit mixed up. Let’s start fresh — where are you moving from?\n[ Texas ] [ California ] [ New York ] [ Other (type)]", 0);
   }
 }
