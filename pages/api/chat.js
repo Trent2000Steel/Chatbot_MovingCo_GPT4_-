@@ -1,6 +1,4 @@
 
-// FINAL CLEAN chat.js with separated buttons
-
 const sessions = {};
 const slackWebhookUrl = 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK';
 
@@ -36,9 +34,9 @@ export default async function handler(req, res) {
   switch (session.phase) {
     case 0:
       return reply(
-        "Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.
+        \`Welcome to MovingCo. I’m your MoveSafe quote concierge—skilled in long-distance coordination, pricing, and protection.
 No forms, no waiting — I’ll give you a real quote right here in chat.
-Where are you moving from?",
+Where are you moving from?\`,
         1,
         ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
       );
@@ -46,11 +44,11 @@ Where are you moving from?",
     case 1:
       if (/^\d{5}$/.test(userInput)) {
         session.data.zip = userInput;
-        return reply(`Got it, ZIP code ${userInput} — can you confirm the city and state just to be sure?`, 1);
+        return reply(\`Got it, ZIP code \${userInput} — can you confirm the city and state just to be sure?\`, 1);
       }
       if (userInput.toLowerCase().includes("how")) {
-        return reply("We coordinate every part of your long-distance move, from packing to safe transport and unloading. You place a small deposit today, send us photos, and we finalize your guaranteed flat rate on a live Move Review Call.
-👉 To get your quote, tell me: what city and state are you moving from?", 1);
+        return reply(\`We coordinate every part of your long-distance move, from packing to safe transport and unloading. You place a small deposit today, send us photos, and we finalize your guaranteed flat rate on a live Move Review Call.
+👉 To get your quote, tell me: what city and state are you moving from?\`, 1);
       }
       session.data.origin = userInput;
       if (userInput.toLowerCase() === "other") {
@@ -65,7 +63,7 @@ Where are you moving from?",
     case 2:
       if (/^\d{5}$/.test(userInput)) {
         session.data.zip = userInput;
-        return reply(`Got it, ZIP code ${userInput} — can you confirm the city and state just to be sure?`, 2);
+        return reply(\`Got it, ZIP code \${userInput} — can you confirm the city and state just to be sure?\`, 2);
       }
       session.data.destination = userInput;
       if (userInput.toLowerCase() === "other") {
@@ -107,27 +105,27 @@ Where are you moving from?",
           : session.data.spaceType.toLowerCase().includes("office")
           ? "💼"
           : "🏠";
-      const recap = `📍 From: ${session.data.origin} → ${session.data.destination}
-${spaceIcon} Space: ${session.data.sizeDetail}
-📅 Move Date: ${session.data.moveDate}
-💪 Help: ${session.data.helpType}
-🛡️ Special Items: ${session.data.specialItems}
-💬 Reason: ${session.data.reason}`;
-      return reply(`Here’s what I’m preparing your quote on:
-${recap}
-✅ Ready?`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
+      const recap = \`📍 From: \${session.data.origin} → \${session.data.destination}
+\${spaceIcon} Space: \${session.data.sizeDetail}
+📅 Move Date: \${session.data.moveDate}
+💪 Help: \${session.data.helpType}
+🛡️ Special Items: \${session.data.specialItems}
+💬 Reason: \${session.data.reason}\`;
+      return reply(\`Here’s what I’m preparing your quote on:
+\${recap}
+✅ Ready?\`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
 
     case 9:
       if (userInput.toLowerCase().includes("update")) {
         return reply("No problem! What would you like to change or update?", 1);
       }
-      return reply("📝 Official Estimate
+      return reply(\`📝 Official Estimate
 ✅ Estimated Range: $500–$800
-✅ Flat rate available after reservation + photo review.", 10, ["✅ Reserve My Move", "📖 Learn How It Works"]);
+✅ Flat rate available after reservation + photo review.\`, 10, ["✅ Reserve My Move", "📖 Learn How It Works"]);
 
     case 10:
       if (userInput.toLowerCase().includes("learn")) {
-        return reply("We coordinate every part of your long-distance move — packing, loading, safe transport, unloading. Place a small deposit today, send us a few photos, and we finalize your flat rate on a live Move Review Call.", 10);
+        return reply(\`We coordinate every part of your long-distance move — packing, loading, safe transport, unloading. Place a small deposit today, send us a few photos, and we finalize your flat rate on a live Move Review Call.\`, 10);
       }
       return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. After booking, you’ll send us a few photos so we can confirm your flat rate on the Move Review Call.
 What’s your full name?", 11);
@@ -151,22 +149,22 @@ What’s your full name?", 11);
     case 15:
       session.data.dropoff = userInput;
 
-      const slackMessage = `New MovingCo Lead:
-Name: ${session.data.name}
-Email: ${session.data.email}
-Phone: ${session.data.phone}
-From: ${session.data.origin} → ${session.data.destination}
-Space: ${session.data.spaceType} (${session.data.sizeDetail})
-Date: ${session.data.moveDate}
-Help: ${session.data.helpType}
-Special Items: ${session.data.specialItems}
-Reason: ${session.data.reason}
-Pickup: ${session.data.pickup}
-Dropoff: ${session.data.dropoff}`;
+      const slackMessage = \`New MovingCo Lead:
+Name: \${session.data.name}
+Email: \${session.data.email}
+Phone: \${session.data.phone}
+From: \${session.data.origin} → \${session.data.destination}
+Space: \${session.data.spaceType} (\${session.data.sizeDetail})
+Date: \${session.data.moveDate}
+Help: \${session.data.helpType}
+Special Items: \${session.data.specialItems}
+Reason: \${session.data.reason}
+Pickup: \${session.data.pickup}
+Dropoff: \${session.data.dropoff}\`;
       sendToSlack(slackMessage);
 
       const stripeLink = "https://buy.stripe.com/your-link";
-      return reply(`💳 To reserve your move, complete your $85 deposit here: ${stripeLink}`, 999);
+      return reply(\`💳 To reserve your move, complete your $85 deposit here: \${stripeLink}\`, 999);
 
     default:
       return reply("Hmm, looks like we got a bit mixed up. Let’s start fresh — where are you moving from?", 0, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
