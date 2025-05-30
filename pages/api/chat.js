@@ -37,16 +37,18 @@ export default async function handler(req, res) {
     return res.status(200).json({ message, buttons });
   }
 
-  switch (session.phase) {
-    case 0:
-      return reply(
-        `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
+  // Handle start_chat
+  if (userInput === "start_chat") {
+    return reply(
+      `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
 No forms, no waiting -- I'll give you a real quote right here in chat.
 Where are you moving from?`,
-        1,
-        ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
-      );
+      1,
+      ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
+    );
+  }
 
+  switch (session.phase) {
     case 1:
       if (/^\d{5}$/.test(userInput)) {
         return reply(`Got it, ZIP code ${userInput} -- can you confirm the city and state just to be sure?`, 1);
@@ -74,13 +76,20 @@ Where are you moving from?`,
 
     case 3:
       session.data.spaceType = userInput;
-      return reply("How many bedrooms or unit size?", 4);
+      return reply("How many bedrooms or unit size?", 4, ["1", "2", "3", "4+"]);
 
     case 4:
       session.data.sizeDetail = userInput;
       return reply("Do you know your move date?", 5, ["📅 I Know My Date", "🤷‍♂️ Not Sure Yet"]);
 
     case 5:
+      if (userInput.includes("I Know My Date")) {
+        return reply("Great! Please type your move date (e.g., June 15, 2025).", 5.5);
+      }
+      session.data.moveDate = userInput;
+      return reply("Will you need help with loading and unloading?", 6, ["Load only", "Unload only", "Both"]);
+
+    case 5.5:
       session.data.moveDate = userInput;
       return reply("Will you need help with loading and unloading?", 6, ["Load only", "Unload only", "Both"]);
 
