@@ -27,51 +27,30 @@ export default async function handler(req, res) {
 
   const { sessionId, userInput } = req.body;
   if (!sessions[sessionId]) {
-    sessions[sessionId] = { phase: 0, data: {}, history: [] };
+    sessions[sessionId] = { phase: 0, data: {} };
   }
 
   const session = sessions[sessionId];
-  session.history.push({ role: "user", content: userInput });
 
   function reply(message, phase, buttons = []) {
     session.phase = phase;
     return res.status(200).json({ message, buttons });
   }
 
-  // Simple fallback: if customer says something like "what's your coverage" or raises an objection
-  const gptFallbackPhases = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  if (gptFallbackPhases.includes(session.phase)) {
-    try {
-      const gptSystemPrompt = `You are a MovingCo sales agent. You guide customers through a structured moving quote process, but you are smart enough to handle side questions, objections, or skipped steps. If they ask about insurance, pricing, timing, or other concerns, answer calmly and guide them back to the next required phase.`;
-
-      const gptCompletion = await openai.chat.completions.create({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: gptSystemPrompt },
-          ...session.history.slice(-10).map(m => ({ role: m.role, content: m.content })),
-          { role: 'user', content: `Current phase: ${session.phase}, collected data: ${JSON.stringify(session.data)}` }
-        ],
-      });
-
-      const assistantReply = gptCompletion.choices[0].message.content;
-      session.history.push({ role: "assistant", content: assistantReply });
-      return res.status(200).json({ message: assistantReply });
-    } catch (error) {
-      console.error('GPT fallback error:', error);
-    }
-  }
-
   switch (session.phase) {
     case 0:
       return reply(
-        `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
+        "Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
 No forms, no waiting -- I'll give you a real quote right here in chat.
-Where are you moving from?`,
+Where are you moving from?",
         1,
         ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
       );
 
     case 1:
+      if (/^\d{5}$/.test(userInput)) {
+        return reply(`Got it, ZIP code ${userInput} -- can you confirm the city and state just to be sure?`, 1);
+      }
       session.data.origin = userInput;
       if (userInput.toLowerCase() === "other") {
         return reply("Please type your city and state:", 1.5);
@@ -115,8 +94,16 @@ Where are you moving from?`,
 
     case 8:
       session.data.reason = userInput;
+      const spaceIcon =
+        session.data.spaceType.toLowerCase().includes("apartment")
+          ? "🏢"
+          : session.data.spaceType.toLowerCase().includes("storage")
+          ? "📦"
+          : session.data.spaceType.toLowerCase().includes("office")
+          ? "💼"
+          : "🏠";
       const recap = `📍 From: ${session.data.origin} → ${session.data.destination}
-🏠 Space: ${session.data.sizeDetail}
+${spaceIcon} Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems}
@@ -130,15 +117,15 @@ ${recap}
         return reply("No problem! What would you like to change or update?", 1);
       }
       try {
-        const quotePrompt = `You are a MovingCo sales agent. Based on the following details, generate a realistic, market-accurate estimated moving cost range, leaning slightly low to avoid sticker shock, but staying credible. Details: ${JSON.stringify(session.data)}`;
+        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
+Details: ${JSON.stringify(session.data)}`;
 
         const quoteCompletion = await openai.chat.completions.create({
           model: 'gpt-4',
           messages: [{ role: 'system', content: quotePrompt }],
         });
 
-        const estimate = quoteCompletion.choices[0].message.content;
-        session.history.push({ role: "assistant", content: estimate });
+        const estimate = quoteCompletion.choices[0].message.content.trim();
         return reply(`📝 Official Estimate
 ${estimate}
 ✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works"]);
@@ -177,7 +164,7 @@ ${JSON.stringify(session.data, null, 2)}`;
       sendToSlack(slackMessage);
 
       const stripeLink = "https://buy.stripe.com/your-link";
-      return reply(`💳 To reserve your move, complete your $85 deposit here: ${stripeLink}`, 999);
+      return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
 
     default:
       return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 0, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
