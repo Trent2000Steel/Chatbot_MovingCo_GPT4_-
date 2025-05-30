@@ -41,34 +41,18 @@ export default async function handler(req, res) {
     return reply(
       `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
 No forms, no waiting -- I'll give you a real quote right here in chat.
-Where are you moving from?`,
-      1,
-      ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
+Where are you moving from? (please type city + state)`,
+      1
     );
   }
 
   switch (session.phase) {
     case 1:
-      if (userInput.includes("How It Works")) {
-        return reply(
-          "We coordinate your long-distance move with verified movers, a guaranteed flat rate, and full support from start to finish. You only pay after approval. Ready to start your quote?",
-          1,
-          ["Texas", "California", "New York", "Other (type)"]
-        );
-      }
-      session.data.originState = userInput;
-      return reply("Great, what’s the city you’re moving from?", 1.6);
-
-    case 1.6:
-      session.data.originCity = userInput;
-      return reply("Great! Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
+      session.data.originFull = userInput;
+      return reply("Great! Where are you moving to? (please type city + state)", 2);
 
     case 2:
-      session.data.destinationState = userInput;
-      return reply("And what’s the city you’re moving to?", 2.6);
-
-    case 2.6:
-      session.data.destinationCity = userInput;
+      session.data.destinationFull = userInput;
       return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
 
     case 3:
@@ -100,7 +84,7 @@ Where are you moving from?`,
 
     case 8:
       session.data.reason = userInput;
-      const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+      const recap = `📍 From: ${session.data.originFull} → ${session.data.destinationFull}
 🏠 Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
 💪 Help: ${session.data.helpType}
@@ -184,6 +168,6 @@ ${JSON.stringify(session.data, null, 2)}`;
       return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
 
     default:
-      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
+      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from? (please type city + state)", 1);
   }
 }
