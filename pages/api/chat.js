@@ -64,12 +64,19 @@ export default async function handler(req, res) {
 No forms, no waiting -- I'll give you a real quote right here in chat.
 Where are you moving from?`,
       1,
-      ["Texas", "California", "New York", "Other (type)"]
+      ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
     );
   }
 
   switch (session.phase) {
     case 1:
+      if (userInput.includes("How It Works")) {
+        return reply(
+          "We coordinate your long-distance move with verified movers, a guaranteed flat rate, and full support from start to finish. You only pay after approval. Ready to start your quote?",
+          1,
+          ["Texas", "California", "New York", "Other (type)"]
+        );
+      }
       session.data.originState = userInput;
       return reply("Great! What’s the city you’re moving from?", 1.5);
 
@@ -198,6 +205,6 @@ ${JSON.stringify(session.data, null, 2)}`;
       return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
 
     default:
-      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)"]);
+      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
   }
 }
