@@ -40,9 +40,9 @@ export default async function handler(req, res) {
   switch (session.phase) {
     case 0:
       return reply(
-        "Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
+        `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
 No forms, no waiting -- I'll give you a real quote right here in chat.
-Where are you moving from?",
+Where are you moving from?`,
         1,
         ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
       );
