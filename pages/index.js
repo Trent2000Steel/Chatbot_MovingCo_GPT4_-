@@ -29,11 +29,12 @@ export default function Home() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, message: text })
+        body: JSON.stringify({ sessionId, userInput: text })
       });
       const data = await res.json();
+
       setTimeout(() => {
-        setMessages((prev) => [...prev, { role: "bot", content: data.reply, buttons: data.buttons }]);
+        setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons }]);
         setLoading(false);
       }, 800); // simulate typing delay
     } catch (err) {
@@ -56,7 +57,7 @@ export default function Home() {
   };
 
   const renderMessage = (msg, idx) => {
-    if (msg.content.startsWith("QUOTE:")) {
+    if (msg.content.includes("Official Estimate")) {
       return (
         <div key={idx} style={{ margin: "12px 0", textAlign: "left" }}>
           <div
@@ -68,17 +69,17 @@ export default function Home() {
               fontSize: "18px",
               color: "#333",
               boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              maxWidth: "80%",
-              margin: "0 auto"
+              maxWidth: "90%",
+              margin: "0 auto",
+              whiteSpace: "pre-wrap"
             }}
           >
-            <strong>Official Estimate:</strong><br />
-            {msg.content.replace("QUOTE:", "").trim()}
+            {msg.content}
           </div>
         </div>
       );
-    } else if (msg.content.startsWith("STRIPE_LINK:")) {
-      const link = msg.content.replace("STRIPE_LINK:", "").trim();
+    } else if (msg.content.includes("https://buy.stripe.com")) {
+      const link = msg.content.match(/https?:\/\/\S+/)?.[0];
       return (
         <div key={idx} style={{ margin: "12px 0", textAlign: "center" }}>
           <a
@@ -111,7 +112,8 @@ export default function Home() {
               borderRadius: "20px",
               fontSize: "16px",
               background: msg.role === "user" ? "#cce5ff" : "#e2e3e5",
-              maxWidth: "75%"
+              maxWidth: "75%",
+              whiteSpace: "pre-wrap"
             }}
           >
             {msg.content}
@@ -128,7 +130,7 @@ export default function Home() {
                     padding: "6px 12px",
                     borderRadius: "6px",
                     border: "none",
-                    background: "#0d6efd",
+                    background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
                     color: "#fff",
                     cursor: "pointer",
                     fontSize: "14px"
