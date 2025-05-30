@@ -127,8 +127,7 @@ ${recap}
       if (userInput.toLowerCase().includes("learn")) {
         return reply(`We coordinate every part of your long-distance move -- packing, loading, safe transport, unloading. Place a small deposit today, send us a few photos, and we finalize your flat rate on a live Move Review Call.`, 10);
       }
-      return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. After booking, you will send us a few photos so we can confirm your flat rate on the Move Review Call.
-What is your full name?", 11);
+      return reply(`Great! To reserve your move, we collect a fully refundable $85 deposit. After booking, you will send us a few photos so we can confirm your flat rate on the Move Review Call. What is your full name?`, 11);
 
     case 11:
       session.data.name = userInput;
