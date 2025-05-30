@@ -6,21 +6,8 @@ const openai = new OpenAI({
 });
 
 const sessions = {};
-const slackWebhookUrl = 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK';
 
 const fallbackKeywords = ["damage", "broken", "refund", "cancel", "late", "delay", "expensive", "price", "insurance", "safe", "trust"];
-
-async function sendToSlack(message) {
-  try {
-    await fetch(slackWebhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: message }),
-    });
-  } catch (error) {
-    console.error('Failed to send to Slack:', error);
-  }
-}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -39,7 +26,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ message, buttons });
   }
 
-  // Check if off-script keyword is present
   const lowerInput = userInput.toLowerCase();
   if (fallbackKeywords.some(keyword => lowerInput.includes(keyword))) {
     try {
@@ -197,11 +183,7 @@ ${estimate}
     case 15:
       session.data.dropoff = userInput;
 
-      const slackMessage = `New MovingCo Lead:
-${JSON.stringify(session.data, null, 2)}`;
-      sendToSlack(slackMessage);
-
-      const stripeLink = "https://buy.stripe.com/your-link";
+      const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
 
     default:
