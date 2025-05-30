@@ -8,6 +8,8 @@ const openai = new OpenAI({
 const sessions = {};
 const slackWebhookUrl = 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK';
 
+const fallbackKeywords = ["damage", "broken", "refund", "cancel", "late", "delay", "expensive", "price", "insurance", "safe", "trust"];
+
 async function sendToSlack(message) {
   try {
     await fetch(slackWebhookUrl, {
@@ -35,6 +37,25 @@ export default async function handler(req, res) {
   function reply(message, phase, buttons = []) {
     session.phase = phase;
     return res.status(200).json({ message, buttons });
+  }
+
+  // Check if off-script keyword is present
+  const lowerInput = userInput.toLowerCase();
+  if (fallbackKeywords.some(keyword => lowerInput.includes(keyword))) {
+    try {
+      const fallbackPrompt = `You are a MovingCo sales agent. The customer has asked about a key concern (such as damage, refunds, delays, price, or safety). Respond in ONLY 1–2 short sentences, calm and professional, and gently guide them back to completing their booking.`;
+
+      const fallbackCompletion = await openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [{ role: 'system', content: fallbackPrompt }, { role: 'user', content: userInput }],
+      });
+
+      const fallbackResponse = fallbackCompletion.choices[0].message.content.trim();
+      return reply(`${fallbackResponse}`, session.phase);
+    } catch (error) {
+      console.error('GPT fallback error:', error);
+      return reply("Sorry, something went wrong answering that. Please try again.", session.phase);
+    }
   }
 
   if (userInput === "start_chat") {
