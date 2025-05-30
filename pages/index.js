@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -36,7 +37,7 @@ export default function Home() {
       setTimeout(() => {
         setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons }]);
         setLoading(false);
-      }, 800); // simulate typing delay
+      }, 800);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { role: "bot", content: "Something went wrong. Please try again." }]);
@@ -57,93 +58,71 @@ export default function Home() {
   };
 
   const renderMessage = (msg, idx) => {
-    if (msg.content.includes("Official Estimate")) {
-      return (
-        <div key={idx} style={{ margin: "12px 0", textAlign: "left" }}>
-          <div
-            style={{
-              border: "2px solid #0d6efd",
-              backgroundColor: "#f8f9fa",
-              borderRadius: "10px",
-              padding: "20px",
-              fontSize: "18px",
-              color: "#333",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-              maxWidth: "90%",
-              margin: "0 auto",
-              whiteSpace: "pre-wrap"
-            }}
-          >
-            {msg.content}
+    const stripeLinkMatch = msg.content.match(/https?:\/\/\S+/);
+    const stripeLink = stripeLinkMatch ? stripeLinkMatch[0] : null;
+
+    return (
+      <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
+        <div
+          style={{
+            display: "inline-block",
+            padding: "14px 18px",
+            margin: "6px",
+            borderRadius: "20px",
+            fontSize: "16px",
+            background: msg.role === "user" ? "#cce5ff" : "#e2e3e5",
+            maxWidth: "75%",
+            whiteSpace: "pre-wrap"
+          }}
+        >
+          {msg.content}
+        </div>
+        {stripeLink && (
+          <div style={{ marginTop: "8px", textAlign: "center" }}>
+            <a
+              href={stripeLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-block",
+                padding: "12px 24px",
+                borderRadius: "6px",
+                background: "#28a745",
+                color: "#fff",
+                fontSize: "16px",
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+              }}
+            >
+              Reserve My Move Now ($85)
+            </a>
           </div>
-        </div>
-      );
-    } else if (msg.content.includes("https://buy.stripe.com")) {
-      const link = msg.content.match(/https?:\/\/\S+/)?.[0];
-      return (
-        <div key={idx} style={{ margin: "12px 0", textAlign: "center" }}>
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-block",
-              padding: "12px 24px",
-              borderRadius: "6px",
-              background: "#28a745",
-              color: "#fff",
-              fontSize: "16px",
-              textDecoration: "none",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-            }}
-          >
-            Reserve My Move Now ($85)
-          </a>
-        </div>
-      );
-    } else {
-      return (
-        <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
-          <div
-            style={{
-              display: "inline-block",
-              padding: "14px 18px",
-              margin: "6px",
-              borderRadius: "20px",
-              fontSize: "16px",
-              background: msg.role === "user" ? "#cce5ff" : "#e2e3e5",
-              maxWidth: "75%",
-              whiteSpace: "pre-wrap"
-            }}
-          >
-            {msg.content}
+        )}
+        {msg.buttons && (
+          <div style={{ marginTop: "8px" }}>
+            {msg.buttons.map((btn, bIdx) => (
+              <button
+                key={bIdx}
+                onClick={() => handleButtonClick(btn)}
+                style={{
+                  marginRight: "8px",
+                  marginTop: "4px",
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  border: "none",
+                  background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
+              >
+                {btn}
+              </button>
+            ))}
           </div>
-          {msg.buttons && (
-            <div style={{ marginTop: "8px" }}>
-              {msg.buttons.map((btn, bIdx) => (
-                <button
-                  key={bIdx}
-                  onClick={() => handleButtonClick(btn)}
-                  style={{
-                    marginRight: "8px",
-                    marginTop: "4px",
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    border: "none",
-                    background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
-                    color: "#fff",
-                    cursor: "pointer",
-                    fontSize: "14px"
-                  }}
-                >
-                  {btn}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    }
+        )}
+      </div>
+    );
   };
 
   return (
