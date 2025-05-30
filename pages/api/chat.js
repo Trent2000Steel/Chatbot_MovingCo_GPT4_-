@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
   const { sessionId, userInput } = req.body;
   if (!sessions[sessionId]) {
-    sessions[sessionId] = { phase: 1, data: {} };  // Start directly at phase 1
+    sessions[sessionId] = { phase: 1, data: {} };
   }
 
   const session = sessions[sessionId];
@@ -37,7 +37,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ message, buttons });
   }
 
-  // Handle start_chat or frontend refresh
   if (userInput === "start_chat") {
     return reply(
       `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
@@ -57,28 +56,19 @@ Where are you moving from?`,
           ["Texas", "California", "New York", "Other (type)"]
         );
       }
-      if (/^\d{5}$/.test(userInput)) {
-        return reply(`Got it, ZIP code ${userInput} -- can you confirm the city and state just to be sure?`, 1);
-      }
-      session.data.origin = userInput;
-      if (userInput.toLowerCase() === "other") {
-        return reply("Please type your city and state:", 1.5);
-      }
-      return reply("Great! Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
+      session.data.originState = userInput;
+      return reply("Great, what’s the city you’re moving from?", 1.6);
 
-    case 1.5:
-      session.data.origin = userInput;
+    case 1.6:
+      session.data.originCity = userInput;
       return reply("Great! Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
 
     case 2:
-      session.data.destination = userInput;
-      if (userInput.toLowerCase() === "other") {
-        return reply("Please type your destination city and state:", 2.5);
-      }
-      return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
+      session.data.destinationState = userInput;
+      return reply("And what’s the city you’re moving to?", 2.6);
 
-    case 2.5:
-      session.data.destination = userInput;
+    case 2.6:
+      session.data.destinationCity = userInput;
       return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
 
     case 3:
@@ -110,16 +100,8 @@ Where are you moving from?`,
 
     case 8:
       session.data.reason = userInput;
-      const spaceIcon =
-        session.data.spaceType.toLowerCase().includes("apartment")
-          ? "🏢"
-          : session.data.spaceType.toLowerCase().includes("storage")
-          ? "📦"
-          : session.data.spaceType.toLowerCase().includes("office")
-          ? "💼"
-          : "🏠";
-      const recap = `📍 From: ${session.data.origin} → ${session.data.destination}
-${spaceIcon} Space: ${session.data.sizeDetail}
+      const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+🏠 Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems}
