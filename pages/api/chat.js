@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
   const { sessionId, userInput } = req.body;
   if (!sessions[sessionId]) {
-    sessions[sessionId] = { phase: 0, data: {} };
+    sessions[sessionId] = { phase: 1, data: {} };  // Start directly at phase 1
   }
 
   const session = sessions[sessionId];
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ message, buttons });
   }
 
-  // Handle start_chat
+  // Handle start_chat or frontend refresh
   if (userInput === "start_chat") {
     return reply(
       `Welcome to MovingCo. I'm your MoveSafe quote concierge -- skilled in long-distance coordination, pricing, and protection.
@@ -50,6 +50,13 @@ Where are you moving from?`,
 
   switch (session.phase) {
     case 1:
+      if (userInput.includes("How It Works")) {
+        return reply(
+          "We coordinate your long-distance move with verified movers, a guaranteed flat rate, and full support from start to finish. You only pay after approval. Ready to start your quote?",
+          1,
+          ["Texas", "California", "New York", "Other (type)"]
+        );
+      }
       if (/^\d{5}$/.test(userInput)) {
         return reply(`Got it, ZIP code ${userInput} -- can you confirm the city and state just to be sure?`, 1);
       }
@@ -137,17 +144,36 @@ Details: ${JSON.stringify(session.data)}`;
         const estimate = quoteCompletion.choices[0].message.content.trim();
         return reply(`📝 Official Estimate
 ${estimate}
-✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works"]);
+✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
       } catch (error) {
         console.error('GPT quote error:', error);
         return reply("Sorry, something went wrong generating your estimate. Please try again.", 9);
       }
 
     case 10:
+      if (userInput.includes("I Have More Questions")) {
+        return reply("Sure! I'm here to answer anything — go ahead and type your question.", "gpt_rebuttal");
+      }
       if (userInput.toLowerCase().includes("learn")) {
         return reply(`We coordinate every part of your long-distance move -- packing, loading, safe transport, unloading. Place a small deposit today, send us photos, and we finalize your flat rate on a live Move Review Call.`, 10);
       }
       return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
+
+    case "gpt_rebuttal":
+      try {
+        const chatPrompt = `You are a MovingCo sales agent. The customer has additional questions or concerns. Answer calmly, helpfully, and professionally, and invite them back to complete their reservation when ready.`;
+
+        const rebuttalCompletion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
+        });
+
+        const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
+        return reply(`${rebuttal}`, 10, ["✅ Ready to Reserve", "❌ I'm Not Ready Yet"]);
+      } catch (error) {
+        console.error('GPT rebuttal error:', error);
+        return reply("Sorry, something went wrong answering that. Please try again.", "gpt_rebuttal");
+      }
 
     case 11:
       session.data.name = userInput;
@@ -176,6 +202,6 @@ ${JSON.stringify(session.data, null, 2)}`;
       return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
 
     default:
-      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 0, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
+      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
   }
 }
