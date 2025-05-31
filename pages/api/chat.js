@@ -122,7 +122,7 @@ ${recap}
         return reply("No problem! What would you like to change or update?", 1);
       }
       try {
-        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
+        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
 Details: ${JSON.stringify(session.data)}`;
 
         const quoteCompletion = await openai.chat.completions.create({
@@ -144,9 +144,9 @@ ${estimate}
         return reply("Sure! I'm here to answer anything — go ahead and type your question.", "gpt_rebuttal");
       }
       if (userInput.toLowerCase().includes("learn")) {
-        return reply(`We coordinate every part of your long-distance move -- packing, loading, safe transport, unloading. Place a small deposit today, send us photos, and we finalize your flat rate on a live Move Review Call.`, 10);
+        return reply(`We coordinate every part of your long-distance move -- loading, safe transport, unloading (packing is excluded unless specifically arranged). Place a small deposit today, send us photos, and we finalize your flat rate on a live Move Review Call.`, 10);
       }
-      return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
+      return reply("Great! To reserve your move, please complete your $85 deposit using the button below.", 11);
 
     case "gpt_rebuttal":
       try {
@@ -184,7 +184,7 @@ ${estimate}
       session.data.dropoff = userInput;
 
       const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
-      return reply(`💳 To reserve your move, please complete your $85 deposit here: ${stripeLink}`, 999);
+      return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
 
     default:
       return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
