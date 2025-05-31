@@ -8,6 +8,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
+  const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+
   const generateSessionId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function Home() {
       const data = await res.json();
 
       setTimeout(() => {
-        setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons }]);
+        setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons, phase: data.phase }]);
         setLoading(false);
       }, 800);
     } catch (err) {
@@ -58,9 +60,6 @@ export default function Home() {
   };
 
   const renderMessage = (msg, idx) => {
-    const stripeLinkMatch = msg.content.match(/https?:\/\/\S+/);
-    const stripeLink = stripeLinkMatch ? stripeLinkMatch[0] : null;
-
     return (
       <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
         <div
@@ -77,8 +76,8 @@ export default function Home() {
         >
           {msg.content}
         </div>
-        {stripeLink && (
-          <div style={{ marginTop: "8px", textAlign: "center" }}>
+        {msg.phase === 999 && (
+          <div style={{ marginTop: "12px", textAlign: "center" }}>
             <a
               href={stripeLink}
               target="_blank"
