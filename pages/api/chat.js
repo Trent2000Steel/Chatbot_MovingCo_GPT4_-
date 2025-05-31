@@ -146,7 +146,7 @@ ${estimate}
       if (userInput.toLowerCase().includes("learn")) {
         return reply(`We coordinate every part of your long-distance move -- loading, safe transport, unloading (packing is excluded unless specifically arranged). Place a small deposit today, send us photos, and we finalize your flat rate on a live Move Review Call.`, 10);
       }
-      return reply("Great! To reserve your move, please complete your $85 deposit using the button below.", 11);
+      return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
 
     case "gpt_rebuttal":
       try {
@@ -182,7 +182,6 @@ ${estimate}
 
     case 15:
       session.data.dropoff = userInput;
-
       const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
 
