@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
   function reply(message, phase, buttons = []) {
     session.phase = phase;
-    return res.status(200).json({ message, buttons });
+    return res.status(200).json({ message, buttons, phase });
   }
 
   const lowerInput = userInput.toLowerCase();
@@ -63,20 +63,36 @@ Where are you moving from?`,
           ["Texas", "California", "New York", "Other (type)"]
         );
       }
-      session.data.originState = userInput;
-      return reply("Great! What’s the city you’re moving from?", 1.5);
+      if (!session.data.originState) {
+        session.data.originState = userInput;
+        return reply("Great! What’s the city you’re moving from?", 1.5);
+      } else {
+        return reply("You've already provided the state. Let's continue.", 1.5);
+      }
 
     case 1.5:
-      session.data.originCity = userInput;
-      return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
+      if (!session.data.originCity) {
+        session.data.originCity = userInput;
+        return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
+      } else {
+        return reply("You've already provided the origin city. Let's move on.", 2, ["Texas", "California", "Arizona", "Other (type)"]);
+      }
 
     case 2:
-      session.data.destinationState = userInput;
-      return reply("And what’s the city you’re moving to?", 2.5);
+      if (!session.data.destinationState) {
+        session.data.destinationState = userInput;
+        return reply("And what’s the city you’re moving to?", 2.5);
+      } else {
+        return reply("You've already provided the destination state. Let's continue.", 2.5);
+      }
 
     case 2.5:
-      session.data.destinationCity = userInput;
-      return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
+      if (!session.data.destinationCity) {
+        session.data.destinationCity = userInput;
+        return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
+      } else {
+        return reply("You've already provided the destination city. Let's continue.", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
+      }
 
     case 3:
       session.data.spaceType = userInput;
