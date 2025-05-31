@@ -90,7 +90,8 @@ export default function Home() {
                 color: "#fff",
                 fontSize: "16px",
                 textDecoration: "none",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+                boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
+                transition: "transform 0.1s",
               }}
             >
               Reserve My Move Now ($85)
@@ -112,8 +113,13 @@ export default function Home() {
                   background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
                   color: "#fff",
                   cursor: "pointer",
-                  fontSize: "14px"
+                  fontSize: "14px",
+                  boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
+                  transition: "transform 0.1s",
                 }}
+                onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
+                onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
               >
                 {btn}
               </button>
