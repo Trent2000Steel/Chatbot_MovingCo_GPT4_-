@@ -66,6 +66,9 @@ Where are you moving from?`,
       if (userInput === "Other") {
         return reply("No problem — just type your state below.", 1);
     }
+    if (userInput === "Other") {
+        return reply("No problem — just type your state below.", 1);
+    }
     if (!session.data.originState) {
         session.data.originState = userInput;
         return reply("Great! What’s the city you’re moving from?", 1.5);
@@ -83,6 +86,9 @@ Where are you moving from?`,
 
     case 2:
       if (userInput === "Other") {
+        return reply("Got it — what state are you moving to?", 2);
+    }
+    if (userInput === "Other") {
         return reply("Got it — what state are you moving to?", 2);
     }
     if (!session.data.destinationState) {
@@ -125,10 +131,13 @@ Where are you moving from?`,
 
     case 7:
       session.data.specialItems = userInput;
-      return reply("", 8, ["Job", "Family", "Fresh start", "Other"]);
+      
 
     case 9:
       if (userInput.toLowerCase().includes("update")) {
+        session.phase = "update_pending";
+        return reply("No problem! What would you like to change or update?", "update_pending");
+    }
         session.phase = "update_pending";
         return reply("No problem! What would you like to change or update?", "update_pending");
     }
@@ -136,6 +145,7 @@ Where are you moving from?`,
       }
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
+        await reply("⏳ Calculating your quote...", session.phase);
         const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
 Details: ${JSON.stringify(session.data)}`;
 
@@ -199,6 +209,18 @@ ${estimate}
       session.data.dropoff = userInput;
       const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
+
+    
+    case "update_pending":
+      const updateInput = userInput.toLowerCase();
+      if (updateInput.includes("date")) session.data.moveDate = userInput;
+      else if (updateInput.includes("city") || updateInput.includes("from")) session.data.originCity = userInput;
+      else if (updateInput.includes("to")) session.data.destinationCity = userInput;
+      else if (updateInput.includes("size") || updateInput.includes("bedroom")) session.data.sizeDetail = userInput;
+      else if (updateInput.includes("help")) session.data.helpType = userInput;
+      else if (updateInput.includes("item")) session.data.specialItems = userInput;
+      session.phase = 9;
+      return reply("Got it — I've updated your info. Recalculating now…", 9);
 
     
     case "update_pending":
