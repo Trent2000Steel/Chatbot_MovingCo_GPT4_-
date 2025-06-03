@@ -50,18 +50,17 @@ export default async function handler(req, res) {
 No forms, no waiting -- I'll give you a real quote right here in chat.
 Where are you moving from?`,
       1,
-      ["Texas", "California", "New York", "Other", "📖 How It Works"]
+      ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]
     );
   }
 
   switch (session.phase) {
     case 1:
-      if (userInput === "Other") return reply("Got it — please type the state you’re moving from:", 1);
       if (userInput.includes("How It Works")) {
         return reply(
           "We coordinate your long-distance move with verified movers, a guaranteed flat rate, and full support from start to finish. You only pay after approval. Ready to start your quote?",
           1,
-          ["Texas", "California", "New York", "Other"]
+          ["Texas", "California", "New York", "Other (type)"]
         );
       }
       if (!session.data.originState) {
@@ -74,9 +73,9 @@ Where are you moving from?`,
     case 1.5:
       if (!session.data.originCity) {
         session.data.originCity = userInput;
-        return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other"]);
+        return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other (type)"]);
       } else {
-        return reply("You've already provided the origin city. Let's move on.", 2, ["Texas", "California", "Arizona", "Other"]);
+        return reply("You've already provided the origin city. Let's move on.", 2, ["Texas", "California", "Arizona", "Other (type)"]);
       }
 
     case 2:
@@ -120,7 +119,7 @@ Where are you moving from?`,
 
     case 7:
       session.data.specialItems = userInput;
-      return reply("What is the reason for your move?", 8, ["Job", "Family", "Fresh start", "Other"]);
+      return reply("", 8, ["Job", "Family", "Fresh start", "Other"]);
 
     case 8:
       session.data.reason = userInput;
@@ -203,6 +202,6 @@ ${estimate}
       return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
 
     default:
-      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other", "📖 How It Works"]);
+      return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other (type)", "📖 How It Works"]);
   }
 }
