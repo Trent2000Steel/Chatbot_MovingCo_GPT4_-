@@ -118,18 +118,12 @@ Where are you moving from?`,
       session.data.helpType = userInput;
       return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
 
-    case 7:
-      session.data.specialItems = userInput;
-      return reply("What is the reason for your move?", 8, ["Job", "Family", "Fresh start", "Other"]);
 
-    case 8:
-      session.data.reason = userInput;
       const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
 🏠 Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems}
-💬 Reason: ${session.data.reason}`;
       return reply(`Here is what I'm preparing your quote on:
 ${recap}
 ✅ Ready?`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
