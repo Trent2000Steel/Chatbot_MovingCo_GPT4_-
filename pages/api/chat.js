@@ -146,15 +146,19 @@ Where are you moving from?`,
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
         await reply("⏳ Calculating your quote...", session.phase);
-        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
+        await reply("⏳ Calculating your quote...", session.phase);
+await new Promise(resolve => setTimeout(resolve, 800));
+const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
 Details: ${JSON.stringify(session.data)}`;
 
-        const quoteCompletion = await openai.chat.completions.create({
-          model: 'gpt-4',
-          messages: [{ role: 'system', content: quotePrompt }],
-        });
-
-        const estimate = quoteCompletion.choices[0].message.content.trim();
+const quoteCompletion = await openai.chat.completions.create({
+  model: 'gpt-4',
+  messages: [{ role: 'system', content: quotePrompt }],
+});
+const estimate = quoteCompletion.choices[0].message.content.trim();
+return reply(`📝 Official Estimate
+${estimate}
+✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
         await reply("⏳ Calculating your quote...", session.phase);
         return reply(`📝 Official Estimate
 ${estimate}
