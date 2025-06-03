@@ -7,6 +7,7 @@ export default function Home() {
   const [sessionId, setSessionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [clickedButtons, setClickedButtons] = useState([]);
+  const [clickedButtons, setClickedButtons] = useState([]);
   const messagesEndRef = useRef(null);
 
   const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -50,6 +51,7 @@ export default function Home() {
   };
 
   const handleButtonClick = (btnText) => {
+    setClickedButtons((prev) => [...prev, btnText]);
     setClickedButtons((prev) => [...prev, btnText]);
     sendMessage(btnText);
   };
@@ -126,8 +128,8 @@ export default function Home() {
               >
                 {btn}
               </button>
-            ))}
-          </div>
+                );
+              })          </div>
         )}
       </div>
     );
