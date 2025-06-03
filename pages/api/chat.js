@@ -95,7 +95,11 @@ Where are you moving from?`,
         return reply("You've already provided the destination city. Let's continue.", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
       }
 
-    case 4:
+        case 3:
+      session.data.spaceType = userInput;
+      return reply("How many bedrooms or unit size?", 4, ["1", "2", "3", "4+"]);
+
+case 4:
       session.data.sizeDetail = userInput;
       return reply("Do you know your move date?", 5, ["📅 I Know My Date", "🤷‍♂️ Not Sure Yet"]);
 
