@@ -56,6 +56,7 @@ Where are you moving from?`,
 
   switch (session.phase) {
     case 1:
+      if (userInput === "Other") return reply("Got it — please type the state you’re moving from:", 1);
       if (userInput.includes("How It Works")) {
         return reply(
           "We coordinate your long-distance move with verified movers, a guaranteed flat rate, and full support from start to finish. You only pay after approval. Ready to start your quote?",
@@ -63,13 +64,7 @@ Where are you moving from?`,
           ["Texas", "California", "New York", "Other"]
         );
       }
-      if (userInput === "Other") {
-        return reply("No problem — just type your state below.", 1);
-    }
-    if (userInput === "Other") {
-        return reply("No problem — just type your state below.", 1);
-    }
-    if (!session.data.originState) {
+      if (!session.data.originState) {
         session.data.originState = userInput;
         return reply("Great! What’s the city you’re moving from?", 1.5);
       } else {
@@ -85,13 +80,7 @@ Where are you moving from?`,
       }
 
     case 2:
-      if (userInput === "Other") {
-        return reply("Got it — what state are you moving to?", 2);
-    }
-    if (userInput === "Other") {
-        return reply("Got it — what state are you moving to?", 2);
-    }
-    if (!session.data.destinationState) {
+      if (!session.data.destinationState) {
         session.data.destinationState = userInput;
         return reply("And what’s the city you’re moving to?", 2.5);
       } else {
@@ -131,38 +120,37 @@ Where are you moving from?`,
 
     case 7:
       session.data.specialItems = userInput;
-      
+      return reply("What is the reason for your move?", 8, ["Job", "Family", "Fresh start", "Other"]);
+
+    case 8:
+      session.data.reason = userInput;
+      const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+🏠 Space: ${session.data.sizeDetail}
+📅 Move Date: ${session.data.moveDate}
+💪 Help: ${session.data.helpType}
+🛡️ Special Items: ${session.data.specialItems}
+💬 Reason: ${session.data.reason}`;
+      return reply(`Here is what I'm preparing your quote on:
+${recap}
+✅ Ready?`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
 
     case 9:
       if (userInput.toLowerCase().includes("update")) {
-        session.phase = "update_pending";
-        return reply("No problem! What would you like to change or update?", "update_pending");
-    }
-        session.phase = "update_pending";
-        return reply("No problem! What would you like to change or update?", "update_pending");
-    }
         return reply("No problem! What would you like to change or update?", 1);
       }
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        await reply("⏳ Calculating your quote...", session.phase);
-        await reply("⏳ Calculating your quote...", session.phase);
-await new Promise(resolve => setTimeout(resolve, 800));
-const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
+        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
 Details: ${JSON.stringify(session.data)}`;
 
-const quoteCompletion = await openai.chat.completions.create({
-  model: 'gpt-4',
-  messages: [{ role: 'system', content: quotePrompt }],
-});
-const estimate = quoteCompletion.choices[0].message.content.trim();
-return reply(`📝 Official Estimate
-${estimate}
-✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
-        await reply("⏳ Calculating your quote...", session.phase);
+        const quoteCompletion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: [{ role: 'system', content: quotePrompt }],
+        });
+
+        const estimate = quoteCompletion.choices[0].message.content.trim();
         return reply(`📝 Official Estimate
 ${estimate}
-✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
+✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
       } catch (error) {
         console.error('GPT quote error:', error);
         return reply("Sorry, something went wrong generating your estimate. Please try again.", 9);
@@ -213,30 +201,6 @@ ${estimate}
       session.data.dropoff = userInput;
       const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
-
-    
-    case "update_pending":
-      const updateInput = userInput.toLowerCase();
-      if (updateInput.includes("date")) session.data.moveDate = userInput;
-      else if (updateInput.includes("city") || updateInput.includes("from")) session.data.originCity = userInput;
-      else if (updateInput.includes("to")) session.data.destinationCity = userInput;
-      else if (updateInput.includes("size") || updateInput.includes("bedroom")) session.data.sizeDetail = userInput;
-      else if (updateInput.includes("help")) session.data.helpType = userInput;
-      else if (updateInput.includes("item")) session.data.specialItems = userInput;
-      session.phase = 9;
-      return reply("Got it — I've updated your info. Recalculating now…", 9);
-
-    
-    case "update_pending":
-      const updateInput = userInput.toLowerCase();
-      if (updateInput.includes("date")) session.data.moveDate = userInput;
-      else if (updateInput.includes("city") || updateInput.includes("from")) session.data.originCity = userInput;
-      else if (updateInput.includes("to")) session.data.destinationCity = userInput;
-      else if (updateInput.includes("size") || updateInput.includes("bedroom")) session.data.sizeDetail = userInput;
-      else if (updateInput.includes("help")) session.data.helpType = userInput;
-      else if (updateInput.includes("item")) session.data.specialItems = userInput;
-      session.phase = 9;
-      return reply("Got it — I've updated your info. Recalculating now…", 9);
 
     default:
       return reply("Hmm, looks like we got a bit mixed up. Let's start fresh -- where are you moving from?", 1, ["Texas", "California", "New York", "Other", "📖 How It Works"]);
