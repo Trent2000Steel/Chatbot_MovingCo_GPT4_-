@@ -118,6 +118,20 @@ case 4:
       session.data.helpType = userInput;
       return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
 
+    
+    case 7:
+      session.data.specialItems = userInput;
+      return reply(`Here is what I'm preparing your quote on:
+📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+🏠 Space: ${session.data.sizeDetail}
+📅 Move Date: ${session.data.moveDate || "Not specified"}
+💪 Help: ${session.data.helpType}
+🛡️ Special Items: ${session.data.specialItems || "None"}
+✅ Ready?`, 9, [
+        "✅ Yes, Show Me My Estimate",
+        "✏️ Wait, I Need to Update Something"
+      ]);
+
     case 9:
       return reply(`Here is what I'm preparing your quote on:\n📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}\n🏠 Space: ${session.data.sizeDetail}\n📅 Move Date: ${session.data.moveDate || "Not specified"}\n💪 Help: ${session.data.helpType}\n🛡️ Special Items: ${session.data.specialItems || "None"}\n✅ Ready?`, 9, [
         "✅ Yes, Show Me My Estimate",
