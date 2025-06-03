@@ -135,31 +135,6 @@ export default function Home() {
             })}
           </div>
         )}
-          <div style={{ marginTop: "8px" }}>
-            {msg.buttons.map((btn, bIdx) => (
-              <button
-                key={bIdx}
-                onClick={() => handleButtonClick(btn)}
-                style={{
-                  marginRight: "8px",
-                  marginTop: "4px",
-                  padding: "6px 12px",
-                  borderRadius: "6px",
-                  border: "none",
-                  background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
-                  transition: "transform 0.1s",
-                }}
-                onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
-                onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
-                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-              >
-                {btn}
-              </button>
-            ))}
         )}
       </div>
     );
