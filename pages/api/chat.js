@@ -115,11 +115,15 @@ Where are you moving from?`,
       return reply("Will you need help with loading and unloading?", 6, ["Load only", "Unload only", "Both"]);
 
     case 6:
-      return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
+      session.data.helpType = userInput;
       return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
 
+    case 7:
+      session.data.specialItems = userInput;
       return reply("What is the reason for your move?", 8, ["Job", "Family", "Fresh start", "Other"]);
 
+    case 8:
+      session.data.reason = userInput;
       const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
 🏠 Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
@@ -129,13 +133,6 @@ Where are you moving from?`,
       return reply(`Here is what I'm preparing your quote on:
 ${recap}
 ✅ Ready?`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
-
-    case 7:
-      session.data.specialItems = userInput;
-      return reply("Thanks! That helps. Ready for your quote?", 9, [
-        "✅ Yes, Show Me My Estimate",
-        "✏️ Wait, I Need to Update Something",
-      ]);
 
     case 9:
       if (userInput.toLowerCase().includes("update")) {
