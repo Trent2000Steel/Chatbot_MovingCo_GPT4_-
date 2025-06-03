@@ -1,3 +1,7 @@
+// SYSTEM GUARDRAIL: Avoid promising insurance, refunds, or guaranteed outcomes.
+// Focus on verified coordination, flat-rate quotes after review, and optional damage reimbursement—not protection.
+// Keep answers short, professional, and sales psychology driven.
+
 
 import OpenAI from 'openai';
 
