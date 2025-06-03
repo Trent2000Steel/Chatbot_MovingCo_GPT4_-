@@ -6,6 +6,7 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [clickedButtons, setClickedButtons] = useState([]);
   const messagesEndRef = useRef(null);
 
   const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -49,6 +50,7 @@ export default function Home() {
   };
 
   const handleButtonClick = (btnText) => {
+    setClickedButtons((prev) => [...prev, btnText]);
     sendMessage(btnText);
   };
 
@@ -100,10 +102,11 @@ export default function Home() {
         )}
         {msg.buttons && (
           <div style={{ marginTop: "8px" }}>
-            {msg.buttons.map((btn, bIdx) => (
+            {msg.buttons.map((btn, bIdx) => {
+              const isDisabled = clickedButtons.includes(btn); (
               <button
                 key={bIdx}
-                onClick={() => handleButtonClick(btn)}
+                onClick={() => !isDisabled && handleButtonClick(btn)} disabled={isDisabled}
                 style={{
                   marginRight: "8px",
                   marginTop: "4px",
@@ -112,7 +115,7 @@ export default function Home() {
                   border: "none",
                   background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
                   color: "#fff",
-                  cursor: "pointer",
+                  cursor: isDisabled ? "not-allowed" : "pointer", opacity: isDisabled ? 0.5 : 1,
                   fontSize: "14px",
                   boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
                   transition: "transform 0.1s",
