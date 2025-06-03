@@ -145,8 +145,8 @@ Details: ${JSON.stringify(session.data)}`;
         });
 
         const estimate = quoteCompletion.choices[0].message.content.trim();
-        return reply("⏳ Calculating your quote...")
-          .then(() => reply(`📝 Official Estimate
+        await reply("⏳ Calculating your quote...", session.phase);
+        return reply(`📝 Official Estimate
 ${estimate}
 ✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
       } catch (error) {
