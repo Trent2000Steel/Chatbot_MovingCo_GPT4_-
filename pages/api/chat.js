@@ -132,31 +132,42 @@ case 4:
         "✏️ Wait, I Need to Update Something"
       ]);
 
+    
     case 9:
-      return reply(`Here is what I'm preparing your quote on:\n📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}\n🏠 Space: ${session.data.sizeDetail}\n📅 Move Date: ${session.data.moveDate || "Not specified"}\n💪 Help: ${session.data.helpType}\n🛡️ Special Items: ${session.data.specialItems || "None"}\n✅ Ready?`, 9, [
+      if (userInput.includes("Update") || userInput.toLowerCase().includes("update")) {
+        return reply("No problem! What would you like to change or update?", 1);
+      }
+
+      if (userInput.includes("Yes")) {
+        try {
+          const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
+Details: ${JSON.stringify(session.data)}`;
+
+          const quoteCompletion = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [{ role: 'system', content: quotePrompt }],
+          });
+
+          const estimate = quoteCompletion.choices[0].message.content.trim();
+          return reply(`📝 Official Estimate
+${estimate}
+✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
+        } catch (error) {
+          console.error('GPT quote error:', error);
+          return reply("Sorry, something went wrong generating your estimate. Please try again.", 9);
+        }
+      }
+
+      return reply(`Here is what I'm preparing your quote on:
+📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+🏠 Space: ${session.data.sizeDetail}
+📅 Move Date: ${session.data.moveDate || "Not specified"}
+💪 Help: ${session.data.helpType}
+🛡️ Special Items: ${session.data.specialItems || "None"}
+✅ Ready?`, 9, [
         "✅ Yes, Show Me My Estimate",
         "✏️ Wait, I Need to Update Something"
       ]);
-      if (userInput.toLowerCase().includes("update")) {
-        return reply("No problem! What would you like to change or update?", 1);
-      }
-      try {
-        const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
-Details: ${JSON.stringify(session.data)}`;
-
-        const quoteCompletion = await openai.chat.completions.create({
-          model: 'gpt-4',
-          messages: [{ role: 'system', content: quotePrompt }],
-        });
-
-        const estimate = quoteCompletion.choices[0].message.content.trim();
-        return reply(`📝 Official Estimate
-${estimate}
-✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
-      } catch (error) {
-        console.error('GPT quote error:', error);
-        return reply("Sorry, something went wrong generating your estimate. Please try again.", 9);
-      }
 
     case 10:
       if (userInput.includes("I Have More Questions")) {
