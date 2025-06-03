@@ -132,7 +132,7 @@ case 4:
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems || "None"}
 ✅ Ready?`, 9, [
-        "✅ Yes, Show Me My Estimate",
+        "✅ Run My Estimate",
         "✏️ Wait, I Need to Update Something"
       ]);
 
@@ -169,7 +169,7 @@ ${estimate}
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems || "None"}
 ✅ Ready?`, 9, [
-        "✅ Yes, Show Me My Estimate",
+        "✅ Run My Estimate",
         "✏️ Wait, I Need to Update Something"
       ]);
 
