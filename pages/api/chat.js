@@ -95,10 +95,6 @@ Where are you moving from?`,
         return reply("You've already provided the destination city. Let's continue.", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
       }
 
-    case 3:
-      session.data.spaceType = userInput;
-      return reply("How many bedrooms or unit size?", 4, ["1", "2", "3", "4+"]);
-
     case 4:
       session.data.sizeDetail = userInput;
       return reply("Do you know your move date?", 5, ["📅 I Know My Date", "🤷‍♂️ Not Sure Yet"]);
@@ -118,12 +114,8 @@ Where are you moving from?`,
       session.data.helpType = userInput;
       return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
 
-    case 7:
-      session.data.specialItems = userInput;
       return reply("What is the reason for your move?", 8, ["Job", "Family", "Fresh start", "Other"]);
 
-    case 8:
-      session.data.reason = userInput;
       const recap = `📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
 🏠 Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate}
@@ -134,11 +126,11 @@ Where are you moving from?`,
 ${recap}
 ✅ Ready?`, 9, ["✅ Yes, Show Me My Estimate", "✏️ Wait, I Need to Update Something"]);
 
-    case 7:
-      session.data.specialItems = userInput;
-      return reply(`Thanks! Let me confirm what we’ve got and prepare your quote…`, 9);
-
     case 9:
+      return reply(`Here is what I'm preparing your quote on:\n📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}\n🏠 Space: ${session.data.sizeDetail}\n📅 Move Date: ${session.data.moveDate || "Not specified"}\n💪 Help: ${session.data.helpType}\n🛡️ Special Items: ${session.data.specialItems || "None"}\n✅ Ready?`, 9, [
+        "✅ Yes, Show Me My Estimate",
+        "✏️ Wait, I Need to Update Something"
+      ]);
       if (userInput.toLowerCase().includes("update")) {
         return reply("No problem! What would you like to change or update?", 1);
       }
