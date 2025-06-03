@@ -7,7 +7,6 @@ export default function Home() {
   const [sessionId, setSessionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [clickedButtons, setClickedButtons] = useState([]);
-  const [clickedButtons, setClickedButtons] = useState([]);
   const messagesEndRef = useRef(null);
 
   const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -51,7 +50,6 @@ export default function Home() {
   };
 
   const handleButtonClick = (btnText) => {
-    setClickedButtons((prev) => [...prev, btnText]);
     setClickedButtons((prev) => [...prev, btnText]);
     sendMessage(btnText);
   };
@@ -103,12 +101,42 @@ export default function Home() {
           </div>
         )}
         {msg.buttons && (
+              <div style={{ marginTop: "8px" }}>
+                {msg.buttons.map((btn, bIdx) => {
+                  const isDisabled = clickedButtons.includes(btn);
+                  return (
+                    <button
+                      key={bIdx}
+                      onClick={() => !isDisabled && handleButtonClick(btn)}
+                      disabled={isDisabled}
+                      style={{
+                        marginRight: "8px",
+                        marginTop: "4px",
+                        padding: "6px 12px",
+                        borderRadius: "6px",
+                        border: "none",
+                        background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
+                        color: "#fff",
+                        cursor: isDisabled ? "not-allowed" : "pointer",
+                        opacity: isDisabled ? 0.5 : 1,
+                        fontSize: "14px",
+                        boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
+                        transition: "transform 0.1s",
+                      }}
+                      onMouseDown={(e) => e.currentTarget.style.transform = "scale(0.95)"}
+                      onMouseUp={(e) => e.currentTarget.style.transform = "scale(1)"}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    >
+                      {btn}
+                    </button>
+                  );
+                })}
+              </div>
           <div style={{ marginTop: "8px" }}>
-            {msg.buttons.map((btn, bIdx) => {
-              const isDisabled = clickedButtons.includes(btn); (
+            {msg.buttons.map((btn, bIdx) => (
               <button
                 key={bIdx}
-                onClick={() => !isDisabled && handleButtonClick(btn)} disabled={isDisabled}
+                onClick={() => handleButtonClick(btn)}
                 style={{
                   marginRight: "8px",
                   marginTop: "4px",
@@ -117,7 +145,7 @@ export default function Home() {
                   border: "none",
                   background: btn.includes("How It Works") ? "#6c757d" : "#0d6efd",
                   color: "#fff",
-                  cursor: isDisabled ? "not-allowed" : "pointer", opacity: isDisabled ? 0.5 : 1,
+                  cursor: "pointer",
                   fontSize: "14px",
                   boxShadow: "0 6px 12px rgba(0,0,0,0.3)",
                   transition: "transform 0.1s",
@@ -128,8 +156,7 @@ export default function Home() {
               >
                 {btn}
               </button>
-                );
-              })          </div>
+            ))}
         )}
       </div>
     );
