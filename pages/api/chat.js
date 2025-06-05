@@ -172,6 +172,7 @@ ${estimate}
             return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
 
     
+
 case "gpt_rebuttal":
   if (!session.data.rebuttalCount) session.data.rebuttalCount = 1;
   else session.data.rebuttalCount++;
@@ -186,11 +187,12 @@ case "gpt_rebuttal":
   }
 
   try {
-    const chatPrompt = `You are a MovingCo sales rep. Keep responses brief (1–2 sentences), calm, and helpful. Do not offer insurance, refunds, or guarantees. Avoid promising things like complete safety, specific timing, or full-value coverage. You coordinate moves with verified movers and help customers understand next steps. Stay professional and liability-safe. Always invite the customer to book or continue with their reservation.`;
+    const chatPrompt = `You are a MovingCo sales rep. Respond in 2–3 complete sentences, focused on building trust and guiding the customer toward reserving. Never promise insurance, guarantees, refunds, or timing. If asked about damage or protection, explain that MovingCo offers optional Premium Move Coverage™—a limited reimbursement program for pre-declared items, not insurance. Avoid the words ‘insured,’ ‘covered,’ or ‘guaranteed.’ Clarify that MovingCo is not a moving company, carrier, or broker—we coordinate with verified, licensed movers. Do not claim to be bonded. If asked about delays, emphasize coordination and support, but never promise timing or compensation. Always invite the customer to continue with their reservation.`;
 
     const rebuttalCompletion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
+      max_tokens: 120
     });
 
     const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
