@@ -173,6 +173,7 @@ ${estimate}
 
     
 
+
 case "gpt_rebuttal":
   if (!session.data.rebuttalCount) session.data.rebuttalCount = 1;
   else session.data.rebuttalCount++;
@@ -187,12 +188,24 @@ case "gpt_rebuttal":
   }
 
   try {
-    const chatPrompt = `You are a MovingCo sales rep. Respond in 2–3 complete sentences, focused on building trust and guiding the customer toward reserving. Never promise insurance, guarantees, refunds, or timing. If asked about damage or protection, explain that MovingCo offers optional Premium Move Coverage™—a limited reimbursement program for pre-declared items, not insurance. Avoid the words ‘insured,’ ‘covered,’ or ‘guaranteed.’ Clarify that MovingCo is not a moving company, carrier, or broker—we coordinate with verified, licensed movers. Do not claim to be bonded. If asked about delays, emphasize coordination and support, but never promise timing or compensation. Always invite the customer to continue with their reservation.`;
+    const chatPrompt = `You are a MovingCo sales rep. Respond in 2–3 complete sentences, focused on building trust and guiding the customer toward reserving. Never promise insurance, guarantees, refunds, or timing. If asked about damage or protection, explain that MovingCo offers optional Premium Move Coverage™—a limited reimbursement program for pre-declared items, not insurance. Avoid the words ‘insured,’ ‘covered,’ or ‘guaranteed.’ Clarify that MovingCo is not a moving company, carrier, or broker—we coordinate moves with verified movers. Do not claim to be bonded. If asked about delays, emphasize coordination and support, but never promise timing or compensation. Always invite the customer to continue with their reservation.`;
+
+    const moveSummary = `
+Customer is moving from ${session.data.originCity}, ${session.data.originState} to ${session.data.destinationCity}, ${session.data.destinationState}.
+Size: ${session.data.sizeDetail || "Not specified"}.
+Move date: ${session.data.moveDate || "Not specified"}.
+Help type: ${session.data.helpType || "Not specified"}.
+Estimate given: ${session.data.estimate || "Not yet generated"}.
+`;
 
     const rebuttalCompletion = await openai.chat.completions.create({
       model: 'gpt-4',
-      messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
-      max_tokens: 120
+      messages: [
+        { role: 'system', content: chatPrompt },
+        { role: 'assistant', content: moveSummary.trim() },
+        { role: 'user', content: userInput }
+      ],
+      max_tokens: 180
     });
 
     const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
