@@ -127,22 +127,11 @@ case 4:
     
     case 7:
       session.data.specialItems = userInput;
-      return reply(`Here is what I'm preparing your quote on:
-📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
-🏠 Space: ${session.data.sizeDetail}
-📅 Move Date: ${session.data.moveDate || "Not specified"}
-💪 Help: ${session.data.helpType}
-🛡️ Special Items: ${session.data.specialItems || "None"}
-✅ Ready?`, 9, [
-        "✅ Run My Estimate",
-        "✏️ Wait, I Need to Update Something"
-      ]);
+      return reply("Ready for your estimate?", 9, ["✅ Run My Estimate"]);
 
     
     case 9:
-      if (userInput.includes("Update") || userInput.toLowerCase().includes("update")) {
-        return reply("No problem! What would you like to change or update?", 1);
-      }
+      
 
       if (true) {  // Trigger quote on any input
         try {
@@ -165,16 +154,7 @@ ${estimate}
         }
       }
 
-      return reply(`Here is what I'm preparing your quote on:
-📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
-🏠 Space: ${session.data.sizeDetail}
-📅 Move Date: ${session.data.moveDate || "Not specified"}
-💪 Help: ${session.data.helpType}
-🛡️ Special Items: ${session.data.specialItems || "None"}
-✅ Ready?`, 9, [
-        "✅ Run My Estimate",
-        "✏️ Wait, I Need to Update Something"
-      ]);
+      return reply("Ready for your estimate?", 9, ["✅ Run My Estimate"]);
 
     case 10:
       if (userInput.includes("I Have More Questions")) {
