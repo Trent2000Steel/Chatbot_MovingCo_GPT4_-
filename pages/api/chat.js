@@ -134,11 +134,27 @@ case 4:
       return reply("Any special or fragile items (like TVs, pianos, artwork)?", 7);
 
     
-    case 7:
-      session.data.specialItems = userInput;
-      return reply("Ready for your estimate?", 9, ["✅ Run My Estimate"]);
-
     
+
+case 7:
+  session.data.specialItems = userInput;
+  
+  let spaceIcon = "🏠";
+  if (session.data.spaceType === "🏢 Apartment") spaceIcon = "🏢";
+  if (session.data.spaceType === "📦 Storage Unit") spaceIcon = "📦";
+  if (session.data.spaceType === "💼 Office") spaceIcon = "💼";
+
+  return reply(`Here’s what I’m preparing your quote on:
+
+📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
+{spaceIcon} Space: ${session.data.sizeDetail}
+📅 Move Date: ${session.data.moveDate || "Not specified"}
+💪 Help: ${session.data.helpType}
+🛡️ Special Items: ${session.data.specialItems || "None"}
+
+✅ Ready?`, 9, ["✅ Run My Estimate"]);
+
+
     case 9:
       
 
@@ -172,8 +188,6 @@ ${estimate}
             return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
 
     
-
-
 case "gpt_rebuttal":
   if (!session.data.rebuttalCount) session.data.rebuttalCount = 1;
   else session.data.rebuttalCount++;
@@ -188,27 +202,22 @@ case "gpt_rebuttal":
   }
 
   try {
-    const chatPrompt = `You are a MovingCo sales rep. Respond in 2–3 complete sentences, focused on building trust and guiding the customer toward reserving. Never promise insurance, guarantees, refunds, or timing. If asked about damage or protection, explain that MovingCo offers optional Premium Move Coverage™—a limited reimbursement program for pre-declared items, not insurance. Avoid the words ‘insured,’ ‘covered,’ or ‘guaranteed.’ Clarify that MovingCo is not a moving company, carrier, or broker—we coordinate moves with verified movers. Do not claim to be bonded. If asked about delays, emphasize coordination and support, but never promise timing or compensation. Always invite the customer to continue with their reservation.`;
-
-    const moveSummary = `
-Customer is moving from ${session.data.originCity}, ${session.data.originState} to ${session.data.destinationCity}, ${session.data.destinationState}.
-Size: ${session.data.sizeDetail || "Not specified"}.
-Move date: ${session.data.moveDate || "Not specified"}.
-Help type: ${session.data.helpType || "Not specified"}.
-Estimate given: ${session.data.estimate || "Not yet generated"}.
-`;
+    const chatPrompt = `You are a MovingCo sales rep. Keep responses brief (1–2 sentences), calm, and helpful. Do not offer insurance, refunds, or guarantees. Avoid promising things like complete safety, specific timing, or full-value coverage. You coordinate moves with verified movers and help customers understand next steps. Stay professional and liability-safe. Always invite the customer to book or continue with their reservation.`;
 
     const rebuttalCompletion = await openai.chat.completions.create({
       model: 'gpt-4',
-      messages: [
-        { role: 'system', content: chatPrompt },
-        { role: 'assistant', content: moveSummary.trim() },
-        { role: 'user', content: userInput }
-      ],
-      max_tokens: 180
+      messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
     });
 
     const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
+
+    const risky = ["insured", "insurance", "guaranteed", "covered", "we are insured", "we offer insurance", "we provide insurance"];
+    const riskyFound = risky.some(word => rebuttal.toLowerCase().includes(word));
+
+    if (riskyFound) {
+      return reply("We coordinate with licensed movers and offer optional Premium Move Coverage™—a simple reimbursement option for declared items. You’ll get all the details during your MoveSafe Call.", 10, ["✅ Ready to Reserve"]);
+    }
+
     return reply(`${rebuttal}`, 10, ["✅ Ready to Reserve"]);
   } catch (error) {
     console.error('GPT rebuttal error:', error);
