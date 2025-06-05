@@ -76,6 +76,9 @@ Where are you moving from?`,
       }
 
     case 1.5:
+      if (userInput === "Other") {
+        return reply("Got it — please type the city you’re moving from:", 1.5);
+      }
       if (session.phase === 1.5) {
   session.data.originCity = userInput.trim();
   return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other"]);
@@ -86,6 +89,9 @@ Where are you moving from?`,
       }
 
     case 2:
+      if (userInput === "Other") {
+        return reply("Got it — please type the state you’re moving to:", 2);
+      }
       if (!session.data.destinationState) {
         session.data.destinationState = userInput;
         return reply("And what’s the city you’re moving to?", 2.5);
@@ -94,6 +100,9 @@ Where are you moving from?`,
       }
 
     case 2.5:
+      if (userInput === "Other") {
+        return reply("Got it — please type the city you’re moving to:", 2.5);
+      }
       if (!session.data.destinationCity) {
         session.data.destinationCity = userInput;
         return reply("Awesome! What type of space are you moving?", 3, ["🏢 Apartment", "📦 Storage Unit", "💼 Office", "🏠 Home"]);
@@ -147,7 +156,7 @@ Details: ${JSON.stringify(session.data)}`;
         session.data.estimate = estimate;
           return reply(`📝 Official Estimate
 ${estimate}
-✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
+✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
         } catch (error) {
           console.error('GPT quote error:', error);
           return reply("Sorry, something went wrong generating your estimate. Please try again.", 9);
@@ -160,26 +169,37 @@ ${estimate}
       if (userInput.includes("I Have More Questions")) {
         return reply("Sure! I'm here to answer anything — go ahead and type your question.", "gpt_rebuttal");
       }
-      if (userInput.toLowerCase().includes("learn")) {
-        return reply(`We coordinate every part of your long-distance move -- loading, safe transport, unloading (packing is excluded unless specifically arranged). Place a small deposit today, send us photos, and we finalize your flat rate on a live Move Review Call.`, 10);
-      }
-      return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
+            return reply("Great! To reserve your move, we collect a fully refundable $85 deposit. What is your full name?", 11);
 
-    case "gpt_rebuttal":
-      try {
-        const chatPrompt = `You are a MovingCo sales agent. The customer has additional questions or concerns. Answer calmly, helpfully, and professionally, and invite them back to complete their reservation when ready.`;
+    
+case "gpt_rebuttal":
+  if (!session.data.rebuttalCount) session.data.rebuttalCount = 1;
+  else session.data.rebuttalCount++;
 
-        const rebuttalCompletion = await openai.chat.completions.create({
-          model: 'gpt-4',
-          messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
-        });
+  const lowerQ = userInput.toLowerCase();
+  if (lowerQ.includes("email") || lowerQ.includes("quote") || lowerQ.includes("summary") || lowerQ.includes("call")) {
+    return reply("Our pricing updates daily to stay competitive, so we don’t send quote summaries. Everything is handled live here—just return anytime to restart your move.", 10, ["✅ Ready to Reserve"]);
+  }
 
-        const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
-        return reply(`${rebuttal}`, 10, ["✅ Ready to Reserve", "❌ I'm Not Ready Yet"]);
-      } catch (error) {
-        console.error('GPT rebuttal error:', error);
-        return reply("Sorry, something went wrong answering that. Please try again.", "gpt_rebuttal");
-      }
+  if (session.data.rebuttalCount > 5) {
+    return reply("That’s all I can cover here in chat—thanks for talking it through! You can lock in your move now and go over the rest during your MoveSafe Call.", 10, ["✅ Ready to Reserve"]);
+  }
+
+  try {
+    const chatPrompt = `You are a MovingCo sales rep. Keep responses brief (1–2 sentences), calm, and helpful. Do not offer insurance, refunds, or guarantees. Avoid promising things like complete safety, specific timing, or full-value coverage. You coordinate moves with verified movers and help customers understand next steps. Stay professional and liability-safe. Always invite the customer to book or continue with their reservation.`;
+
+    const rebuttalCompletion = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [{ role: 'system', content: chatPrompt }, { role: 'user', content: userInput }],
+    });
+
+    const rebuttal = rebuttalCompletion.choices[0].message.content.trim();
+    return reply(`${rebuttal}`, 10, ["✅ Ready to Reserve"]);
+  } catch (error) {
+    console.error('GPT rebuttal error:', error);
+    return reply("Sorry, something went wrong answering that. Please try again.", "gpt_rebuttal");
+  }
+
 
     case 11:
       session.data.name = userInput;
