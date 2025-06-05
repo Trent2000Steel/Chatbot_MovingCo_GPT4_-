@@ -1,40 +1,51 @@
+import Link from 'next/link';
+
 export default function ThankYou() {
   return (
     <div style={{
-      backgroundColor: "#f4f4f4",
-      padding: "60px 24px",
-      fontFamily: '"Inter", "Segoe UI", "Helvetica Neue", sans-serif',
-      minHeight: "100vh"
+      background: 'linear-gradient(to bottom right, #f9fbff, #eef2f7)',
+      minHeight: '100vh',
+      padding: '40px 20px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      fontFamily: '"Inter", sans-serif',
     }}>
       <div style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "12px",
-        maxWidth: "600px",
-        margin: "0 auto",
-        padding: "40px 32px",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
-        textAlign: "center",
-        border: "1px solid #e0e0e0"
+        background: '#fff',
+        borderRadius: '16px',
+        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.1)',
+        padding: '48px',
+        maxWidth: '500px',
+        width: '100%',
+        textAlign: 'center',
+        border: '1px solid #e1e8f0',
       }}>
-        <div style={{ fontSize: "64px", marginBottom: "24px", color: "#28a745" }}>✅</div>
-        <h1 style={{ fontSize: "30px", marginBottom: "16px", color: "#222" }}>You're Booked</h1>
-        <p style={{ fontSize: "17px", marginBottom: "24px", color: "#444" }}>
-          Thanks for placing your $85 deposit. Your move has been reserved and added to our calendar.
+        <div style={{
+          fontSize: '56px',
+          color: '#3ccf55',
+          marginBottom: '24px',
+        }}>
+          ✅
+        </div>
+        <h1 style={{ fontSize: '28px', marginBottom: '12px', color: '#111' }}>You're Booked</h1>
+        <p style={{ fontSize: '16px', color: '#444', marginBottom: '32px' }}>
+          Thanks for placing your <strong>$85 deposit</strong>. Your move has been reserved and added to our calendar.
         </p>
-        <h3 style={{ fontSize: "20px", marginBottom: "8px", color: "#111" }}>Next Step</h3>
-        <p style={{ fontSize: "16px", color: "#555" }}>
-          A MoveSafe Coordinator will call you within 48 hours. We’ll walk through your move and next steps together.
+        <h3 style={{ fontSize: '18px', marginBottom: '12px', color: '#0d6efd' }}>Next Step</h3>
+        <p style={{ fontSize: '15px', color: '#444', marginBottom: '36px' }}>
+          A MoveSafe Coordinator will call you within 48 hours. We’ll walk through your move and plan the next steps together.
         </p>
-        <footer style={{ marginTop: "40px", fontSize: "13px", color: "#999" }}>
-          <p>
-            Questions? Email <a href="mailto:support@trustmovingco.com" style={{ color: "#0d6efd" }}>support@trustmovingco.com</a>
-          </p>
-          <p style={{ marginTop: "8px" }}>
-            <a href="/terms" style={{ color: "#666", marginRight: "10px" }}>Terms</a> ·
-            <a href="/refund-policy" style={{ color: "#666", margin: "0 10px" }}>Refund Policy</a> ·
-            <a href="/service-agreement" style={{ color: "#666", marginLeft: "10px" }}>Service Agreement</a>
-          </p>
-        </footer>
+
+        <div style={{ fontSize: '14px', marginBottom: '24px' }}>
+          Questions? Email <a href="mailto:support@trustmovingco.com" style={{ color: '#0d6efd' }}>support@trustmovingco.com</a>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', fontSize: '14px' }}>
+          <Link href="/terms" style={{ color: '#555', textDecoration: 'underline' }}>Terms</Link>
+          <Link href="/refund-policy" style={{ color: '#555', textDecoration: 'underline' }}>Refund Policy</Link>
+          <Link href="/service-agreement" style={{ color: '#555', textDecoration: 'underline' }}>Service Agreement</Link>
+        </div>
       </div>
     </div>
   );
