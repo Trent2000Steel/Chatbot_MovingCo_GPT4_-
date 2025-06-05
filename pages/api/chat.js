@@ -216,6 +216,35 @@ ${estimate}
 
     case 15:
       session.data.dropoff = userInput;
+
+      // 🛎️ Send Telegram alert before Stripe link
+      try {
+        const response = await fetch('https://trustmovingco.com/api/send-telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: session.data.name,
+            email: session.data.email,
+            phone: session.data.phone,
+            moveDate: session.data.moveDate || "Not specified",
+            origin: session.data.originCity + ", " + session.data.originState,
+            destination: session.data.destinationCity + ", " + session.data.destinationState,
+            size: session.data.sizeDetail,
+            specialItems: session.data.specialItems,
+            quote: session.data.estimate || "Not generated",
+            transcript: Object.entries(session.data).map(([key, val]) => `${key}: ${val}`).join("\n")
+          }),
+        });
+
+        if (!response.ok) {
+          console.error("Telegram alert failed");
+        }
+      } catch (err) {
+        console.error("Telegram alert error:", err);
+      }
+
+      
+      session.data.dropoff = userInput;
       const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       return reply(`💳 To reserve your move, please complete your $85 deposit using the button below.`, 999);
 
