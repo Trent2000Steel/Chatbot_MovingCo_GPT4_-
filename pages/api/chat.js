@@ -147,7 +147,7 @@ case 7:
   return reply(`Here’s what I’m preparing your quote on:
 
 📍 From: ${session.data.originCity}, ${session.data.originState} → ${session.data.destinationCity}, ${session.data.destinationState}
-{spaceIcon} Space: ${session.data.sizeDetail}
+${spaceIcon} Space: ${session.data.sizeDetail}
 📅 Move Date: ${session.data.moveDate || "Not specified"}
 💪 Help: ${session.data.helpType}
 🛡️ Special Items: ${session.data.specialItems || "None"}
