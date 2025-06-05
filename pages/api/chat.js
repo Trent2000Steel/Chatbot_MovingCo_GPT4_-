@@ -76,7 +76,9 @@ Where are you moving from?`,
       }
 
     case 1.5:
-      if (!session.data.originCity) {
+      if (phase === 1.5) {
+  session.data.originCity = userInput.trim();
+  return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other"]);
         session.data.originCity = userInput;
         return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other"]);
       } else {
