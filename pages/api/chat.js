@@ -76,7 +76,7 @@ Where are you moving from?`,
       }
 
     case 1.5:
-      if (phase === 1.5) {
+      if (session.phase === 1.5) {
   session.data.originCity = userInput.trim();
   return reply("Where are you moving to?", 2, ["Texas", "California", "Arizona", "Other"]);
         session.data.originCity = userInput;
@@ -144,7 +144,7 @@ case 4:
         return reply("No problem! What would you like to change or update?", 1);
       }
 
-      if (userInput.includes("Yes")) {
+      if (true) {  // Trigger quote on any input
         try {
           const quotePrompt = `You are a MovingCo sales agent. Based on the following customer details, generate a realistic, market-informed estimated moving cost range, similar to what top U.S. moving companies would provide. Exclude packing services unless explicitly requested. Lean slightly low to avoid sticker shock, but stay professional and credible. Only provide the price range and a one-sentence explanation.
 Details: ${JSON.stringify(session.data)}`;
@@ -155,6 +155,7 @@ Details: ${JSON.stringify(session.data)}`;
           });
 
           const estimate = quoteCompletion.choices[0].message.content.trim();
+        session.data.estimate = estimate;
           return reply(`📝 Official Estimate
 ${estimate}
 ✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "📖 Learn How It Works", "💬 I Have More Questions"]);
