@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 export const config = {
   api: {
-    bodyParser: false, // Stripe requires the raw body
+    bodyParser: false, // Required for raw Stripe body
   },
 };
 
@@ -19,27 +19,25 @@ export default async function handler(req, res) {
     return res.status(405).end('Method Not Allowed');
   }
 
-  const sig = req.headers['stripe-signature'];
   let event;
 
   try {
     const rawBody = await buffer(req);
-    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+    const signature = req.headers['stripe-signature'];
+
+    event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
   } catch (err) {
-    console.error('⚠️  Webhook signature verification failed.', err.message);
+    console.error('❌ Stripe webhook error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // 🔔 Handle the event
-  switch (event.type) {
-    case 'checkout.session.completed':
-      const session = event.data.object;
-      console.log('✅ Payment received for:', session.customer_email);
-      // TODO: Perform some action here (save to DB, notify, etc.)
-      break;
-
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+  // ✅ Handle the successful payment
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    console.log('✅ Payment received for:', session.customer_email);
+    // TODO: Add backend logic here (save to DB, send confirmation, etc.)
+  } else {
+    console.log(`Unhandled event type: ${event.type}`);
   }
 
   res.status(200).json({ received: true });
