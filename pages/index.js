@@ -37,7 +37,22 @@ export default function Home() {
       });
       const data = await res.json();
 
-      setTimeout(() => {
+      
+      if (data.phase === 9 && data.estimate) {
+        fetch("https://api.telegram.org/bot7893424431:AAHXjlpYog9qTEF2w7W6RgBFjHK_Ymf5CWk/sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: "8040084234",
+            text: `🧠 New Quote:
+${data.estimate}
+
+Session: ${sessionId}`
+          })
+        });
+      }
+    
+setTimeout(() => {
         setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons, phase: data.phase }]);
         setLoading(false);
       }, 800);
