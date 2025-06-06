@@ -170,6 +170,29 @@ Details: ${JSON.stringify(session.data)}`;
 
           const estimate = quoteCompletion.choices[0].message.content.trim();
         session.data.estimate = estimate;
+// 🛎️ Send Telegram alert when estimate is viewed
+try {
+  await fetch('https://trustmovingco.com/api/send-telegram-alert', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: session.data.name || "N/A",
+      email: session.data.email || "N/A",
+      phone: session.data.phone || "N/A",
+      moveDate: session.data.moveDate || "Not specified",
+      origin: `${session.data.originCity}, ${session.data.originState}`,
+      destination: `${session.data.destinationCity}, ${session.data.destinationState}`,
+      size: session.data.sizeDetail,
+      specialItems: session.data.specialItems || "None",
+      quote: estimate,
+      transcript: Object.entries(session.data).map(([key, val]) => `${key}: ${val}`).join("\n"),
+      stage: "Estimate Viewed"
+    }),
+  });
+} catch (err) {
+  console.error("Telegram alert (estimate) failed:", err);
+}
+
           return reply(`📝 Official Estimate
 ${estimate}
 ✅ Flat rate available after reservation + photo review.`, 10, ["✅ Reserve My Move", "💬 I Have More Questions"]);
