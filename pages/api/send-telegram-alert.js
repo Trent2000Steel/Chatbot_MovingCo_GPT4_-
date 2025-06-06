@@ -12,23 +12,30 @@ export default async function handler(req, res) {
     destination,
     size,
     specialItems,
-    quote
+    quote,
+    stage
   } = req.body;
 
-  const messageLines = [
-    "📬 New Move Inquiry",
-    "—",
-    `Name: ${name}`,
-    `Phone: ${phone}`,
-    `Email: ${email}`,
-    `Move Date: ${moveDate}`,
-    `From: ${origin}`,
-    `To: ${destination}`,
-    `Size: ${size}`,
-    `Special Items: ${specialItems}`,
-    "",
-    `💬 Quote: ${quote}`
-  ];
+  const isEstimate = stage === "Estimate Viewed";
+
+  const messageLines = [];
+
+  if (isEstimate) {
+    messageLines.push("📊 New Estimate Viewed", "—");
+  } else {
+    messageLines.push("✅ MOVE RESERVED!", "—");
+    if (name) messageLines.push(`👤 Name: ${name}`);
+    if (phone) messageLines.push(`📞 Phone: ${phone}`);
+    if (email) messageLines.push(`📧 Email: ${email}`);
+    messageLines.push(""); // spacing
+  }
+
+  if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
+  if (origin) messageLines.push(`📍 From: ${origin}`);
+  if (destination) messageLines.push(`📍 To: ${destination}`);
+  if (size) messageLines.push(`🏠 Size: ${size}`);
+  if (specialItems) messageLines.push(`🎯 Special Items: ${specialItems}`);
+  if (quote) messageLines.push(isEstimate ? `\n💬 Quote: ${quote}` : `\n💸 Accepted Quote: ${quote}`);
 
   const finalMessage = messageLines.join("\n");
 
