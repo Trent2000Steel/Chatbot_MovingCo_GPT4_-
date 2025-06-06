@@ -12,32 +12,23 @@ export default async function handler(req, res) {
     destination,
     size,
     specialItems,
-    quote,
-    stage
+    quote
   } = req.body;
 
-  const title = stage === "Estimate Viewed" ? "📊 New Estimate Viewed" : "📦 Move Reserved";
-
   const messageLines = [
-    `${title}`,
-    "—"
+    "📬 New Move Inquiry",
+    "—",
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Email: ${email}`,
+    `Move Date: ${moveDate}`,
+    `From: ${origin}`,
+    `To: ${destination}`,
+    `Size: ${size}`,
+    `Special Items: ${specialItems}`,
+    "",
+    `💬 Quote: ${quote}`
   ];
-
-  if (stage !== "Estimate Viewed") {
-    if (name) messageLines.push(`Name: ${name}`);
-    if (phone) messageLines.push(`Phone: ${phone}`);
-    if (email) messageLines.push(`Email: ${email}`);
-  }
-
-  if (moveDate) messageLines.push(`Move Date: ${moveDate}`);
-  if (origin) messageLines.push(`From: ${origin}`);
-  if (destination) messageLines.push(`To: ${destination}`);
-  if (size) messageLines.push(`Size: ${size}`);
-  if (specialItems) messageLines.push(`Special Items: ${specialItems}`);
-  if (quote) {
-    messageLines.push("");
-    messageLines.push(`💬 Quote: ${quote}`);
-  }
 
   const finalMessage = messageLines.join("\n");
 
@@ -52,8 +43,7 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
-        text: finalMessage,
-        parse_mode: 'Markdown'
+        text: finalMessage
       }),
     });
 
