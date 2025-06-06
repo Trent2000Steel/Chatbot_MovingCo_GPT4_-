@@ -34,7 +34,10 @@ export default async function handler(req, res) {
   if (destination) messageLines.push(`To: ${destination}`);
   if (size) messageLines.push(`Size: ${size}`);
   if (specialItems) messageLines.push(`Special Items: ${specialItems}`);
-  if (quote) messageLines.push(`\n💬 Quote: ${quote}`);
+  if (quote) {
+    messageLines.push("");
+    messageLines.push(`💬 Quote: ${quote}`);
+  }
 
   const finalMessage = messageLines.join("\n");
 
