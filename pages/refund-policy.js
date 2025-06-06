@@ -1,57 +1,36 @@
 export default function RefundPolicy() {
   return (
-    <div style={{
-      backgroundColor: "#f4f4f4",
-      padding: "60px 24px",
-      fontFamily: '"Inter", "Segoe UI", "Helvetica Neue", sans-serif',
-      minHeight: "100vh"
-    }}>
-      <div style={{
-        backgroundColor: "#ffffff",
-        borderRadius: "12px",
-        maxWidth: "800px",
-        margin: "0 auto",
-        padding: "40px 32px",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
-        border: "1px solid #e0e0e0"
-      }}>
-        <h1 style={{ fontSize: "28px", marginBottom: "24px", color: "#222" }}>Refund Policy</h1>
+    <div style={{ maxWidth: "700px", margin: "40px auto", padding: "0 20px", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>Refund Policy</h1>
 
-        <section style={{ marginBottom: "24px" }}>
-          <h2 style={{ fontSize: "20px", color: "#111" }}>1. $85 Deposit Refunds</h2>
-          <p>
-            Your $85 deposit is <strong>fully refundable</strong> up until you accept your flat-rate quote.
-            If you decide not to proceed after the MoveSafe Call, we’ll refund your deposit in full—no questions asked.
-          </p>
-          <p style={{ marginTop: "12px" }}>
-            Once you accept your flat rate and coordination begins, the deposit becomes <strong>non-refundable</strong>.
-          </p>
-        </section>
+      <p><strong>Effective Date:</strong> June 6, 2025</p>
 
-        <section style={{ marginBottom: "24px" }}>
-          <h2 style={{ fontSize: "20px", color: "#111" }}>2. What This Policy Covers</h2>
-          <p>
-            This refund policy only applies to the initial $85 booking deposit. It does not cover any additional payments,
-            such as packing supplies or third-party moving services.
-          </p>
-        </section>
+      <h2 style={{ marginTop: "24px", fontSize: "22px" }}>Deposit Refunds</h2>
+      <p>
+        All bookings with MovingCo require an $85 deposit to reserve your spot and secure a live MoveSafe™ Concierge Call.
+        This deposit is <strong>fully refundable</strong> if you choose not to proceed after the call.
+      </p>
+      <p>
+        If you cancel your booking <strong>before your MoveSafe™ Call</strong>, you will receive a full refund automatically within 3–5 business days.
+        If you complete the call but decide not to accept the flat-rate offer, you may request a full refund by replying to your confirmation email.
+      </p>
 
-        <section style={{ marginBottom: "24px" }}>
-          <h2 style={{ fontSize: "20px", color: "#111" }}>3. How to Request a Refund</h2>
-          <p>
-            To request a refund, email <a href="mailto:support@trustmovingco.com" style={{ color: "#0d6efd" }}>support@trustmovingco.com</a>
-            within 14 days of your original booking. Please include your name and the email address used at checkout.
-          </p>
-        </section>
+      <h2 style={{ marginTop: "24px", fontSize: "22px" }}>Post-Acceptance Policy</h2>
+      <p>
+        Once you accept the flat-rate offer and we begin shipping supplies or assigning movers, your deposit becomes non-refundable,
+        as resources have been allocated to your move.
+      </p>
 
-        <section>
-          <h2 style={{ fontSize: "20px", color: "#111" }}>4. Exceptions</h2>
-          <p>
-            We reserve the right to deny refunds in cases of fraud, false information, abuse of our booking system, or where significant
-            coordination work has already been performed prior to cancellation.
-          </p>
-        </section>
-      </div>
+      <h2 style={{ marginTop: "24px", fontSize: "22px" }}>Exchanges & Credits</h2>
+      <p>
+        MovingCo does not offer exchanges or store credit. However, you may reschedule your move at no additional cost up to 48 hours before your scheduled move date.
+      </p>
+
+      <h2 style={{ marginTop: "24px", fontSize: "22px" }}>Contact</h2>
+      <p>
+        For refund requests, please email us at <a href="mailto:support@trustmovingco.com">support@trustmovingco.com</a>
+        or reply directly to your confirmation message. We'll respond within 1–2 business days.
+      </p>
     </div>
   );
 }
