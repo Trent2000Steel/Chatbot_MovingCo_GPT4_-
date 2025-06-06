@@ -85,6 +85,11 @@ export default function ServiceAgreement() {
           <p style={{ marginTop: "10px" }}>
             If you purchase Premium Move Coverage™, it applies only to pre-declared items and within posted reimbursement limits.
           </p>
+          <p style={{ marginTop: "10px", fontStyle: "italic", color: "#555" }}>
+            Please note: Some responses on our site may be powered by artificial intelligence. 
+            While we aim to be helpful, AI may occasionally provide incorrect or outdated information. 
+            Your MoveSafe Coordinator will confirm all final terms and logistics during your scheduled call.
+          </p>
         </section>
 
         <section style={{ marginBottom: "24px" }}>
