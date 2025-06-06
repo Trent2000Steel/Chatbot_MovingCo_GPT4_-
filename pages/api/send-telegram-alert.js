@@ -1,8 +1,7 @@
-// pages/api/send-telegram-alert.js
-import axios from 'axios';
-
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
 
   const {
     name,
@@ -14,40 +13,50 @@ export default async function handler(req, res) {
     size,
     specialItems,
     quote,
-    transcript,
+    stage
   } = req.body;
 
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = '8040084234';
+  const title = stage === "Estimate Viewed" ? "📊 New Estimate Viewed" : "📦 Move Reserved";
 
-  const message = `
-📬 *New MovingCo Lead!*
-—
-*Name:* ${name}
-*Email:* ${email}
-*Phone:* ${phone}
-*Move Date:* ${moveDate}
-*From:* ${origin}
-*To:* ${destination}
-*Size:* ${size}
-*Special Items:* ${specialItems || 'None'}
+  const messageLines = [
+    `${title}`,
+    "—"
+  ];
 
-📝 *Quote:* ${quote}
+  if (stage !== "Estimate Viewed") {
+    if (name) messageLines.push(`Name: ${name}`);
+    if (phone) messageLines.push(`Phone: ${phone}`);
+    if (email) messageLines.push(`Email: ${email}`);
+  }
 
-🗂️ *Full Transcript:*
-${transcript}
-  `;
+  if (moveDate) messageLines.push(`Move Date: ${moveDate}`);
+  if (origin) messageLines.push(`From: ${origin}`);
+  if (destination) messageLines.push(`To: ${destination}`);
+  if (size) messageLines.push(`Size: ${size}`);
+  if (specialItems) messageLines.push(`Special Items: ${specialItems}`);
+  if (quote) messageLines.push(`\n💬 Quote: ${quote}`);
+
+  const finalMessage = messageLines.join("\n");
 
   try {
-    await axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      chat_id: chatId,
-      text: message,
-      parse_mode: 'Markdown',
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
+
+    const telegramUrl = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+
+    await fetch(telegramUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: finalMessage,
+        parse_mode: 'Markdown'
+      }),
     });
 
-    res.status(200).json({ success: true });
+    return res.status(200).json({ message: 'Telegram alert sent' });
   } catch (err) {
-    console.error('Telegram alert error:', err.response?.data || err.message);
-    res.status(500).json({ success: false, error: err.message });
+    console.error("Telegram error:", err);
+    return res.status(500).json({ message: 'Failed to send alert' });
   }
 }
