@@ -158,7 +158,12 @@ setTimeout(() => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{ background: "#f8f9fa", textAlign: "center" }}>
+      <header style={{
+  background: "#ffffff",
+  textAlign: "center",
+  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+  paddingBottom: "10px"
+}}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
       </header>
 
