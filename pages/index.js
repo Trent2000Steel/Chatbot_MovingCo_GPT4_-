@@ -119,7 +119,11 @@ setTimeout(() => {
           <div style={{ marginTop: "8px" }}>
             {msg.buttons.map((btn, bIdx) => {
               const isDisabled = clickedButtons.includes(btn);
-              return (
+              const bounceStyle = msg.phase === 1 ? {
+                    animation: `bounce 0.6s ease-in-out ${bIdx * 0.15}s 1`
+                  } : {};
+
+                return (
                 <button
                   key={bIdx}
                   onClick={() => !isDisabled && handleButtonClick(btn)}
