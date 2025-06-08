@@ -154,21 +154,24 @@ export default function Home() {
   };
 
   const badgeStyle = {
-    padding: "10px 16px",
-    fontSize: "14px",
-    background: "#fff",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    cursor: "pointer",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-    transition: "transform 0.1s ease-in-out",
-  };
+  flex: "1 1 140px",
+  minWidth: "130px",
+  maxWidth: "180px",
+  padding: "10px 16px",
+  fontSize: "14px",
+  background: "#fff",
+  border: "1px solid #ccc",
+  borderRadius: "8px",
+  cursor: "pointer",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+  transition: "transform 0.1s ease-in-out",
+};
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
       <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px" }}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px", maxWidth: "600px", marginLeft: "auto", marginRight: "auto" }}>
           <button style={badgeStyle} onClick={() => setActiveModal("movesafe")}>✅ MoveSafe Verified</button>
           <button style={badgeStyle} onClick={() => setActiveModal("flatrate")}>📦 Guaranteed Flat Rate</button>
           <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
