@@ -75,7 +75,7 @@ export default function Home() {
 
   const renderMessage = (msg, idx) => {
     return (
-      <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left", position: "relative" }}>
+      <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
         <div
           style={{
             display: "inline-block",
@@ -89,22 +89,7 @@ export default function Home() {
           }}
         >
           {msg.content}
-          <div style={{
-            position: "absolute",
-            bottom: 0,
-            left: msg.role === "user" ? "auto" : "-8px",
-            right: msg.role === "user" ? "-8px" : "auto",
-            width: 0,
-            height: 0,
-            borderTop: "8px solid transparent",
-            borderBottom: "8px solid transparent",
-            borderLeft: msg.role === "user" ? "8px solid #cce5ff" : "none",
-            borderRight: msg.role === "user" ? "none" : "8px solid #e2e3e5"
-          }} />
         </div>
-        <span style={{ fontSize: "10px", color: "#888", marginTop: "4px", display: "block" }}>
-          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
         {msg.phase === 999 && (
           <div style={{ marginTop: "12px", textAlign: "center" }}>
             <a
@@ -184,9 +169,9 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px" }}>
+      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px", borderBottom: "1px solid #ddd" }}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px", maxWidth: "600px", marginLeft: "auto", marginRight: "auto" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", boxShadow: "0 4px 8px rgba(0,0,0,0.08)" }}>
           <button style={badgeStyle} onClick={() => setActiveModal("movesafe")}>✅ MoveSafe Verified</button>
           <button style={badgeStyle} onClick={() => setActiveModal("flatrate")}>📦 Guaranteed Flat Rate</button>
           <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
@@ -194,8 +179,8 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", maxWidth: "500px", margin: "20px auto", height: "calc(100vh - 150px)", overflow: "hidden", border: "1px solid #ccc", borderRadius: "16px", boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)", background: "#ffffff" }}>
-        <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)" }}>
+      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
+        <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "#fafafa" }}>
           {messages.map((msg, idx) => msg.content === "start_chat" ? null : renderMessage(msg, idx))}
           {loading && (
             <div style={{ margin: "12px 0", textAlign: "left", fontStyle: "italic", color: "#666" }}>...</div>
@@ -204,8 +189,8 @@ export default function Home() {
         </div>
 
         <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "12px", background: "#f0f0f0", borderTop: "1px solid #ccc" }}>
-          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "12px", fontSize: "16px", borderRadius: "24px", border: "1px solid #ccc", outline: "none", marginRight: "10px" }} />
-          <button type="submit" disabled={loading} style={{ backgroundColor: "#0d6efd", border: "none", color: "#fff", padding: "10px 16px", borderRadius: "24px", fontSize: "16px", cursor: "pointer" }}>Send</button>
+          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "14px", fontSize: "16px", borderRadius: "6px", border: "1px solid #ccc" }} />
+          <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "14px 20px", borderRadius: "6px", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
       </main>
 
