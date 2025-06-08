@@ -7,6 +7,7 @@ export default function Home() {
   const [sessionId, setSessionId] = useState("");
   const [loading, setLoading] = useState(false);
   const [clickedButtons, setClickedButtons] = useState([]);
+  const [activeModal, setActiveModal] = useState(null);
   const messagesEndRef = useRef(null);
 
   const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -37,22 +38,18 @@ export default function Home() {
       });
       const data = await res.json();
 
-      
       if (data.phase === 9 && data.estimate) {
-        fetch("https://api.telegram.org/bot7893424431:AAHXjlpYog9qTEF2w7W6RgBFjHK_Ymf5CWk/sendMessage", {
+        fetch("https://api.telegram.org/botXXX/sendMessage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: "8040084234",
-            text: `🧠 New Quote:
-${data.estimate}
-
-Session: ${sessionId}`
+            text: `🧠 New Quote:\n${data.estimate}\nSession: ${sessionId}`
           })
         });
       }
-    
-setTimeout(() => {
+
+      setTimeout(() => {
         setMessages((prev) => [...prev, { role: "bot", content: data.message, buttons: data.buttons, phase: data.phase }]);
         setLoading(false);
       }, 800);
@@ -120,10 +117,10 @@ setTimeout(() => {
             {msg.buttons.map((btn, bIdx) => {
               const isDisabled = clickedButtons.includes(btn);
               const bounceStyle = msg.phase === 1 ? {
-                    animation: `bounce 0.6s ease-in-out ${bIdx * 0.15}s 1`
-                  } : {};
+                animation: `bounce 0.6s ease-in-out ${bIdx * 0.15}s 1`
+              } : {};
 
-                return (
+              return (
                 <button
                   key={bIdx}
                   onClick={() => !isDisabled && handleButtonClick(btn)}
@@ -156,30 +153,30 @@ setTimeout(() => {
     );
   };
 
+  const badgeStyle = {
+    padding: "10px 16px",
+    fontSize: "14px",
+    background: "#fff",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+    transition: "transform 0.1s ease-in-out",
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{
-  background: "#ffffff",
-  textAlign: "center",
-  boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-  paddingBottom: "10px"
-}}>
+      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px" }}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px" }}>
+          <button style={badgeStyle} onClick={() => setActiveModal("movesafe")}>✅ MoveSafe Verified</button>
+          <button style={badgeStyle} onClick={() => setActiveModal("flatrate")}>📦 Guaranteed Flat Rate</button>
+          <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
+          <button style={badgeStyle} onClick={() => setActiveModal("guarantee")}>💰 Money-Back Guarantee</button>
+        </div>
       </header>
 
-      <main
-        className="chat-container"
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          border: "1px solid #ccc",
-          borderRadius: "10px",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-          margin: "10px"
-        }}
-      >
+      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
         <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "#fafafa" }}>
           {messages.map((msg, idx) => msg.content === "start_chat" ? null : renderMessage(msg, idx))}
           {loading && (
@@ -189,18 +186,43 @@ setTimeout(() => {
         </div>
 
         <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "12px", background: "#f0f0f0", borderTop: "1px solid #ccc" }}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            style={{ flex: 1, padding: "14px", fontSize: "16px", borderRadius: "6px", border: "1px solid #ccc" }}
-          />
-          <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "14px 20px", borderRadius: "6px", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>
-            Send
-          </button>
+          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "14px", fontSize: "16px", borderRadius: "6px", border: "1px solid #ccc" }} />
+          <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "14px 20px", borderRadius: "6px", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
       </main>
+
+      {activeModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+          alignItems: "center", justifyContent: "center", zIndex: 9999
+        }}>
+          <div style={{
+            background: "#fff", padding: "30px", borderRadius: "10px",
+            maxWidth: "90%", width: "400px", textAlign: "center", boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
+          }}>
+            <h2 style={{ marginBottom: "16px" }}>
+              {{
+                movesafe: "MoveSafe Verified",
+                flatrate: "Guaranteed Flat Rate",
+                support: "24/7 Concierge Support",
+                guarantee: "Money-Back Guarantee"
+              }[activeModal]}
+            </h2>
+            <p style={{ fontSize: "15px", lineHeight: "1.5" }}>
+              {{
+                movesafe: "Every move we coordinate goes through licensed, vetted professionals using the MoveSafe Method™. That includes verified crews, smart quoting, real human review, and concierge-level support. But we go further: every customer receives fresh, single-use moving protection—no reused pads or dirty blankets from someone else's move. It's your move, your materials, and your peace of mind.",
+                flatrate: "We start by giving you a real estimate—right here in chat. It’s powered by AI trained on thousands of recent moves across the U.S. If the range looks good, you’ll place a small, refundable $85 deposit to reserve your date. Then, you’ll submit photos and hop on a MoveSafe Call with our live, experienced staff. After reviewing everything, we’ll lock in your Guaranteed Flat Rate — no hidden fees, no surprises. Don’t like the final number? No problem. We’ll return your deposit. The price you accept is the price you pay. Period.",
+                support: "MovingCo blends real-time AI support with experienced, U.S.-based coordinators to guide you every step of the way. Whether you're booking, preparing, or mid-move, you'll always have access to clear answers and calm, expert support. From your first question to final delivery, our concierge team keeps communication smooth, expectations clear, and your move on track. That’s the MoveSafe Method™ — combining smart tools and human touch to give you total confidence.",
+                guarantee: "Your deposit is fully refundable — no tricks, no fine print. After your photo review and MoveSafe Call, we’ll send you a Guaranteed Flat Rate. Don’t love it? Don’t move forward. We’ll return your deposit. Every time. Because trust starts before the truck shows up."
+              }[activeModal]}
+            </p>
+            <button onClick={() => setActiveModal(null)} style={{ marginTop: "20px", padding: "10px 20px", background: "#0d6efd", color: "#fff", border: "none", borderRadius: "6px", fontSize: "14px" }}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <footer style={{ padding: "12px", background: "#f8f9fa", textAlign: "center", fontSize: "12px" }}>
         <a href="/terms" style={{ marginRight: "10px" }}>Terms of Service</a> |
