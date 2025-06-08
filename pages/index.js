@@ -75,7 +75,7 @@ export default function Home() {
 
   const renderMessage = (msg, idx) => {
     return (
-      <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
+      <div key={idx} style={{ margin: "12px 0", textAlign: msg.role === "user" ? "right" : "left", position: "relative" }}>
         <div
           style={{
             display: "inline-block",
@@ -89,7 +89,22 @@ export default function Home() {
           }}
         >
           {msg.content}
+          <div style={{
+            position: "absolute",
+            bottom: 0,
+            left: msg.role === "user" ? "auto" : "-8px",
+            right: msg.role === "user" ? "-8px" : "auto",
+            width: 0,
+            height: 0,
+            borderTop: "8px solid transparent",
+            borderBottom: "8px solid transparent",
+            borderLeft: msg.role === "user" ? "8px solid #cce5ff" : "none",
+            borderRight: msg.role === "user" ? "none" : "8px solid #e2e3e5"
+          }} />
         </div>
+        <span style={{ fontSize: "10px", color: "#888", marginTop: "4px", display: "block" }}>
+          {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
         {msg.phase === 999 && (
           <div style={{ marginTop: "12px", textAlign: "center" }}>
             <a
@@ -177,10 +192,21 @@ export default function Home() {
           <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
           <button style={badgeStyle} onClick={() => setActiveModal("guarantee")}>💰 Money-Back Guarantee</button>
         </div>
-      </header>
+      <p style={{
+  textAlign: "center",
+  fontSize: "13px",
+  color: "#666",
+  fontStyle: "italic",
+  marginTop: "10px",
+  marginBottom: "4px"
+}}>
+  MoveSafe AI is online
+</p>
+
+</header>
 
       <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
-        <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "#fafafa" }}>
+        <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)" }}>
           {messages.map((msg, idx) => msg.content === "start_chat" ? null : renderMessage(msg, idx))}
           {loading && (
             <div style={{ margin: "12px 0", textAlign: "left", fontStyle: "italic", color: "#666" }}>...</div>
@@ -189,8 +215,8 @@ export default function Home() {
         </div>
 
         <form onSubmit={handleSubmit} className="input-area" style={{ display: "flex", padding: "12px", background: "#f0f0f0", borderTop: "1px solid #ccc" }}>
-          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "14px", fontSize: "16px", borderRadius: "6px", border: "1px solid #ccc" }} />
-          <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "14px 20px", borderRadius: "6px", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
+          <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "12px", fontSize: "16px", borderRadius: "24px", outline: "none", marginRight: "10px", border: "1px solid #ccc" }} />
+          <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "10px 16px", borderRadius: "24px", cursor: "pointer", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
       </main>
 
