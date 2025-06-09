@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   }
 
   const {
+    type,
     name,
     email,
     phone,
@@ -13,29 +14,38 @@ export default async function handler(req, res) {
     size,
     specialItems,
     quote,
-    stage
+    stage,
+    message // used for contact form
   } = req.body;
-
-  const isEstimate = stage === "Estimate Viewed";
 
   const messageLines = [];
 
-  if (isEstimate) {
-    messageLines.push("📊 New Estimate Viewed", "—");
-  } else {
-    messageLines.push("✅ MOVE RESERVED!", "—");
-    if (name) messageLines.push(`👤 Name: ${name}`);
-    if (phone) messageLines.push(`📞 Phone: ${phone}`);
+  // Handle contact form
+  if (type === "contact") {
+    messageLines.push("📥 CONTACT REQUEST", "—");
     if (email) messageLines.push(`📧 Email: ${email}`);
-    messageLines.push(""); // spacing
-  }
+    if (phone) messageLines.push(`📞 Phone: ${phone}`);
+    if (message) messageLines.push(`📝 Message: ${message}`);
+  } else {
+    const isEstimate = stage === "Estimate Viewed";
 
-  if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
-  if (origin) messageLines.push(`📍 From: ${origin}`);
-  if (destination) messageLines.push(`📍 To: ${destination}`);
-  if (size) messageLines.push(`🏠 Size: ${size}`);
-  if (specialItems) messageLines.push(`🎯 Special Items: ${specialItems}`);
-  if (quote) messageLines.push(isEstimate ? `\n💬 Quote: ${quote}` : `\n💸 Accepted Quote: ${quote}`);
+    if (isEstimate) {
+      messageLines.push("📊 New Estimate Viewed", "—");
+    } else {
+      messageLines.push("✅ MOVE RESERVED!", "—");
+      if (name) messageLines.push(`👤 Name: ${name}`);
+      if (phone) messageLines.push(`📞 Phone: ${phone}`);
+      if (email) messageLines.push(`📧 Email: ${email}`);
+      messageLines.push(""); // spacing
+    }
+
+    if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
+    if (origin) messageLines.push(`📍 From: ${origin}`);
+    if (destination) messageLines.push(`📍 To: ${destination}`);
+    if (size) messageLines.push(`🏠 Size: ${size}`);
+    if (specialItems) messageLines.push(`🎯 Special Items: ${specialItems}`);
+    if (quote) messageLines.push(isEstimate ? `\n💬 Quote: ${quote}` : `\n💸 Accepted Quote: ${quote}`);
+  }
 
   const finalMessage = messageLines.join("\n");
 
