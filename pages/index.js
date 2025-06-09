@@ -243,11 +243,18 @@ export default function Home() {
       }} />
 
     </main>
-    <footer style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', position: 'relative', bottom: 0, width: '100%' }}>
-      <p style={{ fontSize: '14px', color: '#666' }}>
-        &copy; 2025 MovingCo. All rights reserved. | <a href="/privacy" style={{ color: '#666' }}>Privacy Policy</a>
-      </p>
-    </footer>
+    
+<footer style={{ padding: "16px", background: "#f8f9fa", textAlign: "center", fontSize: "13px" }}>
+  <div style={{ marginBottom: "6px" }}>
+    <a href="/privacy" style={{ marginRight: "12px", color: "#666", textDecoration: "none" }}>Privacy Policy</a> |
+    <a href="/terms" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>Terms of Service</a> |
+    <a href="/contact" style={{ marginLeft: "12px", color: "#666", textDecoration: "none" }}>Contact</a>
+  </div>
+  <p style={{ color: "#888", fontSize: "12px", marginTop: "4px" }}>
+    © 2025 MovingCo. All rights reserved.
+  </p>
+</footer>
+
   
 
       {activeModal && (
