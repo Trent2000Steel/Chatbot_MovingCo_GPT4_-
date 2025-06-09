@@ -261,3 +261,24 @@ export default function Home() {
     </div>
   );
 }
+
+<div id="testimonial-bar" style="background-color: #e6f2ff; padding: 20px; text-align: center; margin-top: 20px;">
+  <img id="testimonial-img" src="/Te1.PNG" alt="Customer Testimonial" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;" />
+  <p id="testimonial-text" style="max-width: 600px; margin: 0 auto; font-style: italic;">We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.</p>
+</div>
+
+<script>
+  const testimonials = [
+    { img: "/Te1.PNG", text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service." },
+    { img: "/Te2.PNG", text: "I'm a single mom, and I’ve had moving companies treat me like I don’t know anything. This time was different. Respectful. Helpful. They gave me real options, not pressure. I’d recommend them to anyone." },
+    { img: "/Te3.PNG", text: "I was ready to get scammed like last time. But these guys actually do what they say. Straightforward quote. They called me within a day. The final rate was fair — no surprises." },
+    { img: "/Te4.PNG", text: "This was a last-minute move and I was freaking out. MovingCo gave me real answers in chat right away. Not a form. Not a waitlist. Just help. And it worked. We booked it and they delivered." },
+    { img: "/Te5.PNG", text: "I’ve moved 7 times in 10 years. This is the first time I actually felt relaxed. The guys were great, but honestly, the planning and support was what stood out. Felt like someone was always looking out for me." }
+  ];
+  let current = 0;
+  setInterval(() => {
+    current = (current + 1) % testimonials.length;
+    document.getElementById("testimonial-img").src = testimonials[current].img;
+    document.getElementById("testimonial-text").textContent = testimonials[current].text;
+  }, 6000);
+</script>
