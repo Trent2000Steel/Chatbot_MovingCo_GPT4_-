@@ -194,13 +194,13 @@ export default function Home() {
         </div>
       <p style={{
   textAlign: "center",
-  fontSize: "13px",
-  color: "#666",
-  fontStyle: "italic",
+  fontSize: "14px",
+  color: "#444",
+  fontWeight: "500",
   marginTop: "10px",
   marginBottom: "4px"
 }}>
-  MoveSafe AI is online
+  Flat-rate moving quotes, instantly. No forms. No phone calls. Just chat.
 </p>
 
 </header>
