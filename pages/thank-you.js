@@ -34,7 +34,8 @@ export default function ThankYou() {
         </p>
         <h3 style={{ fontSize: '18px', marginBottom: '12px', color: '#0d6efd' }}>Next Step</h3>
         <p style={{ fontSize: '15px', color: '#444', marginBottom: '36px' }}>
-          A MoveSafe Coordinator will call you within 48 hours. We’ll walk through your move and plan the next steps together.
+          Your MoveSafe Coordinator will <strong>text and email you shortly</strong> to begin the process.<br />
+          Most customers hear from us the <strong>same day</strong>, but during peak hours it may take up to <strong>24 hours</strong>.
         </p>
 
         <div style={{ fontSize: '14px', marginBottom: '24px' }}>
