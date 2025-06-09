@@ -192,16 +192,26 @@ export default function Home() {
           <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
           <button style={badgeStyle} onClick={() => setActiveModal("guarantee")}>💰 Money-Back Guarantee</button>
         </div>
-      <p style={{
-  textAlign: "center",
-  fontSize: "14px",
-  color: "#444",
-  fontWeight: "500",
-  marginTop: "10px",
-  marginBottom: "4px"
-}}>
-  Instant moving price estimates. No forms. No phone calls. Just chat.
-</p>
+      <div style={{ textAlign: "center", marginTop: "10px", marginBottom: "6px" }}>
+  <p style={{
+    fontSize: "14px",
+    color: "#444",
+    fontWeight: "500",
+    margin: 0
+  }}>
+    Instant moving price estimates. No forms. No phone calls. Just chat.
+  </p>
+  <div style={{
+    marginTop: "6px",
+    fontSize: "13px",
+    color: "#555",
+    lineHeight: "1.5"
+  }}>
+    <div><b>1.</b> Chat your move details</div>
+    <div><b>2.</b> Get a custom price range instantly</div>
+    <div><b>3.</b> Lock in your flat rate after review</div>
+  </div>
+</div>
 
 </header>
 
