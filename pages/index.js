@@ -218,7 +218,37 @@ export default function Home() {
           <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type your message..." style={{ flex: 1, padding: "12px", fontSize: "16px", borderRadius: "24px", outline: "none", marginRight: "10px", border: "1px solid #ccc" }} />
           <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "10px 16px", borderRadius: "24px", cursor: "pointer", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
-      </main>
+      
+      <div id="testimonial-bar" style={{ backgroundColor: '#e6f2ff', padding: '20px', textAlign: 'center', marginTop: '20px' }}>
+        <img id="testimonial-img" src="/Te1.PNG" alt="Customer Testimonial" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }} />
+        <p id="testimonial-text" style={{ maxWidth: '600px', margin: '0 auto', fontStyle: 'italic' }}>We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.</p>
+      </div>
+
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          const testimonials = [
+            { img: '/Te1.PNG', text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service." },
+            { img: '/Te2.PNG', text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted." },
+            { img: '/Te3.PNG', text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through." },
+            { img: '/Te4.PNG', text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly." },
+            { img: '/Te5.PNG', text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver." }
+          ];
+          let current = 0;
+          setInterval(() => {
+            current = (current + 1) % testimonials.length;
+            document.getElementById('testimonial-img').src = testimonials[current].img;
+            document.getElementById('testimonial-text').textContent = testimonials[current].text;
+          }, 6000);
+        `
+      }} />
+
+    </main>
+    <footer style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', position: 'relative', bottom: 0, width: '100%' }}>
+      <p style={{ fontSize: '14px', color: '#666' }}>
+        &copy; 2025 MovingCo. All rights reserved. | <a href="/privacy" style={{ color: '#666' }}>Privacy Policy</a>
+      </p>
+    </footer>
+  
 
       {activeModal && (
         <div style={{
