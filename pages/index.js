@@ -9,6 +9,7 @@ export default function Home() {
   const [clickedButtons, setClickedButtons] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
   const messagesEndRef = useRef(null);
+  const hasSentMessage = useRef(false);
 
   const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
 
@@ -22,10 +23,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (hasSentMessage.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const sendMessage = async (text) => {
+    hasSentMessage.current = true;
     if (!text) return;
     setLoading(true);
     setMessages((prev) => [...prev, { role: "user", content: text }]);
