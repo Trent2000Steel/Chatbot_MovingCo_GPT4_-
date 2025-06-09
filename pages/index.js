@@ -200,7 +200,7 @@ export default function Home() {
   marginTop: "10px",
   marginBottom: "4px"
 }}>
-  Flat-rate moving quotes, instantly. No forms. No phone calls. Just chat.
+  Instant moving price estimates. No forms. No phone calls. Just chat.
 </p>
 
 </header>
