@@ -283,18 +283,9 @@ export default function Home() {
         </div>
       )}
 
-      <footer style={{ padding: "12px", background: "#f8f9fa", textAlign: "center", fontSize: "12px" }}>
-        <a href="/terms" style={{ marginRight: "10px" }}>Terms of Service</a> |
-        <a href="/privacy" style={{ marginLeft: "10px" }}>Privacy Policy</a>
-        <p style={{ marginTop: "6px" }}>&copy; 2025 MovingCo. All rights reserved.</p>
-      </footer>
+      
 
-      <div id="testimonial-bar" style={{ backgroundColor: '#e6f2ff', padding: '20px', textAlign: 'center', marginTop: '20px' }}>
-        <img id="testimonial-img" src="/Te1.PNG" alt="Customer Testimonial" style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }} />
-        <p id="testimonial-text" style={{ maxWidth: '600px', margin: '0 auto', fontStyle: 'italic' }}>
-          We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.
-        </p>
-      </div>
+      
     </div>
   );
 }
