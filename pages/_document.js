@@ -25,10 +25,11 @@ export default function Document() {
               window.addEventListener("load", function(){
                 window.cookieconsent.initialise({
                   palette: {
-                    popup: { background: "#000" },
-                    button: { background: "#f1d600" }
+                    popup: { background: "#f0f2f5", text: "#333" },
+                    button: { background: "#007bff", text: "#fff" }
                   },
                   theme: "classic",
+                  position: "bottom",
                   content: {
                     message: "We use cookies to analyze traffic and deliver our services.",
                     dismiss: "OK, got it!",
