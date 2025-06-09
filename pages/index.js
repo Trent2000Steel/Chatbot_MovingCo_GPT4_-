@@ -256,7 +256,10 @@ export default function Home() {
     
 <footer style={{ padding: "16px", background: "#f8f9fa", textAlign: "center", fontSize: "13px" }}>
   <div style={{ marginBottom: "6px" }}>
-    <a href="/privacy" style={{ marginRight: "12px", color: "#666", textDecoration: "none" }}>Privacy Policy</a> |
+    <a href="/about" style={{ marginRight: "12px", color: "#666", textDecoration: "none" }}>About</a> |
+    <a href="/how-it-works" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>How It Works</a> |
+    <a href="/faq" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>FAQ</a> |
+    <a href="/privacy" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>Privacy Policy</a> |
     <a href="/terms" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>Terms of Service</a> |
     <a href="/contact" style={{ marginLeft: "12px", color: "#666", textDecoration: "none" }}>Contact</a>
   </div>
