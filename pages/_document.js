@@ -16,6 +16,30 @@ export default function Document() {
             `,
           }}
         />
+
+        {/* Cookie Consent */}
+        <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener("load", function(){
+                window.cookieconsent.initialise({
+                  palette: {
+                    popup: { background: "#000" },
+                    button: { background: "#f1d600" }
+                  },
+                  theme: "classic",
+                  content: {
+                    message: "We use cookies to analyze traffic and deliver our services.",
+                    dismiss: "OK, got it!",
+                    link: "Learn more",
+                    href: "/privacy"
+                  }
+                });
+              });
+            `,
+          }}
+        />
       </Head>
       <body>
         <Main />
