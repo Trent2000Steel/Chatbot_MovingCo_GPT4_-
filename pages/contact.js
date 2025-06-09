@@ -8,31 +8,31 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !phone || !message) return alert("Please fill out all fields.");
-
-    const telegramMessage = `
-📨 New Contact Form Submission:
-Email: ${email}
-Phone: ${phone}
-Message: ${message}
-    `;
+    if (!email || !phone || !message) {
+      alert("Please fill out all fields.");
+      return;
+    }
 
     try {
-      await fetch("https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage", {
+      const res = await fetch("/api/send-telegram-alert", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          chat_id: "<YOUR_CHAT_ID>",
-          text: telegramMessage
+          type: "contact",
+          email,
+          phone,
+          message,
         }),
       });
+
+      if (!res.ok) throw new Error("Failed to send message.");
       setSubmitted(true);
       setEmail("");
       setPhone("");
       setMessage("");
     } catch (err) {
-      console.error("Failed to send Telegram message", err);
-      alert("Something went wrong. Please try again later.");
+      console.error("Failed to send message", err);
+      alert("Something went wrong. " + err.message);
     }
   };
 
@@ -47,7 +47,11 @@ Message: ${message}
       </p>
 
       {submitted ? (
-        <p style={{ textAlign: "center", color: "green", fontWeight: "bold" }}>Thanks! Your message has been sent.</p>
+        <p style={{ textAlign: "center", color: "green", fontSize: "15px", lineHeight: "1.6" }}>
+          Thanks for reaching out! We’ve received your message and will review it soon.
+          <br /><br />
+          <strong>For urgent help or move questions, please return to the chat assistant — it's the fastest way to get support.</strong>
+        </p>
       ) : (
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <input
