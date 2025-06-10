@@ -236,7 +236,6 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   marginTop: "10px",
   marginBottom: "4px"
 }}>
-  MoveSafe AI is online
 <p style={{
   textAlign: "center",
   fontSize: "15px",
@@ -245,7 +244,22 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   marginBottom: "12px",
   lineHeight: "1.6"
 }}>
-  <strong>No forms. No spam. Just a real quote — right here in chat.</strong><br /><br />
+
+<p style={{
+  textAlign: "center",
+  fontSize: "15px",
+  color: "#777",
+  marginTop: "24px",
+  marginBottom: "12px",
+  lineHeight: "1.6"
+}}>
+  <strong>Skip the forms. Get a real quote in chat — fast.</strong><br /><br />
+  We’ll guide you step-by-step in just a few minutes:<br /><br />
+  <strong>1.</strong> Chat now and get your custom quote<br />
+  <strong>2.</strong> Reserve your move day with a refundable $85 deposit<br />
+  <strong>3.</strong> Lock in your flat rate after a quick MoveSafe Call
+</p>
+
   <strong>Reserve your move day with a fully refundable $85 deposit.</strong><br /><br />
   Here’s how it works:<br />
   <strong>1.</strong> Chat with us and get your custom quote<br />
