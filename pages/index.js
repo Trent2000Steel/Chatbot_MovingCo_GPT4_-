@@ -22,11 +22,7 @@ export default function Home() {
     sendMessage("start_chat");
   }, []);
 
-  useEffect(() => {
-    if (hasSentMessage.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+  
 
   const sendMessage = async (text) => {
     hasSentMessage.current = true;
@@ -238,23 +234,49 @@ export default function Home() {
         <p id="testimonial-text" style={{ maxWidth: '600px', margin: '0 auto', fontStyle: 'italic' }}>We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.</p>
       </div>
 
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          const testimonials = [
-            { img: '/Te1.PNG', text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service." },
-            { img: '/Te2.PNG', text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted." },
-            { img: '/Te3.PNG', text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through." },
-            { img: '/Te4.PNG', text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly." },
-            { img: '/Te5.PNG', text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver." }
-          ];
-          let current = 0;
-          setInterval(() => {
-            current = (current + 1) % testimonials.length;
-            document.getElementById('testimonial-img').src = testimonials[current].img;
-            document.getElementById('testimonial-text').textContent = testimonials[current].text;
-          }, 6000);
-        `
-      }} />
+      <script dangerouslySetInnerHTML={{ __html: `
+const testimonials = [
+  {
+    img: '/Te1.PNG',
+    text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.",
+    author: "Danielle R., Texas to North Carolina"
+  },
+  {
+    img: '/Te2.PNG',
+    text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
+    author: "Michael T., Arizona to Georgia"
+  },
+  {
+    img: '/Te3.PNG',
+    text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
+    author: "Elena S., California to Texas"
+  },
+  {
+    img: '/Te4.PNG',
+    text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
+    author: "Chris D., Massachusetts to South Carolina"
+  },
+  {
+    img: '/Te5.PNG',
+    text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver.",
+    author: "Brittany M., New Jersey to Colorado"
+  }
+];
+let current = 0;
+setInterval(() => {
+  current = (current + 1) % testimonials.length;
+  document.getElementById('testimonial-img').src = testimonials[current].img;
+  document.getElementById('testimonial-text').innerHTML = `
+    <div style="font-style: italic; font-size: 15px; line-height: 1.4; margin-bottom: 6px;">
+      “${testimonials[current].text}”
+    </div>
+    <div style="font-size: 13px; color: #555; font-style: normal; margin-bottom: 8px;">
+      — ${testimonials[current].author}
+    </div>
+    <div style="font-size: 16px; color: #000; text-align: center;">★★★★★</div>
+  `;
+}, 6000);
+` }} />
 
     </main>
     
