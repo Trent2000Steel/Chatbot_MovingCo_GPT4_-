@@ -9,9 +9,46 @@ export default function Home() {
   const [clickedButtons, setClickedButtons] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
   const messagesEndRef = useRef(null);
-  const hasSentMessage = useRef(false);
 
-  const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+  
+  const testimonials = [
+    {
+      img: '/Te1.PNG',
+      quote: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.",
+      name: "Emily – California to Texas"
+    },
+    {
+      img: '/Te2.PNG',
+      quote: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
+      name: "Jason – New York to Florida"
+    },
+    {
+      img: '/Te3.PNG',
+      quote: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
+      name: "Monica – Illinois to Arizona"
+    },
+    {
+      img: '/Te4.PNG',
+      quote: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
+      name: "Thomas – Virginia to Colorado"
+    },
+    {
+      img: '/Te5.PNG',
+      quote: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver.",
+      name: "Ashley – Nevada to Oregon"
+    }
+  ];
+
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
 
   const generateSessionId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -22,10 +59,11 @@ export default function Home() {
     sendMessage("start_chat");
   }, []);
 
-  
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = async (text) => {
-    hasSentMessage.current = true;
     if (!text) return;
     setLoading(true);
     setMessages((prev) => [...prev, { role: "user", content: text }]);
@@ -192,26 +230,16 @@ export default function Home() {
           <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
           <button style={badgeStyle} onClick={() => setActiveModal("guarantee")}>💰 Money-Back Guarantee</button>
         </div>
-      <div style={{ textAlign: "center", marginTop: "10px", marginBottom: "6px" }}>
-  <p style={{
-    fontSize: "14px",
-    color: "#444",
-    fontWeight: "500",
-    margin: 0
-  }}>
-    Instant moving price estimates. No forms. No phone calls. Just chat.
-  </p>
-  <div style={{
-    marginTop: "6px",
-    fontSize: "13px",
-    color: "#555",
-    lineHeight: "1.5"
-  }}>
-    <div><b>1.</b> Chat your move details</div>
-    <div><b>2.</b> Get a custom price range instantly</div>
-    <div><b>3.</b> Lock in your flat rate after review</div>
-  </div>
-</div>
+      <p style={{
+  textAlign: "center",
+  fontSize: "13px",
+  color: "#666",
+  fontStyle: "italic",
+  marginTop: "10px",
+  marginBottom: "4px"
+}}>
+  MoveSafe AI is online
+</p>
 
 </header>
 
@@ -229,71 +257,30 @@ export default function Home() {
           <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "10px 16px", borderRadius: "24px", cursor: "pointer", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
       
+      
+
+    
       <div id="testimonial-bar" style={{ backgroundColor: '#e6f2ff', padding: '20px', textAlign: 'center', marginTop: '20px' }}>
-        <img id="testimonial-img" src="/Te1.PNG" alt="Customer Testimonial" style={{ width: '80px', height: '80px', borderRadius: '6px', border: '1px solid #ccc', boxShadow: '0 2px 6px rgba(0,0,0,0.08)', objectFit: 'cover', marginBottom: '10px' }} />
-        <p id="testimonial-text" style={{ maxWidth: '600px', margin: '0 auto', fontStyle: 'italic' }}>We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.</p>
+        <img
+          src={testimonials[currentTestimonial].img}
+          alt="Customer Testimonial"
+          style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }}
+        />
+        <p style={{ fontStyle: 'italic', maxWidth: '600px', margin: '0 auto' }}>
+          “{testimonials[currentTestimonial].quote}”
+        </p>
+        <p style={{ fontWeight: 'bold', marginTop: '8px' }}>
+          — {testimonials[currentTestimonial].name}
+        </p>
+        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★</p>
       </div>
 
-      <script dangerouslySetInnerHTML={{ __html: `
-const testimonials = [
-  {
-    img: '/Te1.PNG',
-    text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.",
-    author: "Danielle R., Texas to North Carolina"
-  },
-  {
-    img: '/Te2.PNG',
-    text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
-    author: "Michael T., Arizona to Georgia"
-  },
-  {
-    img: '/Te3.PNG',
-    text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
-    author: "Elena S., California to Texas"
-  },
-  {
-    img: '/Te4.PNG',
-    text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
-    author: "Chris D., Massachusetts to South Carolina"
-  },
-  {
-    img: '/Te5.PNG',
-    text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver.",
-    author: "Brittany M., New Jersey to Colorado"
-  }
-];
-let current = 0;
-setInterval(() => {
-  current = (current + 1) % testimonials.length;
-  document.getElementById('testimonial-img').src = testimonials[current].img;
-  document.getElementById('testimonial-text').innerHTML = `
-    <div style="font-style: italic; font-size: 15px; line-height: 1.4; margin-bottom: 6px;">
-      “${testimonials[current].text}”
-    </div>
-    <div style="font-size: 13px; color: #555; font-style: normal; margin-bottom: 8px;">
-      — ${testimonials[current].author}
-    </div>
-    <div style="font-size: 16px; color: #000; text-align: center;">★★★★★</div>
-  `;
-}, 6000);
-` }} />
-
     </main>
-    
-<footer style={{ padding: "16px", background: "#f8f9fa", textAlign: "center", fontSize: "13px" }}>
-  <div style={{ marginBottom: "6px" }}>
-    <a href="/about" style={{ marginRight: "12px", color: "#666", textDecoration: "none" }}>About</a> |
-    <a href="/how-it-works" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>How It Works</a> |
-    <a href="/faq" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>FAQ</a> |
-    <a href="/privacy" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>Privacy Policy</a> |
-    <a href="/terms" style={{ margin: "0 12px", color: "#666", textDecoration: "none" }}>Terms of Service</a> |
-    <a href="/contact" style={{ marginLeft: "12px", color: "#666", textDecoration: "none" }}>Contact</a>
-  </div>
-  <p style={{ color: "#888", fontSize: "12px", marginTop: "4px" }}>
-    © 2025 MovingCo. All rights reserved.
-  </p>
-</footer>
-
+    <footer style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', position: 'relative', bottom: 0, width: '100%' }}>
+      <p style={{ fontSize: '14px', color: '#666' }}>
+        &copy; 2025 MovingCo. All rights reserved. | <a href="/privacy" style={{ color: '#666' }}>Privacy Policy</a>
+      </p>
+    </footer>
   
 
       {activeModal && (
