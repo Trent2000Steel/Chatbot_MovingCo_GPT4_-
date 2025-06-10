@@ -220,7 +220,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px", borderBottom: "1px solid #ddd" }}>
+      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "6px", borderBottom: "1px solid #ddd" }}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", boxShadow: "0 4px 8px rgba(0,0,0,0.08)" }}>
           <button style={badgeStyle} onClick={() => setActiveModal("movesafe")}>✅ MoveSafe Verified</button>
@@ -233,26 +233,10 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   fontSize: "13px",
   color: "#666",
   fontStyle: "italic",
-  marginTop: "10px",
-  marginBottom: "4px"
-}}>
-<p style={{
-  textAlign: "center",
-  fontSize: "15px",
-  color: "#333",
-  marginTop: "24px",
-  marginBottom: "12px",
-  lineHeight: "1.6"
+  marginTop: "8px",
+  marginBottom: "8px"
 }}>
 
-<p style={{
-  textAlign: "center",
-  fontSize: "15px",
-  color: "#777",
-  marginTop: "24px",
-  marginBottom: "12px",
-  lineHeight: "1.6"
-}}>
   <strong>Skip the forms. Get a real quote in chat — fast.</strong><br /><br />
   We’ll guide you step-by-step in just a few minutes:<br /><br />
   <strong>1.</strong> Chat now and get your custom quote<br />
@@ -260,12 +244,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   <strong>3.</strong> Lock in your flat rate after a quick MoveSafe Call
 </p>
 
-  <strong>Reserve your move day with a fully refundable $85 deposit.</strong><br /><br />
-  Here’s how it works:<br />
-  <strong>1.</strong> Chat with us and get your custom quote<br />
-  <strong>2.</strong> Place your refundable deposit to hold your move date<br />
-  <strong>3.</strong> Lock in a flat rate after your MoveSafe Call
-</p>
+  
 </p>
 
 </header>
