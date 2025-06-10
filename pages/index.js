@@ -274,11 +274,25 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
       </div>
 
     </main>
-    <footer style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', position: 'relative', bottom: 0, width: '100%' }}>
-      <p style={{ fontSize: '14px', color: '#666' }}>
-        &copy; 2025 MovingCo. All rights reserved. | <a href="/privacy" style={{ color: '#666' }}>Privacy Policy</a>
-      </p>
-    </footer>
+    <footer style={{
+  textAlign: 'center',
+  padding: '24px 12px',
+  backgroundColor: '#f9f9f9',
+  fontSize: '14px',
+  color: '#666'
+}}>
+  <div style={{ marginBottom: '10px' }}>
+    <a href="/about" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>About Us</a>
+    <a href="/how-it-works" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>How It Works</a>
+    <a href="/faq" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>FAQ</a>
+    <a href="/privacy" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Privacy Policy</a>
+    <a href="/terms" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Terms of Service</a>
+    <a href="/contact" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Contact</a>
+  </div>
+  <p style={{ fontSize: '13px', color: '#999' }}>
+    &copy; 2025 MovingCo. All rights reserved.
+  </p>
+</footer>
   
 
       {activeModal && (
