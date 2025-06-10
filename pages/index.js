@@ -59,9 +59,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
     sendMessage("start_chat");
   }, []);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  
 
   const sendMessage = async (text) => {
     if (!text) return;
