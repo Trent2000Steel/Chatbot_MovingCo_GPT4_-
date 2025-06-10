@@ -242,10 +242,10 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   <strong>1.</strong> Chat now and get your custom quote<br />
   <strong>2.</strong> Reserve your move day with a refundable $85 deposit<br />
   <strong>3.</strong> Lock in your flat rate after a quick MoveSafe Call
-</p>
+
 
   
-</p>
+
 
 </header>
 
@@ -274,11 +274,11 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
         />
         <p style={{ fontStyle: 'italic', maxWidth: '600px', margin: '0 auto' }}>
           “{testimonials[currentTestimonial].quote}”
-        </p>
+        
         <p style={{ fontWeight: 'bold', marginTop: '8px' }}>
           — {testimonials[currentTestimonial].name}
-        </p>
-        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★</p>
+        
+        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★
       </div>
 
     </main>
@@ -299,7 +299,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   </div>
   <p style={{ fontSize: '13px', color: '#999' }}>
     &copy; 2025 MovingCo. All rights reserved.
-  </p>
+  
 </footer>
   
 
@@ -328,7 +328,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
                 support: "MovingCo blends real-time AI support with experienced, U.S.-based coordinators to guide you every step of the way. Whether you're booking, preparing, or mid-move, you'll always have access to clear answers and calm, expert support. From your first question to final delivery, our concierge team keeps communication smooth, expectations clear, and your move on track. That’s the MoveSafe Method™ — combining smart tools and human touch to give you total confidence.",
                 guarantee: "Your deposit is fully refundable — no tricks, no fine print. After your photo review and MoveSafe Call, we’ll send you a Guaranteed Flat Rate. Don’t love it? Don’t move forward. We’ll return your deposit. Every time. Because trust starts before the truck shows up."
               }[activeModal]}
-            </p>
+            
             <button onClick={() => setActiveModal(null)} style={{ marginTop: "20px", padding: "10px 20px", background: "#0d6efd", color: "#fff", border: "none", borderRadius: "6px", fontSize: "14px" }}>
               Close
             </button>
