@@ -242,6 +242,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   <strong>1.</strong> Chat now and get your custom quote<br />
   <strong>2.</strong> Reserve your move day with a refundable $85 deposit<br />
   <strong>3.</strong> Lock in your flat rate after a quick MoveSafe Call
+</p>
 
 
   
@@ -273,12 +274,12 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
           style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }}
         />
         <p style={{ fontStyle: 'italic', maxWidth: '600px', margin: '0 auto' }}>
-          “{testimonials[currentTestimonial].quote}”
+          “{testimonials[currentTestimonial].quote}”</p>
         
         <p style={{ fontWeight: 'bold', marginTop: '8px' }}>
-          — {testimonials[currentTestimonial].name}
+          — {testimonials[currentTestimonial].name}</p>
         
-        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★
+        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★</p>
       </div>
 
     </main>
@@ -298,7 +299,7 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
     <a href="/contact" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Contact</a>
   </div>
   <p style={{ fontSize: '13px', color: '#999' }}>
-    &copy; 2025 MovingCo. All rights reserved.
+    &copy; 2025 MovingCo. All rights reserved.</p>
   
 </footer>
   
