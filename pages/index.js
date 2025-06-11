@@ -13,7 +13,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* Hero Section with Video Background */}
+      {/* Hero Section */}
       <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
         <video
           autoPlay
@@ -32,8 +32,6 @@ export default function Home() {
             zIndex: -2
           }}
         />
-
-        {/* Optional dark overlay */}
         <div style={{
           position: 'absolute',
           top: 0,
@@ -43,8 +41,6 @@ export default function Home() {
           background: 'rgba(0, 0, 0, 0.25)',
           zIndex: -1
         }} />
-
-        {/* Overlay Image */}
         <img
           src="/Headeroverlay.PNG"
           alt="MovingCo Overlay"
@@ -60,9 +56,21 @@ export default function Home() {
         />
       </div>
 
-      <ChatBox />
+      {/* Redesigned ChatBox container */}
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: '16px',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+        maxWidth: '700px',
+        margin: '40px auto 20px auto',
+        padding: '24px 16px',
+        zIndex: 2,
+        position: 'relative'
+      }}>
+        <ChatBox />
+      </div>
 
-      {/* Trust Bar Image (below chat) */}
+      {/* Trust bar image */}
       <img
         src="/Movingcompany2.png"
         alt="Trust Bar"
