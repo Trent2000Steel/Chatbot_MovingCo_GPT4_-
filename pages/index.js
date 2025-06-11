@@ -19,6 +19,7 @@ export default function Home() {
           muted
           loop
           playsInline
+          type="video/mp4"
           src="/videos/Hero4.mp4"
           style={{
             position: 'absolute',
