@@ -2,7 +2,7 @@ export default function IntroMessage() {
   return (
     <div style={{
       backgroundColor: '#ffffff',
-      padding: '30px 20px',
+      padding: '15px 20px',
       textAlign: 'center',
       maxWidth: '700px',
       margin: '0 auto',
