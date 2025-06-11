@@ -253,3 +253,4 @@ const [messages, setMessages] = useState([]);
     </div>
   );
 }
+export default Home;
