@@ -60,7 +60,9 @@ export default function Home() {
         />
       </div>
 
-      {/* Trust Bar Image */}
+      <ChatBox />
+
+      {/* Trust Bar Image (below chat) */}
       <img
         src="/Movingcompany2.png"
         alt="Trust Bar"
@@ -72,7 +74,6 @@ export default function Home() {
         }}
       />
 
-      <ChatBox />
       <TestimonialBar />
       <Footer />
     </div>
