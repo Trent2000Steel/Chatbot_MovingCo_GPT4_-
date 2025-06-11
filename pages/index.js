@@ -7,20 +7,15 @@ import TestimonialBar from '../components/testimonialbar';
 
 export default function Home() {
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#ffffff' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0 }}>
       <Head>
         <title>MovingCo – The Standard of Moving</title>
         <meta name="description" content="Premium moving coordination built on trust. Get a flat-rate long distance move with verified movers." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-      {/* Hero Section with Background Video and Overlay */}
-      <div style={{
-        position: 'relative',
-        height: '100vh',
-        overflow: 'hidden',
-        textAlign: 'center',
-      }}>
+      {/* Hero Section with Video Background */}
+      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
         <video
           autoPlay
           muted
@@ -35,11 +30,22 @@ export default function Home() {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            zIndex: -1,
-            opacity: 0.6
+            zIndex: -2
           }}
         />
 
+        {/* Optional dark overlay */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 0, 0, 0.25)',
+          zIndex: -1
+        }} />
+
+        {/* Overlay Image */}
         <img
           src="/Headeroverlay.PNG"
           alt="MovingCo Overlay"
