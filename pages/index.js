@@ -10,45 +10,7 @@ export default function Home() {
   const [activeModal, setActiveModal] = useState(null);
   const messagesEndRef = useRef(null);
 
-  
-  const testimonials = [
-    {
-      img: '/Te1.PNG',
-      quote: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.",
-      name: "Emily – California to Texas"
-    },
-    {
-      img: '/Te2.PNG',
-      quote: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
-      name: "Jason – New York to Florida"
-    },
-    {
-      img: '/Te3.PNG',
-      quote: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
-      name: "Monica – Illinois to Arizona"
-    },
-    {
-      img: '/Te4.PNG',
-      quote: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
-      name: "Thomas – Virginia to Colorado"
-    },
-    {
-      img: '/Te5.PNG',
-      quote: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver.",
-      name: "Ashley – Nevada to Oregon"
-    }
-  ];
-
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+  const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
 
   const generateSessionId = () => Math.random().toString(36).substring(2) + Date.now().toString(36);
 
@@ -59,7 +21,9 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
     sendMessage("start_chat");
   }, []);
 
-  
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = async (text) => {
     if (!text) return;
@@ -220,41 +184,19 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
-      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "6px", borderBottom: "1px solid #ddd" }}>
+      <header style={{ background: "#ffffff", textAlign: "center", boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)", paddingBottom: "10px", borderBottom: "1px solid #ddd" }}>
         <img src="/Movingcompany1.PNG" alt="MovingCo Header" style={{ width: "100%", height: "auto", maxWidth: "600px" }} />
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px", marginTop: "20px", padding: "0 20px", maxWidth: "600px", marginLeft: "auto", marginRight: "auto", boxShadow: "0 4px 8px rgba(0,0,0,0.08)" }}>
-          <button style={badgeStyle} onClick={() => setActiveModal("movesafe")}>✅ MoveSafe Verified</button>
-          <button style={badgeStyle} onClick={() => setActiveModal("flatrate")}>📦 Guaranteed Flat Rate</button>
-          <button style={badgeStyle} onClick={() => setActiveModal("support")}>🕓 24/7 Concierge Support</button>
-          <button style={badgeStyle} onClick={() => setActiveModal("guarantee")}>💰 Money-Back Guarantee</button>
-        </div>
-      <p style={{
-  textAlign: "center",
-  fontSize: "13px",
-  color: "#666",
-  fontStyle: "italic",
-  marginTop: "8px",
-  marginBottom: "8px"
-}}>
+        
+<div style={{ padding: "20px", textAlign: "center", background: "#ffffff", fontSize: "18px", lineHeight: "1.6" }}>
+  <h2 style={{ fontSize: "24px", marginBottom: "10px" }}>Skip the forms. Get a real quote in chat — fast.</h2>
+  <p>We’ll guide you step-by-step in just a few minutes:</p>
+  <ol style={{ textAlign: "left", display: "inline-block", marginTop: "10px", fontSize: "16px", lineHeight: "1.8" }}>
+    <li>Chat now and get your custom quote</li>
+    <li>Reserve your move day with a refundable $85 deposit</li>
+    <li>Lock in your flat rate after a quick MoveSafe Call</li>
+  </ol>
+</div>
 
-  <strong>Skip the forms. Get a real quote in chat — fast.
-
-We’ll guide you step-by-step in just a few minutes:
-
-1. Chat now and get your custom quote
-2. Reserve your move day with a refundable $85 deposit
-3. Lock in your flat rate after a quick MoveSafe Call</strong><br /><br />
-  We’ll guide you step-by-step in just a few minutes:<br /><br />
-  <strong>1.</strong> Chat now and get your custom quote<br />
-  <strong>2.</strong> Reserve your move day with a refundable $85 deposit<br />
-  <strong>3.</strong> Lock in your flat rate after a quick MoveSafe Call
-</p>
-
-
-  
-
-
-</header>
 
       <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
         <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)"}}>
@@ -270,78 +212,36 @@ We’ll guide you step-by-step in just a few minutes:
           <button type="submit" disabled={loading} style={{ marginLeft: "8px", padding: "10px 16px", borderRadius: "24px", cursor: "pointer", background: "#0d6efd", color: "#fff", border: "none", fontSize: "16px" }}>Send</button>
         </form>
       
-      
-
-    
       <div id="testimonial-bar" style={{ backgroundColor: '#e6f2ff', padding: '20px', textAlign: 'center', marginTop: '20px' }}>
-        <img
-          src={testimonials[currentTestimonial].img}
-          alt="Customer Testimonial"
-          style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }}
-        />
-        <p style={{ fontStyle: 'italic', maxWidth: '600px', margin: '0 auto' }}>
-          “{testimonials[currentTestimonial].quote}”</p>
-        
-        <p style={{ fontWeight: 'bold', marginTop: '8px' }}>
-          — {testimonials[currentTestimonial].name}</p>
-        
-        <p style={{ fontSize: '20px', color: '#000', margin: '8px 0' }}>★★★★★</p>
+        <img id="testimonial-img" src="/Te1.PNG" alt="Customer Testimonial" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginBottom: '10px' }} />
+        <p id="testimonial-text" style={{ maxWidth: '600px', margin: '0 auto', fontStyle: 'italic' }}>We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.</p>
       </div>
 
-    </main>
-    <footer style={{
-  textAlign: 'center',
-  padding: '24px 12px',
-  backgroundColor: '#f9f9f9',
-  fontSize: '14px',
-  color: '#666'
-}}>
-  <div style={{ marginBottom: '10px' }}>
-    <a href="/about" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>About Us</a>
-    <a href="/how-it-works" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>How It Works</a>
-    <a href="/faq" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>FAQ</a>
-    <a href="/privacy" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Privacy Policy</a>
-    <a href="/terms" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Terms of Service</a>
-    <a href="/contact" style={{ margin: '0 12px', color: '#666', textDecoration: 'none' }}>Contact</a>
-  </div>
-  <p style={{ fontSize: '13px', color: '#999' }}>
-    &copy; 2025 MovingCo. All rights reserved.</p>
-  
-</footer>
-  
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          const testimonials = [
+            { img: '/Te1.PNG', text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service." },
+            { img: '/Te2.PNG', text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted." },
+            { img: '/Te3.PNG', text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through." },
+            { img: '/Te4.PNG', text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly." },
+            { img: '/Te5.PNG', text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver." }
+          ];
+          let current = 0;
+          setInterval(() => {
+            current = (current + 1) % testimonials.length;
+            document.getElementById('testimonial-img').src = testimonials[current].img;
+            document.getElementById('testimonial-text').textContent = testimonials[current].text;
+          }, 6000);
+        `
+      }} />
 
-      {activeModal && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
-          alignItems: "center", justifyContent: "center", zIndex: 9999
-        }}>
-          <div style={{
-            background: "#fff", padding: "30px", borderRadius: "10px",
-            maxWidth: "90%", width: "400px", textAlign: "center", boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
-          }}>
-            <h2 style={{ marginBottom: "16px" }}>
-              {{
-                movesafe: "MoveSafe Verified",
-                flatrate: "Guaranteed Flat Rate",
-                support: "24/7 Concierge Support",
-                guarantee: "Money-Back Guarantee"
-              }[activeModal]}
-            </h2>
-            <p style={{ fontSize: "15px", lineHeight: "1.5" }}>
-              {{
-                movesafe: "Every move we coordinate goes through licensed, vetted professionals using the MoveSafe Method™. That includes verified crews, smart quoting, real human review, and concierge-level support. But we go further: every customer receives fresh, single-use moving protection—no reused pads or dirty blankets from someone else's move. It's your move, your materials, and your peace of mind.",
-                flatrate: "We start by giving you a real estimate—right here in chat. It’s powered by AI trained on thousands of recent moves across the U.S. If the range looks good, you’ll place a small, refundable $85 deposit to reserve your date. Then, you’ll submit photos and hop on a MoveSafe Call with our live, experienced staff. After reviewing everything, we’ll lock in your Guaranteed Flat Rate — no hidden fees, no surprises. Don’t like the final number? No problem. We’ll return your deposit. The price you accept is the price you pay. Period.",
-                support: "MovingCo blends real-time AI support with experienced, U.S.-based coordinators to guide you every step of the way. Whether you're booking, preparing, or mid-move, you'll always have access to clear answers and calm, expert support. From your first question to final delivery, our concierge team keeps communication smooth, expectations clear, and your move on track. That’s the MoveSafe Method™ — combining smart tools and human touch to give you total confidence.",
-                guarantee: "Your deposit is fully refundable — no tricks, no fine print. After your photo review and MoveSafe Call, we’ll send you a Guaranteed Flat Rate. Don’t love it? Don’t move forward. We’ll return your deposit. Every time. Because trust starts before the truck shows up."
-              }[activeModal]}
-            
-            <button onClick={() => setActiveModal(null)} style={{ marginTop: "20px", padding: "10px 20px", background: "#0d6efd", color: "#fff", border: "none", borderRadius: "6px", fontSize: "14px" }}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+    </main>
+    <footer style={{ textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', position: 'relative', bottom: 0, width: '100%' }}>
+      <p style={{ fontSize: '14px', color: '#666' }}>
+        &copy; 2025 MovingCo. All rights reserved. | <a href="/privacy" style={{ color: '#666' }}>Privacy Policy</a>
+      </p>
+    </footer>
+  
 
       
 
