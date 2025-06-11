@@ -16,6 +16,17 @@ export default function ChatBox() {
   const handleButtonClick = async (btnText) => {
     setClickedButtons((prev) => [...prev, btnText]);
     setMessages((prev) => [...prev, { role: 'user', content: btnText }]);
+
+    // Optional: Handle "How it works" locally
+    if (btnText === "How it works") {
+      setMessages((prev) => [...prev, {
+        role: 'bot',
+        content: "We pair you with verified movers, confirm inventory on a quick call, and lock in a flat rate. No surprises.",
+        phase: 2
+      }]);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/chat", {
@@ -24,7 +35,12 @@ export default function ChatBox() {
         body: JSON.stringify({ userInput: btnText })
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'bot', content: data.message, buttons: data.buttons, phase: data.phase }]);
+      setMessages((prev) => [...prev, {
+        role: 'bot',
+        content: data.message,
+        buttons: data.buttons,
+        phase: data.phase
+      }]);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { role: 'bot', content: "Something went wrong. Please try again." }]);
@@ -46,7 +62,12 @@ export default function ChatBox() {
         body: JSON.stringify({ userInput })
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: 'bot', content: data.message, buttons: data.buttons, phase: data.phase }]);
+      setMessages((prev) => [...prev, {
+        role: 'bot',
+        content: data.message,
+        buttons: data.buttons,
+        phase: data.phase
+      }]);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [...prev, { role: 'bot', content: "Something went wrong. Please try again." }]);
@@ -56,7 +77,7 @@ export default function ChatBox() {
 
   return (
     <div style={{
-      background: '#e6f7ff',
+      background: 'linear-gradient(to bottom, #f9f9f9, #f1f1f1)',
       padding: '20px',
       borderRadius: '12px',
       maxWidth: '800px',
@@ -73,13 +94,36 @@ export default function ChatBox() {
             <div style={{
               display: 'inline-block',
               padding: '12px 16px',
-              background: msg.role === 'user' ? '#cce5ff' : '#f1f1f1',
+              background: msg.role === 'user' ? '#d7ecff' : '#f1f1f1',
               borderRadius: '16px',
               maxWidth: '80%',
               whiteSpace: 'pre-wrap'
             }}>
               {msg.content}
             </div>
+
+            {/* Stripe button for phase 999 */}
+            {msg.phase === 999 && (
+              <div style={{ marginTop: '16px' }}>
+                <a
+                  href="https://buy.stripe.com/eVqbJ23Px8yx4Ab2aU"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    padding: '12px 24px',
+                    background: '#28a745',
+                    color: '#fff',
+                    fontSize: '16px',
+                    borderRadius: '8px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  Reserve My Move Now ($85)
+                </a>
+              </div>
+            )}
+
             {msg.buttons && (
               <div style={{ marginTop: '10px' }}>
                 {msg.buttons.map((btn, bIdx) => {
