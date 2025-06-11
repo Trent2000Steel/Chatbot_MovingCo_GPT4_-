@@ -6,7 +6,7 @@ import TestimonialBar from '../components/testimonialbar';
 export default function Home() {
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#ffffff' }}>
-      <header style={{ textAlign: 'center', padding: '20px 0' }}>
+      <header style={{ textAlign: 'center', padding: '10px 0' }}>
         <img
           src="/Header.png"
           alt="MovingCo Header"
