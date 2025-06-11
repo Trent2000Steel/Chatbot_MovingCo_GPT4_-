@@ -98,7 +98,8 @@ export default function ChatBox() {
             <div style={{
               display: 'inline-block',
               padding: '12px 16px',
-              background: msg.role === 'user' ? '#d7ecff' : '#eaf3fb',
+              background: msg.role === 'user' ? '#d7ecff' : '#ffffff',
+              boxShadow: msg.role === 'user' ? 'none' : '0 2px 8px rgba(0, 0, 0, 0.08)',
               borderRadius: '16px',
               maxWidth: '80%',
               whiteSpace: 'pre-wrap'
