@@ -202,7 +202,27 @@ const [messages, setMessages] = useState([]);
 </div>
 
 
-      <main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
+      
+<div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; padding: 16px 0;">
+  <div style="text-align: center;">
+    <img src="/trust_verified.png" alt="Verified Movers" style="width: 40px; height: 40px;" />
+    <div style="font-weight: bold; font-size: 12px;">VERIFIED<br />MOVERS</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/trust_flat.png" alt="Flat Rate Guarantee" style="width: 40px; height: 40px;" />
+    <div style="font-weight: bold; font-size: 12px;">FLAT RATE<br />GUARANTEE</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/trust_dedicated.png" alt="Dedicated Coordinator" style="width: 40px; height: 40px;" />
+    <div style="font-weight: bold; font-size: 12px;">DEDICATED<br />COORDINATOR</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/trust_moneyback.png" alt="Money-Back Guarantee" style="width: 40px; height: 40px;" />
+    <div style="font-weight: bold; font-size: 12px;">MONEY-BACK<br />GUARANTEE</div>
+  </div>
+</div>
+
+<main className="chat-container" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", border: "1px solid #ccc", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", margin: "10px" }}>
         <div className="messages" style={{ flex: 1, overflowY: "auto", padding: "15px", background: "linear-gradient(to bottom, #f9f9f9, #f0f0f0)"}}>
           {messages.map((msg, idx) => msg.content === "start_chat" ? null : renderMessage(msg, idx))}
           {loading && (
