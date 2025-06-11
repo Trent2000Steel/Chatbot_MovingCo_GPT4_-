@@ -98,7 +98,7 @@ export default function ChatBox() {
             <div style={{
               display: 'inline-block',
               padding: '12px 16px',
-              background: msg.role === 'user' ? '#d7ecff' : '#f1f1f1',
+              background: msg.role === 'user' ? '#d7ecff' : '#eaf3fb',
               borderRadius: '16px',
               maxWidth: '80%',
               whiteSpace: 'pre-wrap'
@@ -109,7 +109,7 @@ export default function ChatBox() {
             {msg.phase === 999 && (
               <div style={{ marginTop: '16px' }}>
                 <a
-                  href="https://buy.stripe.com/eVqbJ23Px8yx4Ab2aU"
+                  href="https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00"
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
