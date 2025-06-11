@@ -45,22 +45,7 @@ export default function Home() {
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 6000);
-    
-  const modalTitle = {
-    movesafe: "MoveSafe Verified",
-    flatrate: "Guaranteed Flat Rate",
-    support: "24/7 Concierge Support",
-    guarantee: "Money-Back Guarantee"
-  }[activeModal];
-
-  const modalBody = {
-    movesafe: "Every move we coordinate goes through licensed, vetted professionals using the MoveSafe Method™. That includes verified crews, smart quoting, real human review, and concierge-level support. But we go further: every customer receives fresh, single-use moving protection—no reused pads or dirty blankets from someone else's move. It's your move, your materials, and your peace of mind.",
-    flatrate: "We start by giving you a real estimate—right here in chat. It’s powered by AI trained on thousands of recent moves across the U.S. If the range looks good, you’ll place a small, refundable $85 deposit to reserve your date. Then, you’ll submit photos and hop on a MoveSafe Call with our live, experienced staff. After reviewing everything, we’ll lock in your Guaranteed Flat Rate — no hidden fees, no surprises. Don’t like the final number? No problem. We’ll return your deposit. The price you accept is the price you pay. Period.",
-    support: "MovingCo blends real-time AI support with experienced, U.S.-based coordinators to guide you every step of the way. Whether you're booking, preparing, or mid-move, you'll always have access to clear answers and calm, expert support. From your first question to final delivery, our concierge team keeps communication smooth, expectations clear, and your move on track. That’s the MoveSafe Method™ — combining smart tools and human touch to give you total confidence.",
-    guarantee: "Your deposit is fully refundable — no tricks, no fine print. After your photo review and MoveSafe Call, we’ll send you a Guaranteed Flat Rate. Don’t love it? Don’t move forward. We’ll return your deposit. Every time. Because trust starts before the truck shows up."
-  }[activeModal];
-
-return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
 const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
@@ -252,7 +237,13 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
   marginBottom: "8px"
 }}>
 
-  <strong>Skip the forms. Get a real quote in chat — fast.</strong><br /><br />
+  <strong>Skip the forms. Get a real quote in chat — fast.
+
+We’ll guide you step-by-step in just a few minutes:
+
+1. Chat now and get your custom quote
+2. Reserve your move day with a refundable $85 deposit
+3. Lock in your flat rate after a quick MoveSafe Call</strong><br /><br />
   We’ll guide you step-by-step in just a few minutes:<br /><br />
   <strong>1.</strong> Chat now and get your custom quote<br />
   <strong>2.</strong> Reserve your move day with a refundable $85 deposit<br />
@@ -330,10 +321,20 @@ const stripeLink = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
             maxWidth: "90%", width: "400px", textAlign: "center", boxShadow: "0 6px 20px rgba(0,0,0,0.3)"
           }}>
             <h2 style={{ marginBottom: "16px" }}>
-              {modalTitle}
+              {{
+                movesafe: "MoveSafe Verified",
+                flatrate: "Guaranteed Flat Rate",
+                support: "24/7 Concierge Support",
+                guarantee: "Money-Back Guarantee"
+              }[activeModal]}
             </h2>
             <p style={{ fontSize: "15px", lineHeight: "1.5" }}>
-              {modalBody}
+              {{
+                movesafe: "Every move we coordinate goes through licensed, vetted professionals using the MoveSafe Method™. That includes verified crews, smart quoting, real human review, and concierge-level support. But we go further: every customer receives fresh, single-use moving protection—no reused pads or dirty blankets from someone else's move. It's your move, your materials, and your peace of mind.",
+                flatrate: "We start by giving you a real estimate—right here in chat. It’s powered by AI trained on thousands of recent moves across the U.S. If the range looks good, you’ll place a small, refundable $85 deposit to reserve your date. Then, you’ll submit photos and hop on a MoveSafe Call with our live, experienced staff. After reviewing everything, we’ll lock in your Guaranteed Flat Rate — no hidden fees, no surprises. Don’t like the final number? No problem. We’ll return your deposit. The price you accept is the price you pay. Period.",
+                support: "MovingCo blends real-time AI support with experienced, U.S.-based coordinators to guide you every step of the way. Whether you're booking, preparing, or mid-move, you'll always have access to clear answers and calm, expert support. From your first question to final delivery, our concierge team keeps communication smooth, expectations clear, and your move on track. That’s the MoveSafe Method™ — combining smart tools and human touch to give you total confidence.",
+                guarantee: "Your deposit is fully refundable — no tricks, no fine print. After your photo review and MoveSafe Call, we’ll send you a Guaranteed Flat Rate. Don’t love it? Don’t move forward. We’ll return your deposit. Every time. Because trust starts before the truck shows up."
+              }[activeModal]}
             
             <button onClick={() => setActiveModal(null)} style={{ marginTop: "20px", padding: "10px 20px", background: "#0d6efd", color: "#fff", border: "none", borderRadius: "6px", fontSize: "14px" }}>
               Close
