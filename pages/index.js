@@ -63,19 +63,16 @@ const [messages, setMessages] = useState([]);
       setLoading(false);
     }
     setInput("");
-  };
 
   const handleButtonClick = (btnText) => {
     setClickedButtons((prev) => [...prev, btnText]);
     sendMessage(btnText);
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (input.trim()) {
       sendMessage(input.trim());
     }
-  };
 
   const renderMessage = (msg, idx) => {
     return (
@@ -170,7 +167,6 @@ const [messages, setMessages] = useState([]);
         )}
       </div>
     );
-  };
 
   const badgeStyle = {
   flex: "1 1 140px",
@@ -184,7 +180,6 @@ const [messages, setMessages] = useState([]);
   cursor: "pointer",
   boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
   transition: "transform 0.1s ease-in-out",
-};
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
@@ -272,5 +267,5 @@ const [messages, setMessages] = useState([]);
       
     </div>
   );
-}
+
 export default Home;
