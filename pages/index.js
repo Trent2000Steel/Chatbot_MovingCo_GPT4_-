@@ -2,7 +2,6 @@
 import Head from 'next/head';
 import ChatBox from '../components/chatbox';
 import Footer from '../components/footer';
-import IntroMessage from '../components/intromessage';
 import TestimonialBar from '../components/testimonialbar';
 
 export default function Home() {
@@ -61,7 +60,18 @@ export default function Home() {
         />
       </div>
 
-      <IntroMessage />
+      {/* Trust Bar Image */}
+      <img
+        src="/Movingcompany2.png"
+        alt="Trust Bar"
+        style={{
+          width: '100%',
+          display: 'block',
+          margin: 0,
+          padding: 0
+        }}
+      />
+
       <ChatBox />
       <TestimonialBar />
       <Footer />
