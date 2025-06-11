@@ -12,7 +12,7 @@ export default function IntroMessage() {
         Skip the forms. Get a real quote in chat — fast.
       </h2>
       <p style={{ fontSize: '16px', color: '#555' }}>
-        We’ll guide you step-by-step in just a few minutes:
+        We’ll guide you step-by-step right now:
       </p>
       <ol style={{
         textAlign: 'left',
