@@ -34,7 +34,7 @@ export default function Home() {
         />
 
         <img
-          src="/images/HeaderOverlay.png"
+          src="/Headeroverlay.PNG"
           alt="MovingCo Overlay"
           style={{
             maxWidth: '1000px',
