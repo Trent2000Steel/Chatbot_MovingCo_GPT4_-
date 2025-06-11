@@ -94,7 +94,8 @@ export default function ChatBox() {
       maxWidth: '800px',
       margin: '20px auto',
       border: '1px solid #ccc',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      fontFamily: '"Inter", sans-serif'
     }}>
       <div style={{ minHeight: '300px', paddingBottom: '20px' }}>
         {messages.map((msg, idx) => (
@@ -110,17 +111,21 @@ export default function ChatBox() {
               borderRadius: '16px',
               maxWidth: '80%',
               whiteSpace: 'pre-wrap',
-              position: 'relative'
+              fontSize: '15px',
+              lineHeight: '1.5'
             }}>
               {msg.content}
-              <div style={{
-                fontSize: '10px',
-                color: '#777',
-                marginTop: '6px',
-                textAlign: 'right'
-              }}>
-                {msg.timestamp}
-              </div>
+            </div>
+            <div style={{
+              fontSize: '11px',
+              color: '#888',
+              marginTop: '4px',
+              marginLeft: msg.role === 'user' ? 'auto' : '0',
+              marginRight: msg.role === 'user' ? '0' : 'auto',
+              width: 'fit-content',
+              fontFamily: '"Inter", sans-serif'
+            }}>
+              {msg.timestamp}
             </div>
 
             {msg.phase === 999 && (
@@ -136,7 +141,8 @@ export default function ChatBox() {
                     color: '#fff',
                     fontSize: '16px',
                     borderRadius: '8px',
-                    textDecoration: 'none'
+                    textDecoration: 'none',
+                    fontFamily: '"Inter", sans-serif'
                   }}
                 >
                   Reserve My Move Now ($85)
@@ -162,7 +168,8 @@ export default function ChatBox() {
                         color: '#fff',
                         cursor: isDisabled ? 'not-allowed' : 'pointer',
                         opacity: isDisabled ? 0.5 : 1,
-                        fontSize: '14px'
+                        fontSize: '14px',
+                        fontFamily: '"Inter", sans-serif'
                       }}
                     >
                       {btn}
@@ -178,7 +185,8 @@ export default function ChatBox() {
       <form onSubmit={handleSubmit} style={{
         display: 'flex',
         paddingTop: '12px',
-        borderTop: '1px solid #ccc'
+        borderTop: '1px solid #ccc',
+        fontFamily: '"Inter", sans-serif'
       }}>
         <input
           type="text"
@@ -191,7 +199,8 @@ export default function ChatBox() {
             borderRadius: '24px',
             border: '1px solid #ccc',
             fontSize: '16px',
-            marginRight: '10px'
+            marginRight: '10px',
+            fontFamily: '"Inter", sans-serif'
           }}
         />
         <button
@@ -204,7 +213,8 @@ export default function ChatBox() {
             color: '#fff',
             border: 'none',
             fontSize: '16px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontFamily: '"Inter", sans-serif'
           }}
         >
           Send
