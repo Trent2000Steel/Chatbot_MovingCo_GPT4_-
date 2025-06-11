@@ -17,13 +17,17 @@ export default function ChatBox() {
     setClickedButtons((prev) => [...prev, btnText]);
     setMessages((prev) => [...prev, { role: 'user', content: btnText }]);
 
-    // Optional: Handle "How it works" locally
     if (btnText === "How it works") {
-      setMessages((prev) => [...prev, {
-        role: 'bot',
-        content: "We pair you with verified movers, confirm inventory on a quick call, and lock in a flat rate. No surprises.",
-        phase: 2
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'bot',
+          content:
+            "We coordinate your move from start to finish using verified, trusted movers and long-distance transport.\nThese are professionals who show up on time, handle your belongings with care, and deliver a move that’s seamless and stress-free.\n\nEvery move is backed by our MoveSafe Method™—that means:\n✅ Verified Movers\n✅ Flat Rate Guarantee\n✅ Dedicated Coordination\n✅ Money-Back Guarantee\n\nWant to get your custom quote?",
+          buttons: ['Texas', 'California', 'New York', 'Other'],
+          phase: 2
+        }
+      ]);
       return;
     }
 
@@ -102,7 +106,6 @@ export default function ChatBox() {
               {msg.content}
             </div>
 
-            {/* Stripe button for phase 999 */}
             {msg.phase === 999 && (
               <div style={{ marginTop: '16px' }}>
                 <a
