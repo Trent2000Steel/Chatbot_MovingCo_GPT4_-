@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 export default function TestimonialBar() {
   const testimonials = [
     {
@@ -32,37 +34,55 @@ export default function TestimonialBar() {
     }
   ];
 
+  const [current, setCurrent] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrent((prev) => (prev + 1) % testimonials.length);
+        setFade(true);
+      }, 300); // match transition duration
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const t = testimonials[current];
+
   return (
     <div style={{ backgroundColor: '#e6f2ff', padding: '40px 20px', textAlign: 'center' }}>
-      <div id="testimonial-container">
-        {testimonials.map((t, i) => (
-          <div key={i} style={{ maxWidth: '600px', margin: '0 auto 40px' }}>
-            <img
-              src={t.img}
-              alt={`Photo of ${t.name}`}
-              style={{
-                width: '90px',
-                height: '90px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                marginBottom: '16px'
-              }}
-            />
-            <p style={{
-              fontStyle: 'italic',
-              fontSize: '16px',
-              lineHeight: '1.6',
-              margin: '0 auto 10px',
-              color: '#333'
-            }}>
-              “{t.text}”
-            </p>
-            <div style={{ fontSize: '18px', color: '#000', margin: '8px 0' }}>★ ★ ★ ★ ★</div>
-            <div style={{ fontSize: '13px', color: '#555' }}>
-              — {t.name}, {t.route}
-            </div>
-          </div>
-        ))}
+      <div style={{
+        maxWidth: '600px',
+        margin: '0 auto',
+        transition: 'opacity 0.3s ease-in-out',
+        opacity: fade ? 1 : 0
+      }}>
+        <img
+          src={t.img}
+          alt={`Photo of ${t.name}`}
+          loading="lazy"
+          style={{
+            width: '90px',
+            height: '90px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            marginBottom: '16px'
+          }}
+        />
+        <p style={{
+          fontStyle: 'italic',
+          fontSize: '16px',
+          lineHeight: '1.6',
+          margin: '0 auto 10px',
+          color: '#333'
+        }}>
+          “{t.text}”
+        </p>
+        <div style={{ fontSize: '18px', color: '#000', margin: '8px 0' }}>★ ★ ★ ★ ★</div>
+        <div style={{ fontSize: '13px', color: '#555' }}>
+          — {t.name}, {t.route}
+        </div>
       </div>
     </div>
   );
