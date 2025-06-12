@@ -67,14 +67,27 @@ export default function Home() {
         <span role="img" aria-label="wave">👋</span> Ready to get your price? Just answer a few quick questions.
       </div>
 
-      {/* Fullscreen ChatFlow */}
+      {/* Chat container with border, blue top line, and bottom shadow */}
       <div style={{
-        width: "100%",
+        backgroundColor: "#fff",
+        maxWidth: "100%",
+        margin: "0 auto",
+        border: "1px solid #e0e0e0",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
         padding: "0",
-        margin: "0",
-        backgroundColor: "#f9fbff"
+        overflow: "hidden"
       }}>
-        <ChatFlow />
+        <div style={{
+          backgroundColor: "#1e70ff",
+          height: "6px",
+          width: "100%",
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px"
+        }} />
+        <div style={{ padding: "16px" }}>
+          <ChatFlow />
+        </div>
       </div>
 
       {/* Full-width trust badge image */}
