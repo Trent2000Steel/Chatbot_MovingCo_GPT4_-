@@ -43,7 +43,31 @@ export default function Home() {
             paddingTop: "60px"
           }}
         />
+        {/* Floating white down arrow */}
+        <div style={{
+          position: "absolute",
+          bottom: "30px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 3,
+          animation: "bounce 2s infinite"
+        }}>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateX(-50%) translateY(0);
+          }
+          50% {
+            transform: translateX(-50%) translateY(8px);
+          }
+        }
+      `}</style>
 
       {/* Trust message */}
       <div style={{
