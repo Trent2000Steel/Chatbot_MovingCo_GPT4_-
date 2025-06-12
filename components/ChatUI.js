@@ -1,10 +1,9 @@
-
 import React from "react";
 
 export default function ChatUI({
-  messages,
+  messages = [],
   input,
-  options,
+  options = [],
   isThinking,
   handleInputChange,
   handleUserInput
