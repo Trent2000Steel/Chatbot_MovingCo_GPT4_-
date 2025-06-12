@@ -35,7 +35,7 @@ export default async function handler(req, res) {
   const lowerInput = userInput.toLowerCase();
   if (fallbackKeywords.some(keyword => lowerInput.includes(keyword))) {
     try {
-      const fallbackPrompt = \`You are a MovingCo sales agent. The customer has asked about a key concern (such as damage, refunds, delays, price, or safety). Respond in ONLY 1–2 short sentences, calm and professional, and gently guide them back to completing their booking.\`;
+      const fallbackPrompt = \`You are a MovingCo sales agent. The customer has asked about a key concern (such as damage, refunds, delays, price, or safety). Respond in ONLY 1-2 short sentences, calm and professional, and gently guide them back to completing their booking.\`;
 
       const fallbackCompletion = await openai.chat.completions.create({
         model: 'gpt-4',
