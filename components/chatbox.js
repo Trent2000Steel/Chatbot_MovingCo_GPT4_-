@@ -26,7 +26,7 @@ export default function ChatBox() {
     setMessages([
       {
         sender: "system",
-        text: "No forms, no waiting—I’ll give you a real price range right now!"
+        text: "No forms, no waiting—I'll give you a real price range right now!"
       },
       {
         sender: "system",
@@ -81,7 +81,7 @@ export default function ChatBox() {
           const recap = [
             {
               sender: "system",
-              text: `Got it! Here’s what I have so far:
+              text: `Got it! Here's what I have so far:
 - Move Size: ${updatedInfo.size}
 - From: ${updatedInfo.origin}
 - To: ${updatedInfo.destination}
@@ -92,11 +92,10 @@ export default function ChatBox() {
             { sender: "system", text: "Preparing your quote…" },
             { sender: "system", text: "Checking route availability and fuel trends…" },
             { sender: "system", text: "Filtering for 4.5-star movers with special equipment…" },
-            { sender: "system", text: "Your price range: $2,200–$2,800 flat.
-Rates may change soon — this is a live quote." },
+            { sender: "system", text: "Your price range: $2,200–$2,800 flat.\nRates may change soon — this is a live quote." },
             {
               sender: "system",
-              text: "Here’s how it works: You pay a refundable $85 deposit to reserve your spot. Then upload room photos and we finalize your flat rate. Your MoveSafe Coordinator will call you within 48 hours."
+              text: "Here's how it works: You pay a refundable $85 deposit to reserve your spot. Then upload room photos and we finalize your flat rate. Your MoveSafe Coordinator will call you within 48 hours."
             },
             {
               sender: "system",
@@ -119,15 +118,15 @@ Rates may change soon — this is a live quote." },
             setIsThinking(false);
             return;
           }
-          newPrompt = "Great! Let’s get your info. What’s your full name?";
+          newPrompt = "Great! Let's get your info. What's your full name?";
           break;
         case 8:
           updatedInfo.name = value;
-          newPrompt = "What’s your email address?";
+          newPrompt = "What's your email address?";
           break;
         case 9:
           updatedInfo.email = value;
-          newPrompt = "What’s the best phone number to reach you?";
+          newPrompt = "What's the best phone number to reach you?";
           break;
         case 10:
           updatedInfo.phone = value;
