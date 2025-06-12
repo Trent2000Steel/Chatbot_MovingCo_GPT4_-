@@ -11,9 +11,9 @@ export default function ChatBox() {
   const [options, setOptions] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
   const [phase, setPhase] = useState("opener");
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    // Inject welcome message once on load
     if (messages.length === 0) {
       addBotMessage("No forms, no waiting — I’ll give you a real price range right now.");
     }
@@ -35,12 +35,16 @@ export default function ChatBox() {
 
   const handleUserInput = (text) => {
     if (!text.trim()) return;
+
     addUserMessage(text);
     setInput("");
-  };
 
-  const handleOpenerComplete = () => {
-    setPhase("estimate");
+    if (phase === "opener") {
+      const { botReply, updatedUserData, nextPhase } = ChatOpener(text, userData);
+      setUserData(updatedUserData);
+      addBotMessage(botReply);
+      if (nextPhase) setPhase(nextPhase);
+    }
   };
 
   const handleQuoteGenerated = () => {
@@ -49,7 +53,6 @@ export default function ChatBox() {
 
   const handleSubmitStripe = () => {
     addBotMessage("Great — let’s reserve your move! Redirecting to secure checkout…");
-    // Stripe redirect would go here
   };
 
   const handleAskMoreQuestions = () => {
@@ -70,15 +73,9 @@ export default function ChatBox() {
         handleInputChange={handleInputChange}
         handleUserInput={handleUserInput}
       />
-      {phase === "opener" && (
-        <ChatOpener
-          onComplete={handleOpenerComplete}
-          addBotMessage={addBotMessage}
-          addUserMessage={addUserMessage}
-        />
-      )}
       {phase === "estimate" && (
         <EstimateFlow
+          userData={userData}
           onQuoteReady={handleQuoteGenerated}
           addBotMessage={addBotMessage}
         />
