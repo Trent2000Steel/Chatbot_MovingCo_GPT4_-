@@ -1,3 +1,4 @@
+import HowItWorks from './components/HowItWorks';
 
 import Head from 'next/head';
 import ChatBox from '../components/chatbox';
@@ -123,6 +124,7 @@ export default function Home() {
         </div>
 
         <TestimonialBar />
+        <HowItWorks />
         <Footer />
       </div>
 
