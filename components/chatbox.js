@@ -163,7 +163,7 @@ export default function ChatBox() {
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      <div style={{ height: "600px", padding: "20px", overflowY: "auto" }}>
+      <div style={{ height: "480px", padding: "16px", overflowY: "auto" }}>
         {messages.map((msg, index) => (
           <div
             key={index}
