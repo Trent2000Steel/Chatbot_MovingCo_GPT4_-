@@ -1,4 +1,3 @@
-import HowItWorks from './components/HowItWorks';
 
 import Head from 'next/head';
 import ChatBox from '../components/chatbox';
@@ -124,7 +123,33 @@ export default function Home() {
         </div>
 
         <TestimonialBar />
-        <HowItWorks />
+
+        {/* Replacing HowItWorks with static image */}
+        <div style={{ backgroundColor: '#1a1a1a', padding: '40px 0' }}>
+          <img
+            src="/17029ECA-FD4F-4F7C-A085-91BBF0DFDFFB.png"
+  loading="lazy"
+            alt="How It Works"
+            style={{
+              width: '100%',
+              maxWidth: '900px',
+              margin: '0 auto 40px auto',
+              display: 'block'
+            }}
+          />
+          <img
+            src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png"
+  loading="lazy"
+            alt="Final Call To Action"
+            style={{
+              width: '100%',
+              maxWidth: '800px',
+              margin: '0 auto',
+              display: 'block'
+            }}
+          />
+        </div>
+
         <Footer />
       </div>
 
