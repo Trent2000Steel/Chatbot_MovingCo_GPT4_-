@@ -25,8 +25,8 @@ const openerSteps = [
   },
   {
     phase: 6,
-    message: "And what size roughly? (e.g. 2-bedroom, studio, 4-bedroom)",
-    type: "text"
+    message: "And what size roughly?",
+    options: ["1-bedroom", "2-bedroom", "3-bedroom", "4-bedroom+"]
   },
   {
     phase: 7,
@@ -35,8 +35,11 @@ const openerSteps = [
   },
   {
     phase: 8,
-    message: "What help do you need?",
-    options: ["Loading", "Unloading", "Packing", "Everything"]
+    message: "Do you want help with packing too?",
+    options: [
+      "Yes, I need packing help",
+      "No, I’ll pack everything myself"
+    ]
   },
   {
     phase: 9,
