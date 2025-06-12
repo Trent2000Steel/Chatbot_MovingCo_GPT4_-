@@ -68,14 +68,14 @@ export default function Home() {
       </div>
 
       {/* Chat container with light gray background */}
-      <div style={{ backgroundColor: "#f2f4f7", padding: "40px 20px" }}>
+      <div style={{ backgroundColor: "#f2f4f7", padding: "40px 12px" }}>
         <main style={{
           maxWidth: "800px",
           margin: "0 auto",
           background: "#fff",
           borderRadius: "12px",
           boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-          padding: "40px 24px"
+          padding: "40px 12px"
         }}>
           <div style={{
             backgroundColor: "#fff",
@@ -85,7 +85,7 @@ export default function Home() {
           }}>
             <div style={{
               backgroundColor: "#1e70ff",
-              height: "6px",
+              height: "8px",
               width: "100%",
               borderTopLeftRadius: "12px",
               borderTopRightRadius: "12px",
