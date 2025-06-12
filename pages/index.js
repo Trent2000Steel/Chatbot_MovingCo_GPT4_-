@@ -67,32 +67,34 @@ export default function Home() {
         <span role="img" aria-label="wave">👋</span> Ready to get your price? Just answer a few quick questions.
       </div>
 
-      {/* Chat container with inner box effect */}
-      <main style={{
-        maxWidth: "800px",
-        margin: "0 auto",
-        background: "#fff",
-        borderRadius: "12px",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-        padding: "40px 24px"
-      }}>
-        <div style={{
-          backgroundColor: "#fff",
+      {/* Chat container with light gray background */}
+      <div style={{ backgroundColor: "#f2f4f7", padding: "40px 20px" }}>
+        <main style={{
+          maxWidth: "800px",
+          margin: "0 auto",
+          background: "#fff",
           borderRadius: "12px",
-          padding: "24px",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.04)"
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+          padding: "40px 24px"
         }}>
           <div style={{
-            backgroundColor: "#1e70ff",
-            height: "6px",
-            width: "100%",
-            borderTopLeftRadius: "12px",
-            borderTopRightRadius: "12px",
-            marginBottom: "16px"
-          }} />
-          <ChatBox />
-        </div>
-      </main>
+            backgroundColor: "#fff",
+            borderRadius: "12px",
+            padding: "24px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.04)"
+          }}>
+            <div style={{
+              backgroundColor: "#1e70ff",
+              height: "6px",
+              width: "100%",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px",
+              marginBottom: "16px"
+            }} />
+            <ChatBox />
+          </div>
+        </main>
+      </div>
 
       {/* Full-width trust badge image */}
       <div style={{ width: "100%", marginTop: "40px", marginBottom: "40px" }}>
