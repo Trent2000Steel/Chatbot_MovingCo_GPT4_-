@@ -1,6 +1,6 @@
 
 import Head from "next/head";
-import Chat from "../public/chat"; // <-- This is your main orchestrator using ChatUI and the flow logic
+import Chat from "../components/ChatBox"; // <-- This is your main orchestrator using ChatUI and the flow logic
 
 export default function Home() {
   return (
