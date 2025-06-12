@@ -35,10 +35,6 @@ export default function ChatBox() {
     ]);
   }, []);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   const handleUserInput = (value) => {
     if (!value) return;
     const newMessages = [...messages, { sender: "user", text: value }];
@@ -167,7 +163,7 @@ export default function ChatBox() {
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      <div style={{ maxHeight: "400px", overflowY: "auto", padding: "10px" }}>
+      <div style={{ height: "600px", padding: "20px", overflowY: "auto" }}>
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -192,7 +188,7 @@ export default function ChatBox() {
             </div>
           </div>
         ))}
-        <div ref={bottomRef} />
+        
       </div>
 
       {isThinking && <div style={{ fontStyle: "italic", padding: "8px" }}>...</div>}
