@@ -4,7 +4,7 @@ import ChatUI from "./ChatUI";
 import opener from "./ChatOpener";
 import estimate from "./EstimateFlow";
 import closer from "./ChatFlow_Closing";
-import runChat from "./chat";
+import runChat from "../pages/api/chat";
 
 export default function ChatBox() {
   const [messages, setMessages] = useState([]);
