@@ -4,19 +4,20 @@ import ChatUI from "./ChatUI";
 import opener from "./ChatOpener";
 import estimate from "./EstimateFlow";
 import closer from "./ChatFlow_Closing";
-import runChat from "../pages/api/chat";
 
 export default function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [options, setOptions] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [sessionId] = useState(() => Date.now().toString());
 
   useEffect(() => {
-    // Load initial messages from the opener phase
-    const initialMessages = opener.messages || [];
+    const initialMessages = [
+      { sender: "bot", text: "No forms, no waiting — I’ll give you a real price range right now.", timestamp: new Date().toLocaleTimeString() },
+      { sender: "bot", text: "Where are you moving from?", timestamp: new Date().toLocaleTimeString() }
+    ];
     setMessages(initialMessages);
-    setOptions(opener.options || []);
   }, []);
 
   const handleInputChange = (e) => {
@@ -26,25 +27,44 @@ export default function ChatBox() {
   const handleUserInput = async (userText) => {
     if (!userText.trim()) return;
 
-    const userMessage = { sender: "user", text: userText, timestamp: new Date().toLocaleTimeString() };
+    const userMessage = {
+      sender: "user",
+      text: userText,
+      timestamp: new Date().toLocaleTimeString()
+    };
+
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
     setOptions([]);
     setIsThinking(true);
 
-    const { reply, nextOptions } = await runChat({
-      messages: updatedMessages,
-      input: userText,
-      opener,
-      estimate,
-      closer
-    });
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, userInput: userText }),
+      });
 
-    const botMessage = { sender: "bot", text: reply, timestamp: new Date().toLocaleTimeString() };
-    setMessages([...updatedMessages, botMessage]);
-    setOptions(nextOptions || []);
-    setIsThinking(false);
+      const data = await res.json();
+
+      const botMessage = {
+        sender: "bot",
+        text: data.message,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      setMessages([...updatedMessages, botMessage]);
+      setOptions(data.buttons || []);
+    } catch (err) {
+      setMessages([...updatedMessages, {
+        sender: "bot",
+        text: "Oops, something went wrong. Please try again.",
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   return (
