@@ -14,8 +14,7 @@ export default function ChatBox() {
 
   useEffect(() => {
     const initialMessages = [
-      { sender: "bot", text: "No forms, no waiting — I’ll give you a real price range right now.", timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) },
-      { sender: "bot", text: "Where are you moving from?", timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) }
+      { sender: "bot", text: "No forms, no waiting — I’ll give you a real price. Where are you moving from?", timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) }
     ];
     setMessages(initialMessages);
   }, []);
