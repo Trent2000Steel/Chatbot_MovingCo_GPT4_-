@@ -1,88 +1,78 @@
-import { useEffect, useState } from 'react';
+
+import React from 'react';
+
+const testimonials = [
+  {
+    name: "James, TX to FL",
+    quote: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
+    image: "/Te1.PNG",
+    rating: 5
+  },
+  {
+    name: "Evelyn, NY to TN",
+    quote: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
+    image: "/Te2.PNG",
+    rating: 5
+  },
+  {
+    name: "Marcus, AZ to WA",
+    quote: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
+    image: "/Te3.PNG",
+    rating: 5
+  }
+];
 
 export default function TestimonialBar() {
-  const testimonials = [
-    {
-      img: '/Te1.PNG',
-      text: "We had a lot of concerns moving cross country. MovingCo didn't just calm our nerves — they handled every detail, every question, and never once made us feel like we were bothering them. Incredible service.",
-      name: "Karen",
-      route: "CA to TX"
-    },
-    {
-      img: '/Te2.PNG',
-      text: "Every mover showed up exactly on time, and the quote matched the final price. No surprises. That's all I ever wanted.",
-      name: "Alicia",
-      route: "TX to FL"
-    },
-    {
-      img: '/Te3.PNG',
-      text: "We had some valuable antiques we were worried about. Everything was packed with care and arrived perfectly.",
-      name: "Evelyn",
-      route: "NY to TN"
-    },
-    {
-      img: '/Te4.PNG',
-      text: "We weren’t sure if a concierge-style service would be worth it. It was. We had support the whole way through.",
-      name: "Raj",
-      route: "NV to AZ"
-    },
-    {
-      img: '/Te5.PNG',
-      text: "We’d been ghosted by another mover days before our move date. MovingCo came through and made it happen. Life saver.",
-      name: "Chris",
-      route: "IL to CA"
-    }
-  ];
-
-  const [current, setCurrent] = useState(0);
-  const [fade, setFade] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrent((prev) => (prev + 1) % testimonials.length);
-        setFade(true);
-      }, 300); // match transition duration
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const t = testimonials[current];
-
   return (
-    <div style={{ backgroundColor: '#e6f2ff', padding: '40px 20px', textAlign: 'center' }}>
-      <div style={{
-        maxWidth: '600px',
-        margin: '0 auto',
-        transition: 'opacity 0.3s ease-in-out',
-        opacity: fade ? 1 : 0
+    <div style={{
+      backgroundColor: '#f0f4f8',
+      padding: '48px 16px'
+    }}>
+      <h2 style={{
+        textAlign: 'center',
+        fontSize: '24px',
+        fontWeight: '600',
+        marginBottom: '32px',
+        color: '#222'
       }}>
-        <img
-          src={t.img}
-          alt={`Photo of ${t.name}`}
-          loading="lazy"
-          style={{
-            width: '90px',
-            height: '90px',
-            borderRadius: '50%',
-            objectFit: 'cover',
-            marginBottom: '16px'
-          }}
-        />
-        <p style={{
-          fontStyle: 'italic',
-          fontSize: '16px',
-          lineHeight: '1.6',
-          margin: '0 auto 10px',
-          color: '#333'
-        }}>
-          “{t.text}”
-        </p>
-        <div style={{ fontSize: '18px', color: '#000', margin: '8px 0' }}>★ ★ ★ ★ ★</div>
-        <div style={{ fontSize: '13px', color: '#555' }}>
-          — {t.name}, {t.route}
-        </div>
+        What Customers Are Saying
+      </h2>
+      <div style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: '24px'
+      }}>
+        {testimonials.map((t, i) => (
+          <div key={i} style={{
+            backgroundColor: '#fff',
+            borderRadius: '12px',
+            boxShadow: '0 6px 20px rgba(0,0,0,0.05)',
+            padding: '24px',
+            maxWidth: '340px',
+            textAlign: 'center',
+            flex: '1 1 300px'
+          }}>
+            <img
+              src={t.image}
+              alt={t.name}
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                marginBottom: '16px'
+              }}
+            />
+            <p style={{ fontSize: '16px', color: '#333', marginBottom: '12px' }}>
+              “{t.quote}”
+            </p>
+            <div style={{ marginBottom: '6px' }}>
+              {'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}
+            </div>
+            <p style={{ fontSize: '14px', color: '#777' }}>— {t.name}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
