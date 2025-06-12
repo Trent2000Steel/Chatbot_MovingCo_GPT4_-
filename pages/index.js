@@ -55,8 +55,6 @@ export default function Home() {
               zIndex: 1
             }}
           />
-
-          {/* Animated Down Arrow */}
           <div style={{
             textAlign: 'center',
             marginTop: '-20px',
@@ -68,6 +66,16 @@ export default function Home() {
             ↓
           </div>
         </div>
+
+        {/* Trust Line */}
+        <p style={{
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#888',
+          margin: '16px auto -8px'
+        }}>
+          Trusted by families in all 50 states.
+        </p>
 
         {/* Chat Container */}
         <div style={{
