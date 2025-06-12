@@ -1,6 +1,6 @@
 
 import Head from "next/head";
-import ChatBox from "../components/ChatBox";
+import ChatFlow from "../components/ChatFlow_Master";
 import Footer from "../components/footer";
 import TestimonialBar from "../components/testimonialbar";
 
@@ -91,7 +91,7 @@ export default function Home() {
               borderTopRightRadius: "12px",
               marginBottom: "16px"
             }} />
-            <ChatBox />
+            <ChatFlow />
           </div>
         </main>
       </div>
