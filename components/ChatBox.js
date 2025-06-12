@@ -14,8 +14,8 @@ export default function ChatBox() {
 
   useEffect(() => {
     const initialMessages = [
-      { sender: "bot", text: "No forms, no waiting — I’ll give you a real price range right now.", timestamp: new Date().toLocaleTimeString() },
-      { sender: "bot", text: "Where are you moving from?", timestamp: new Date().toLocaleTimeString() }
+      { sender: "bot", text: "No forms, no waiting — I’ll give you a real price range right now.", timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) },
+      { sender: "bot", text: "Where are you moving from?", timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) }
     ];
     setMessages(initialMessages);
   }, []);
@@ -30,7 +30,7 @@ export default function ChatBox() {
     const userMessage = {
       sender: "user",
       text: userText,
-      timestamp: new Date().toLocaleTimeString()
+      timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
     };
 
     const updatedMessages = [...messages, userMessage];
@@ -51,7 +51,7 @@ export default function ChatBox() {
       const botMessage = {
         sender: "bot",
         text: data.message,
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
       };
 
       setMessages([...updatedMessages, botMessage]);
@@ -60,7 +60,7 @@ export default function ChatBox() {
       setMessages([...updatedMessages, {
         sender: "bot",
         text: "Oops, something went wrong. Please try again.",
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
       }]);
     } finally {
       setIsThinking(false);
