@@ -1,76 +1,61 @@
 
-// SYSTEM GUARDRAIL: Avoid promising insurance, refunds, or guaranteed outcomes.
-// Focus on verified coordination, flat-rate quotes after review, and optional damage reimbursement—not protection.
-// Keep answers short, professional, and sales psychology driven.
-
-import OpenAI from 'openai';
-import handleOpener from './ChatOpener';
-import handleEstimate from './EstimateFlow';
-import handleClosing from './ChatFlow_Closing';
+import { OpenAI } from 'openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-const sessions = {};
-const fallbackKeywords = ["damage", "broken", "refund", "cancel", "late", "delay", "expensive", "price", "insurance", "safe", "trust"];
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { sessionId, userInput } = req.body;
-  if (!sessions[sessionId]) {
-    sessions[sessionId] = { phase: 1, data: {} };
+  const { messages, userInput } = req.body;
+
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'Invalid request format' });
   }
 
-  const session = sessions[sessionId];
-
-  function reply(message, phase, buttons = []) {
-    session.phase = phase;
-    return res.status(200).json({ message, buttons, phase });
-  }
+  const fallbackKeywords = [
+    'insurance', 'bonded', 'guarantee', 'money back', 'scam', 'safe', 'protection',
+    'refund', 'damage', 'damaged', 'break', 'broke', 'late', 'reschedule',
+    'cancel', 'charge', 'ripoff', 'hidden fee', 'fees', 'lawsuit', 'trust',
+    'legal', 'review', 'rating', 'fraud', 'return', 'fake', 'cost'
+  ];
 
   const lowerInput = userInput.toLowerCase();
   if (fallbackKeywords.some(keyword => lowerInput.includes(keyword))) {
     try {
-      const fallbackPrompt = \`You are a MovingCo sales agent. The customer has asked about a key concern (such as damage, refunds, delays, price, or safety). Respond in ONLY 1-2 short sentences, calm and professional, and gently guide them back to completing their booking.\`;
+      const fallbackPrompt = "You are a MovingCo sales agent. The customer has asked about a key concern (such as damage, refunds, delays, price, or safety). Respond in ONLY 1-2 short sentences, calm and professional, and gently guide them back to completing their booking.";
 
       const fallbackCompletion = await openai.chat.completions.create({
         model: 'gpt-4',
-        messages: [{ role: 'system', content: fallbackPrompt }, { role: 'user', content: userInput }],
+        messages: [
+          { role: 'system', content: fallbackPrompt },
+          { role: 'user', content: userInput }
+        ],
+        temperature: 0.7
       });
 
-      const fallbackResponse = fallbackCompletion.choices[0].message.content.trim();
-      return reply(\`\${fallbackResponse}\`, session.phase);
+      const reply = fallbackCompletion.choices[0]?.message?.content || "I’ll do my best to help with that. Let’s keep going.";
+      return res.status(200).json({ reply });
     } catch (error) {
-      console.error('GPT fallback error:', error);
-      return reply("Sorry, something went wrong answering that. Please try again.", session.phase);
+      console.error('Fallback GPT error:', error);
+      return res.status(500).json({ error: 'Internal fallback error' });
     }
   }
 
   try {
-    const currentPhase = session.phase;
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages,
+      temperature: 0.7
+    });
 
-    if (currentPhase <= 9) {
-      const { message, phase, buttons } = await handleOpener(session, userInput);
-      return reply(message, phase, buttons);
-    }
-
-    if (currentPhase === 10) {
-      const { message, phase, buttons } = await handleEstimate(session, userInput, openai);
-      return reply(message, phase, buttons);
-    }
-
-    if (currentPhase >= 10 || currentPhase === "gpt_rebuttal") {
-      const { message, phase, buttons } = await handleClosing(session, userInput, openai);
-      return reply(message, phase, buttons);
-    }
-
-    return reply("Hmm, something went wrong. Let’s start again — where are you moving from?", 1, ["Texas", "California", "New York", "Other", "📖 How It Works"]);
-  } catch (err) {
-    console.error("Chat router error:", err);
-    return reply("Something broke — refresh and we’ll start over.", session.phase);
+    const reply = completion.choices[0]?.message?.content || 'Something went wrong.';
+    return res.status(200).json({ reply });
+  } catch (error) {
+    console.error('GPT error:', error);
+    return res.status(500).json({ error: 'Internal error' });
   }
 }
