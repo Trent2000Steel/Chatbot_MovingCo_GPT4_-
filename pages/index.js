@@ -1,6 +1,6 @@
 
 import Head from 'next/head';
-import ChatBox from '../components/chatbox';
+import ChatBox from '../components/ChatBox';
 import Footer from '../components/footer';
 import TestimonialBar from '../components/testimonialbar';
 
