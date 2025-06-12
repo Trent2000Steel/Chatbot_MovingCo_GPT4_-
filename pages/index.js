@@ -12,7 +12,7 @@ export default function Home() {
         <meta name="description" content="No forms, no waiting. Get a real long-distance moving quote now in chat." />
       </Head>
 
-      {/* Hero section with background video and logo overlay */}
+      {/* Hero video and overlay */}
       <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
         <video
           src="/videos/Hero.mp4"
@@ -45,7 +45,7 @@ export default function Home() {
         />
       </div>
 
-      {/* Trusted by message */}
+      {/* Trust message */}
       <div style={{
         textAlign: "center",
         fontSize: "14px",
@@ -53,10 +53,10 @@ export default function Home() {
         marginTop: "12px",
         marginBottom: "8px"
       }}>
-        Trusted by families in all 50 States!
+        Trusted by families in all 50 states.
       </div>
 
-      {/* Chat intro message */}
+      {/* Intro message */}
       <div style={{
         textAlign: "center",
         fontSize: "18px",
@@ -64,34 +64,39 @@ export default function Home() {
         padding: "0 20px",
         maxWidth: "500px"
       }}>
-        <span role="img" aria-label="wave">👋</span> Ready to get a price? Let’s do it here in chat! Seriously—it only takes a minute.
+        <span role="img" aria-label="wave">👋</span> Ready to get your price? Just answer a few quick questions.
       </div>
 
-      {/* Chat section with border and top bar */}
+      {/* Chat container with inner box effect */}
       <main style={{
         maxWidth: "800px",
         margin: "0 auto",
         background: "#fff",
         borderRadius: "12px",
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
-        padding: "0",
-        overflow: "hidden"
+        padding: "40px 24px"
       }}>
         <div style={{
-          backgroundColor: "#1e70ff",
-          height: "6px",
-          width: "100%",
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px"
-        }} />
-        <div style={{ padding: "24px" }}>
+          backgroundColor: "#fff",
+          borderRadius: "12px",
+          padding: "24px",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.04)"
+        }}>
+          <div style={{
+            backgroundColor: "#1e70ff",
+            height: "6px",
+            width: "100%",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+            marginBottom: "16px"
+          }} />
           <ChatBox />
         </div>
       </main>
 
-      {/* Trust badge image below chat */}
-      <div style={{ textAlign: "center", margin: "30px 0" }}>
-        <img src="/Movingcompany2.png" alt="Trust Badges" style={{ maxWidth: "300px", height: "auto" }} />
+      {/* Full-width trust badge image */}
+      <div style={{ width: "100%", marginTop: "40px", marginBottom: "40px" }}>
+        <img src="/Movingcompany2.png" alt="Trust Badges" style={{ width: "100%", height: "auto" }} />
       </div>
 
       {/* Testimonials */}
@@ -100,9 +105,13 @@ export default function Home() {
       </div>
 
       {/* How it works images */}
-      <div style={{ textAlign: "center", marginBottom: "40px" }}>
+      <div style={{ textAlign: "center", marginBottom: "0" }}>
         <img src="/17029ECA-FD4F-4F7C-A085-91BBF0DFDFFB.png" alt="How It Works" style={{ width: "100%", maxWidth: "900px" }} />
-        <img src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png" alt="Move Process" style={{ width: "100%", maxWidth: "900px", marginTop: "20px" }} />
+      </div>
+
+      {/* Final image with soft black background */}
+      <div style={{ backgroundColor: "#111", padding: "40px 0", textAlign: "center" }}>
+        <img src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png" alt="Final Info" style={{ width: "100%", maxWidth: "900px" }} />
       </div>
 
       {/* Footer */}
