@@ -77,18 +77,35 @@ export default function Home() {
           Trusted by families in all 50 states.
         </p>
 
-        {/* Chat Container */}
+        {/* Chat Section with background */}
         <div style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          borderRadius: '16px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-          maxWidth: '700px',
-          margin: '40px auto 20px auto',
-          padding: '24px 16px',
-          zIndex: 2,
-          position: 'relative'
+          backgroundColor: '#f5f6f7',
+          padding: '48px 0'
         }}>
-          <ChatBox />
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto',
+            padding: '0 16px'
+          }}>
+            <p style={{
+              textAlign: 'center',
+              fontSize: '16px',
+              fontWeight: '500',
+              color: '#444',
+              marginBottom: '16px'
+            }}>
+              👋 Ready to get your price? Just answer a few quick questions.
+            </p>
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: '16px',
+              boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
+              borderTop: '4px solid #1e70ff',
+              padding: '24px 16px'
+            }}>
+              <ChatBox />
+            </div>
+          </div>
         </div>
 
         {/* Trust Bar Image */}
