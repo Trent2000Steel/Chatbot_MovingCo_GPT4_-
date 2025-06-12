@@ -72,7 +72,7 @@ export default function Home() {
           textAlign: 'center',
           fontSize: '14px',
           color: '#888',
-          margin: '16px auto -8px'
+          margin: '12px auto -4px'
         }}>
           Trusted by families in all 50 states.
         </p>
@@ -80,7 +80,7 @@ export default function Home() {
         {/* Chat Section with background */}
         <div style={{
           backgroundColor: '#f5f6f7',
-          padding: '48px 0'
+          padding: '24px 0 48px 0'
         }}>
           <div style={{
             maxWidth: '700px',
@@ -108,17 +108,19 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Trust Bar Image */}
-        <img
-          src="/Movingcompany2.png"
-          alt="Trust Bar"
-          style={{
-            width: '100%',
-            display: 'block',
-            margin: 0,
-            padding: 0
-          }}
-        />
+        {/* Trust Bar Image with bottom padding */}
+        <div style={{ paddingBottom: '24px' }}>
+          <img
+            src="/Movingcompany2.png"
+            alt="Trust Bar"
+            style={{
+              width: '100%',
+              display: 'block',
+              margin: 0,
+              padding: 0
+            }}
+          />
+        </div>
 
         <TestimonialBar />
         <Footer />
