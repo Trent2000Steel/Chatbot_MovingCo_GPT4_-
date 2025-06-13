@@ -1,3 +1,5 @@
+// components/ChatUI.js
+
 import React from "react";
 
 export default function ChatUI({
@@ -6,18 +8,14 @@ export default function ChatUI({
   options = [],
   isThinking,
   handleInputChange,
-  handleUserInput,
-  placeholder
+  handleUserInput
 }) {
-  const formatTime = (timestamp) => {
-    const date = new Date();
-    date.setHours(...timestamp.split(':').slice(0, 2));
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      <div style={{ padding: "16px", transition: "all 0.3s ease" }}>
+      <div style={{
+        padding: "16px",
+        transition: "all 0.3s ease"
+      }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ marginBottom: "12px", textAlign: msg.sender === "user" ? "right" : "left" }}>
             <div
@@ -35,7 +33,7 @@ export default function ChatUI({
               {msg.text}
             </div>
             <div style={{ fontSize: "11px", color: "#999", marginTop: "4px" }}>
-              {formatTime(msg.timestamp)}
+              {msg.timestamp}
             </div>
           </div>
         ))}
@@ -77,7 +75,7 @@ export default function ChatUI({
           value={input}
           onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && handleUserInput(input)}
-          placeholder={placeholder || "Type your answer..."}
+          placeholder="Type your answer..."
           style={{
             flex: 1,
             padding: "10px",
