@@ -91,9 +91,7 @@ export default function ChatFlow() {
         setIsTyping(true);
         setTimeout(() => {
           setIsTyping(false);
-          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**.
-
-This is a live rate and may change, so let’s lock it in while it’s still active.");
+          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**. This is a live rate and may change, so let’s lock it in while it’s still active.");
           setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
         }, 2000);
         newStep++;
