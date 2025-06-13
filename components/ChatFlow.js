@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
+    { sender: 'bot', text: "No forms, no waiting — I'll give you a real price range right now. Where are you moving from?" }
   ]);
   const [input, setInput] = useState('');
   const [step, setStep] = useState(1);
@@ -46,7 +46,7 @@ export default function ChatFlow() {
         break;
       case 2:
         updatedFormData.to = userInput;
-        sendBotMessage("What’s your move date?");
+        sendBotMessage("What's your move date?");
         newStep++;
         break;
       case 3:
@@ -76,7 +76,7 @@ export default function ChatFlow() {
         break;
       case 8:
         updatedFormData.special = userInput;
-        sendBotMessage(\`Thanks! Here's what I’ve got:
+        sendBotMessage(\`Thanks! Here's what I've got:
 • From: \${updatedFormData.from}
 • To: \${updatedFormData.to}
 • Date: \${updatedFormData.date}
