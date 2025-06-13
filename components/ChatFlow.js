@@ -181,6 +181,7 @@ import React, { useState } from "react";
 import ChatUI from "./ChatUI";
 
 export default function ChatFlow() {
+
   const [phase, setPhase] = useState(1);
   const [memory, setMemory] = useState({});
   const [input, setInput] = useState("");
@@ -253,9 +254,7 @@ export default function ChatFlow() {
     setInput("");
     setIsThinking(true);
 
-      };
-
-  return (
+return (
     <ChatUI
       messages={messages}
       input={input}
