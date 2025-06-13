@@ -1,118 +1,110 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-export default function ChatFlow() {
-  const [messages, setMessages] = useState([
-    { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
-  ]);
-  const [input, setInput] = useState('');
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({});
-  const [buttonOptions, setButtonOptions] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
+const ChatFlow = ({ sendBotMessage, setButtonOptions, setIsTyping }) => {
+  const [step, setStep] = useState(0);
+  const [userAnswers, setUserAnswers] = useState({});
 
-  const getPlaceholder = () => {
-    switch (step) {
-      case 1: return "City, State (e.g. Dallas, TX)";
-      case 2: return "City, State (e.g. Phoenix, AZ)";
-      case 3: return "Move date (e.g. June 25)";
-      case 4: return "What matters most? (e.g. timing, fragile items)";
-      case 8: return "Special items (e.g. piano, art)";
-      default: return "";
-    }
+  useEffect(() => {
+    runChatStep(step);
+  }, [step]);
+
+  const handleUserInput = (input) => {
+    const newAnswers = { ...userAnswers, [step]: input };
+    setUserAnswers(newAnswers);
+    setStep((prev) => prev + 1);
   };
 
-  const sendBotMessage = (text, options = []) => {
-    setMessages(prev => [...prev, { sender: 'bot', text }]);
-    setButtonOptions(options);
-  };
+  const runChatStep = (currentStep) => {
+    let newBotMessage = "";
+    let options = null;
+    let placeholder = "";
 
-  const handleUserInput = async (customInput = null) => {
-    const userInput = customInput || input.trim();
-    if (!userInput) return;
-
-    setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
-    setInput('');
-    setButtonOptions([]);
-
-    let newStep = step;
-    const updatedFormData = { ...formData };
-
-    switch (step) {
+    switch (currentStep) {
+      case 0:
+        newBotMessage = "No forms, no waiting — I’ll give you a real price range right now.";
+        break;
       case 1:
-        updatedFormData.from = userInput;
-        sendBotMessage("Where to?");
-        newStep++;
+        newBotMessage = "Where are you moving from?";
+        placeholder = "City, State (e.g. Dallas, TX)";
         break;
       case 2:
-        updatedFormData.to = userInput;
-        sendBotMessage("What’s your move date?");
-        newStep++;
+        newBotMessage = "Where to?";
+        placeholder = "City, State (e.g. Phoenix, AZ)";
         break;
       case 3:
-        updatedFormData.date = userInput;
-        sendBotMessage("What matters most to you about this move?");
-        newStep++;
+        newBotMessage = "What’s your move date?";
+        options = ["Within 7 days", "Within 30 days", "Not sure yet"];
         break;
       case 4:
-        updatedFormData.priority = userInput;
-        sendBotMessage("What type of place are you moving from?", ["House", "Apartment", "Storage Unit", "Other"]);
-        newStep++;
+        newBotMessage = "What matters most to you about this move?";
+        placeholder = "Timing, cost, fragile items…";
         break;
       case 5:
-        updatedFormData.type = userInput;
-        sendBotMessage("And how many bedrooms?", ["1", "2", "3", "4+"]);
-        newStep++;
+        newBotMessage = "What type of place are you moving from?";
+        options = ["House", "Apartment", "Storage Unit", "Other"];
         break;
       case 6:
-        updatedFormData.size = userInput;
-        sendBotMessage("Do you want packing included in the estimate?", ["Yes", "I'll pack myself"]);
-        newStep++;
+        newBotMessage = "Roughly what size?";
+        options = ["1 Bedroom", "2 Bedroom", "3 Bedroom", "4+ Bedroom"];
         break;
       case 7:
-        updatedFormData.packing = userInput;
-        sendBotMessage("Any fragile or high-value items?", []);
-        newStep++;
+        newBotMessage = "Any stairs, elevators, or long walks?";
+        options = ["Stairs", "Elevator", "Long Walk", "Nope"];
         break;
       case 8:
-        updatedFormData.special = userInput;
-        sendBotMessage(`Thanks! Here's what I’ve got:
-• From: ${updatedFormData.from}
-• To: ${updatedFormData.to}
-• Date: ${updatedFormData.date}
-• Place: ${updatedFormData.type} (${updatedFormData.size} bedrooms)
-• Packing: ${updatedFormData.packing}
-• Priority: ${updatedFormData.priority}
-• Special: ${updatedFormData.special}`, ["Run My Estimate"]);
-        newStep++;
+        newBotMessage = "Would you like us to include packing?";
+        options = ["Yes, include packing", "No, I’ll pack myself"];
         break;
       case 9:
-        // Show typing dots then estimate
+        newBotMessage = `Got it! Here's what I have so far:
+
+• Moving from: ${userAnswers[1]}
+• Moving to: ${userAnswers[2]}
+• Date: ${userAnswers[3]}
+• Home: ${userAnswers[5]} – ${userAnswers[6]}
+• Access: ${userAnswers[7]}
+• Packing: ${userAnswers[8]}
+
+Sound good?`;
+        options = ["Run My Estimate"];
+        break;
+      case 10:
         setIsTyping(true);
         setTimeout(() => {
           setIsTyping(false);
-          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**.
+          sendBotMessage("Checking mover availability...");
+          setTimeout(() => {
+            sendBotMessage("Reviewing recent route data...");
+            setTimeout(() => {
+              sendBotMessage("Matching top-rated crews...");
+              setTimeout(() => {
+                setIsTyping(true);
+                setTimeout(() => {
+                  setIsTyping(false);
+                  sendBotMessage(
+                    "**Estimated Range:** $2,200 – $3,100
 
-This is a live rate and may change, so let’s lock it in while it’s still active.");
-          setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
-        }, 2000);
-        newStep++;
+Based on what you shared, this is a live rate and may change. Let’s lock it in while it’s still active."
+                  );
+                  setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+                }, 2000);
+              }, 1000);
+            }, 1000);
+          }, 1000);
+        }, 500);
         break;
       default:
+        newBotMessage = "Thanks! Let’s continue.";
         break;
     }
 
-    setFormData(updatedFormData);
-    setStep(newStep);
+    if (newBotMessage) {
+      sendBotMessage(newBotMessage, options, placeholder);
+    }
   };
 
-  return {
-    messages,
-    input,
-    setInput,
-    handleUserInput,
-    buttonOptions,
-    getPlaceholder,
-    isTyping
-  };
-}
+  return null;
+};
+
+export default ChatFlow;
