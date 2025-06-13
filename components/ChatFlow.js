@@ -96,7 +96,8 @@ export default function ChatFlow() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               messages: messages.map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text })),
-              userInput: userInput
+              userInput: userInput,
+              formData: formData
             })
           });
           const data = await res.json();
@@ -118,6 +119,7 @@ export default function ChatFlow() {
 
   return (
     <div className="chat-container">
+      <div className="chat-header" />
       <div className="messages">
         {messages.map((msg, i) => (
           <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
@@ -126,17 +128,20 @@ export default function ChatFlow() {
         ))}
         {isTyping && <div className="typing-indicator">...</div>}
       </div>
-      <input
-        type="text"
-        value={input}
-        onChange={e => setInput(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && handleUserInput()}
-        placeholder={getPlaceholder()}
-        className="chat-input"
-      />
+      <div className="input-row">
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleUserInput()}
+          placeholder={getPlaceholder()}
+          className="chat-input"
+        />
+        <button className="send-btn" onClick={() => handleUserInput()}>Send</button>
+      </div>
       <div className="options">
         {buttonOptions.map((option, i) => (
-          <button key={i} onClick={() => handleUserInput(option)}>{option}</button>
+          <button key={i} className="pill-btn" onClick={() => handleUserInput(option)}>{option}</button>
         ))}
       </div>
 
@@ -144,48 +149,67 @@ export default function ChatFlow() {
         .chat-container {
           background: #fff;
           border-radius: 12px;
-          padding: 20px;
           box-shadow: 0 0 20px rgba(0,0,0,0.05);
-          margin-top: 20px;
+          margin-top: 24px;
+          padding: 0;
+          overflow: hidden;
+        }
+        .chat-header {
+          height: 6px;
+          background-color: #1a73e8;
         }
         .messages {
-          max-height: 250px;
-          overflow-y: auto;
-          margin-bottom: 12px;
+          padding: 20px;
         }
         .bubble {
-          padding: 10px 14px;
-          margin: 6px 0;
-          border-radius: 10px;
+          padding: 12px 16px;
+          margin-bottom: 10px;
+          border-radius: 18px;
           max-width: 90%;
           word-wrap: break-word;
+          font-size: 15px;
         }
         .bot {
           background-color: #f1f1f1;
           align-self: flex-start;
         }
         .user {
-          background-color: #cce5ff;
+          background-color: #d2ebff;
           align-self: flex-end;
         }
+        .input-row {
+          display: flex;
+          padding: 16px;
+          border-top: 1px solid #eee;
+        }
         .chat-input {
-          width: 100%;
-          padding: 12px;
+          flex: 1;
+          padding: 14px;
           border: 1px solid #ccc;
           border-radius: 8px;
-          margin-bottom: 12px;
+          font-size: 16px;
+          margin-right: 12px;
         }
-        .options button {
-          background-color: #1e70ff;
+        .send-btn {
+          background-color: #1a73e8;
           color: white;
-          padding: 8px 12px;
-          margin: 4px;
           border: none;
-          border-radius: 20px;
+          padding: 12px 16px;
+          border-radius: 8px;
           cursor: pointer;
         }
-        .options button:hover {
-          background-color: #155ed8;
+        .pill-btn {
+          background-color: #1a73e8;
+          color: white;
+          padding: 10px 18px;
+          margin: 4px;
+          border: none;
+          border-radius: 999px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        .pill-btn:hover, .send-btn:hover {
+          background-color: #155ab6;
         }
       `}</style>
     </div>
