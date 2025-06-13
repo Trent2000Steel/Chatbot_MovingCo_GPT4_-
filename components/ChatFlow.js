@@ -1,155 +1,158 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styles from '../styles/Chat.module.css';
 
-const chatSteps = [
-  {
-    id: 1,
-    question: "Where are you moving from?",
-    type: "text",
-    field: "origin",
-    placeholder: "City, State (e.g. Dallas, TX)"
-  },
-  {
-    id: 2,
-    question: "Where to?",
-    type: "text",
-    field: "destination",
-    placeholder: "City, State (e.g. Phoenix, AZ)"
-  },
-  {
-    id: 3,
-    question: "What’s your move date?",
-    type: "text",
-    field: "date",
-    placeholder: "MM/DD/YYYY or 'Not sure yet'"
-  },
-  {
-    id: 4,
-    question: "What matters most to you about this move?",
-    type: "text",
-    field: "priority",
-    placeholder: "Timing, cost, fragile items…"
-  },
-  {
-    id: 5,
-    question: "What type of place are you moving from?",
-    type: "buttons",
-    field: "placeType",
-    options: ["House", "Apartment", "Storage Unit", "Other"]
-  },
-  {
-    id: 6,
-    question: "Any stairs, elevators, or long walks to the truck?",
-    type: "buttons",
-    field: "access",
-    options: ["Stairs", "Elevator", "Long Walk", "Nope"]
-  },
-  {
-    id: 7,
-    question: "What help do you need?",
-    type: "buttons",
-    field: "helpLevel",
-    options: ["Load + Unload", "Include Packing", "Just Transport", "I’ll explain"]
-  },
-  {
-    id: 8,
-    question: "Any fragile, heavy, or high-value items?",
-    type: "text",
-    field: "specialItems",
-    placeholder: "TVs, pianos, antiques, etc."
-  }
-];
+import { useState, useEffect, useRef } from 'react';
 
 export default function ChatFlow() {
-  const [stepIndex, setStepIndex] = useState(0);
-  const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState('');
-  const [memory, setMemory] = useState({});
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
+  ]);
+  const [input, setInput] = useState('');
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({});
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (stepIndex < chatSteps.length) {
-      const nextStep = chatSteps[stepIndex];
-      setMessages(prev => [...prev, { from: 'bot', text: nextStep.question, options: nextStep.options }]);
-    } else {
-      runEstimate();
-    }
-  }, [stepIndex]);
-
-  useEffect(() => {
-    scrollToBottom();
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const handleUserInput = async () => {
+    if (!input.trim()) return;
+
+    const updatedMessages = [...messages, { sender: 'user', text: input }];
+    setMessages(updatedMessages);
+
+    let newBotMessage = '';
+    let newStep = step;
+    let updatedFormData = { ...formData };
+
+    switch (step) {
+      case 1:
+        updatedFormData.from = input;
+        newBotMessage = "Where to?";
+        newStep++;
+        break;
+      case 2:
+        updatedFormData.to = input;
+        newBotMessage = "What’s your move date?";
+        newStep++;
+        break;
+      case 3:
+        updatedFormData.date = input;
+        newBotMessage = "What matters most to you about this move? (e.g., timing, cost, fragile items…)";
+        newStep++;
+        break;
+      case 4:
+        updatedFormData.priority = input;
+        newBotMessage = "What type of place are you moving from? (e.g., apartment, house, storage)";
+        newStep++;
+        break;
+      case 5:
+        updatedFormData.placeType = input;
+        newBotMessage = "And what size roughly? (e.g., 2-bedroom)";
+        newStep++;
+        break;
+      case 6:
+        updatedFormData.size = input;
+        newBotMessage = "Any stairs, elevators, or long walks to the truck?";
+        newStep++;
+        break;
+      case 7:
+        updatedFormData.access = input;
+        newBotMessage = "What help do you need? (e.g., Load + Unload, Just Transport, Include Packing)";
+        newStep++;
+        break;
+      case 8:
+        updatedFormData.help = input;
+        newBotMessage = "Any fragile, heavy, or high-value items?";
+        newStep++;
+        break;
+      case 9:
+        updatedFormData.special = input;
+        newBotMessage = `Okay! Here’s what I’ve got so far:\n\n- From: ${updatedFormData.from}\n- To: ${updatedFormData.to}\n- Move Date: ${updatedFormData.date}\n- Priority: ${updatedFormData.priority}\n- Type: ${updatedFormData.placeType}, ${updatedFormData.size}\n- Access: ${updatedFormData.access}\n- Help Needed: ${updatedFormData.help}\n- Special Items: ${updatedFormData.special}\n\nPreparing your quote...`;
+        newStep++;
+        break;
+      case 10:
+        // Simulate quote from backend
+        const quote = "$2,150–$2,500";
+        newBotMessage = `Here’s your estimated price range: **${quote}**\n\nThis is a live rate and may change — ready to lock it in with an $85 deposit?`;
+        newStep++;
+        break;
+      default:
+        newBotMessage = "Would you like to reserve your move now, or ask more questions?";
+    }
+
+    setMessages([...updatedMessages, { sender: 'bot', text: newBotMessage }]);
+    setStep(newStep);
+    setInput('');
+    setFormData(updatedFormData);
   };
 
-  const handleUserInput = async (input) => {
-    const currentStep = chatSteps[stepIndex];
-    const newMemory = { ...memory, [currentStep.field]: input };
-
-    setMessages(prev => [...prev, { from: 'user', text: input }]);
-    setMemory(newMemory);
-    setUserInput('');
-    setStepIndex(prev => prev + 1);
-  };
-
-  const runEstimate = async () => {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ memory })
-    });
-    const data = await response.json();
-    setMessages(prev => [
-      ...prev,
-      { from: 'bot', text: "Okay, here's a quick summary of your move:" },
-      { from: 'bot', text: `From: ${memory.origin}\nTo: ${memory.destination}\nDate: ${memory.date}\nSpecial items: ${memory.specialItems || 'None listed'}` },
-      { from: 'bot', text: "Let me calculate your quote..." },
-      { from: 'bot', text: data.reply },
-      { from: 'bot', text: "Would you like to reserve your move with an $85 deposit?" },
-    ]);
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleUserInput();
   };
 
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.chatBox}>
-        {messages.map((msg, idx) => (
-          <div key={idx} className={msg.from === 'bot' ? styles.botBubble : styles.userBubble}>
-            {msg.text}
-            {msg.options && (
-              <div className={styles.buttonRow}>
-                {msg.options.map((option, i) => (
-                  <button key={i} className={styles.optionButton} onClick={() => handleUserInput(option)}>
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        <div ref={chatEndRef} />
-      </div>
-      {stepIndex < chatSteps.length && chatSteps[stepIndex].type === 'text' && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (userInput.trim()) {
-              handleUserInput(userInput.trim());
-            }
+    <div style={{
+      background: '#fffef8',
+      padding: '24px',
+      borderRadius: '16px',
+      border: '2px solid #e4b200',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+      maxWidth: '800px',
+      margin: '0 auto',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+      {messages.map((msg, idx) => (
+        <div
+          key={idx}
+          style={{
+            textAlign: msg.sender === 'user' ? 'right' : 'left',
+            margin: '12px 0'
           }}
-          className={styles.inputForm}
         >
-          <input
-            type="text"
-            placeholder={chatSteps[stepIndex].placeholder}
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            className={styles.textInput}
-          />
-          <button type="submit" className={styles.sendButton}>Send</button>
-        </form>
-      )}
+          <div style={{
+            display: 'inline-block',
+            backgroundColor: msg.sender === 'user' ? '#d0ebff' : '#f5f5f5',
+            color: '#000',
+            padding: '12px 16px',
+            borderRadius: '16px',
+            maxWidth: '75%',
+            whiteSpace: 'pre-line'
+          }}>
+            {msg.text}
+          </div>
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', marginTop: '16px' }}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your answer..."
+          style={{
+            flex: 1,
+            padding: '12px',
+            border: '1px solid #ccc',
+            borderRadius: '8px'
+          }}
+        />
+        <button
+          onClick={handleUserInput}
+          style={{
+            marginLeft: '8px',
+            padding: '12px 16px',
+            backgroundColor: '#1e70ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+        >
+          Send
+        </button>
+      </div>
+      <div ref={chatEndRef} />
     </div>
   );
 }
