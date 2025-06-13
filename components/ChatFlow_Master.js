@@ -79,7 +79,26 @@ export default function ChatFlow() {
         setOptions(currentStep.options || []);
       }
     }
-  }, [phase]);
+  },
+
+
+  {
+    phase: 10,
+    message: [
+      { type: "system", content: "Okay — you’re moving a 4-bedroom house from McKinney, TX to Phoenix, AZ and need help packing. Got it." },
+      { type: "system", content: "Checking route availability and current demand...", delay: 1200, typing: true },
+      { type: "system", content: "Filtering movers with 4.5 stars or higher in both cities…", delay: 1500, typing: true },
+      { type: "system", content: "Running pricing history and fuel rate analysis…", delay: 1400, typing: true },
+      { type: "system", content: "Here’s your live quote:", delay: 1200, typing: true },
+      { type: "system", content: "**📦 Official Estimate:**\n**$3,700 – $4,300**\n*(Based on current fuel rates, availability, and route demand. Quote may change — lock it in today.)*" }
+    ]
+  },
+  {
+    phase: 11,
+    message: "Would you like to reserve your move with an $85 deposit? (100% refundable and locks in this rate for 7 days)",
+    options: ["Yes, Reserve My Move", "I Have Questions First"]
+  }
+ [phase]);
 
   const handleInputChange = (e) => setInput(e.target.value);
 
