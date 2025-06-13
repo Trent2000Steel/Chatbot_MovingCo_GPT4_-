@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import getChatMessage from "./Chatsteps";
 import ChatUI from "./ChatUI";
 
@@ -11,6 +11,18 @@ export default function ChatFlow() {
   const [isThinking, setIsThinking] = useState(false);
 
   const currentStep = getChatMessage(phase, memory);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([
+        {
+          sender: "bot",
+          text: currentStep.message,
+          timestamp: new Date().toLocaleTimeString()
+        }
+      ]);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
