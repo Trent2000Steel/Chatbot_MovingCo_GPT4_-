@@ -1,148 +1,155 @@
-// ChatFlow.js
+import React, { useState, useEffect, useRef } from 'react';
+import styles from '../styles/Chat.module.css';
 
-import React, { useState } from "react";
-import ChatUI from "./ChatUI";
-
-// Step logic — now a named export
-export function getChatMessage(phase, memory) {
-  switch (phase) {
-    case 1:
-      return {
-        message: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?",
-        field: "origin",
-        placeholder: "City, State (e.g. Dallas, TX)"
-      };
-    case 2:
-      return {
-        message: "Where to?",
-        field: "destination",
-        placeholder: "City, State (e.g. Phoenix, AZ)"
-      };
-    case 3:
-      return {
-        message: "When are you moving?",
-        field: "moveDate",
-        placeholder: "Example: Aug 1, next weekend, or I'm flexible"
-      };
-    case 4:
-      return {
-        message: "What matters most to you about this move?",
-        field: "priority",
-        placeholder: "For example: timing, cost, safety, or fragile items"
-      };
-    case 5:
-      return {
-        message: "What type of place are you moving from?",
-        field: "placeType",
-        options: ["House", "Apartment", "Storage Unit", "Other"]
-      };
-    case 6:
-      return {
-        message: "And what size roughly?",
-        field: "placeSize",
-        options: ["1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4+ Bedrooms"]
-      };
-    case 7:
-      return {
-        message: "Any stairs, elevators, or long walks to the truck?",
-        field: "obstacles",
-        options: ["Stairs", "Elevator", "Long Walk", "Nope"]
-      };
-    case 8:
-      return {
-        message: "Would you like to include packing in your estimate?",
-        field: "packing",
-        options: ["Yes, include packing", "No, I’ll pack myself"]
-      };
-    case 9:
-      return {
-        message: "Any fragile, heavy, or high-value items?",
-        field: "specialItems",
-        placeholder: "TVs, antiques, artwork, safes, gym equipment, etc."
-      };
-    default:
-      return {
-        message: "Thanks! Quoting your move now...",
-        field: null
-      };
+const chatSteps = [
+  {
+    id: 1,
+    question: "Where are you moving from?",
+    type: "text",
+    field: "origin",
+    placeholder: "City, State (e.g. Dallas, TX)"
+  },
+  {
+    id: 2,
+    question: "Where to?",
+    type: "text",
+    field: "destination",
+    placeholder: "City, State (e.g. Phoenix, AZ)"
+  },
+  {
+    id: 3,
+    question: "What’s your move date?",
+    type: "text",
+    field: "date",
+    placeholder: "MM/DD/YYYY or 'Not sure yet'"
+  },
+  {
+    id: 4,
+    question: "What matters most to you about this move?",
+    type: "text",
+    field: "priority",
+    placeholder: "Timing, cost, fragile items…"
+  },
+  {
+    id: 5,
+    question: "What type of place are you moving from?",
+    type: "buttons",
+    field: "placeType",
+    options: ["House", "Apartment", "Storage Unit", "Other"]
+  },
+  {
+    id: 6,
+    question: "Any stairs, elevators, or long walks to the truck?",
+    type: "buttons",
+    field: "access",
+    options: ["Stairs", "Elevator", "Long Walk", "Nope"]
+  },
+  {
+    id: 7,
+    question: "What help do you need?",
+    type: "buttons",
+    field: "helpLevel",
+    options: ["Load + Unload", "Include Packing", "Just Transport", "I’ll explain"]
+  },
+  {
+    id: 8,
+    question: "Any fragile, heavy, or high-value items?",
+    type: "text",
+    field: "specialItems",
+    placeholder: "TVs, pianos, antiques, etc."
   }
-}
+];
 
-// Main flow component
 export default function ChatFlow() {
-  const [phase, setPhase] = useState(1);
-  const [memory, setMemory] = useState({});
-  const [input, setInput] = useState("");
+  const [stepIndex, setStepIndex] = useState(0);
   const [messages, setMessages] = useState([]);
-  const [isThinking, setIsThinking] = useState(false);
+  const [userInput, setUserInput] = useState('');
+  const [memory, setMemory] = useState({});
+  const chatEndRef = useRef(null);
 
-  const currentStep = getChatMessage(phase, memory);
+  useEffect(() => {
+    if (stepIndex < chatSteps.length) {
+      const nextStep = chatSteps[stepIndex];
+      setMessages(prev => [...prev, { from: 'bot', text: nextStep.question, options: nextStep.options }]);
+    } else {
+      runEstimate();
+    }
+  }, [stepIndex]);
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleUserInput = async (userInput) => {
-    if (!userInput) return;
+  const handleUserInput = async (input) => {
+    const currentStep = chatSteps[stepIndex];
+    const newMemory = { ...memory, [currentStep.field]: input };
 
-    const userMessage = {
-      sender: "user",
-      text: userInput,
-      timestamp: new Date().toLocaleTimeString()
-    };
+    setMessages(prev => [...prev, { from: 'user', text: input }]);
+    setMemory(newMemory);
+    setUserInput('');
+    setStepIndex(prev => prev + 1);
+  };
 
-    const updatedMessages = [...messages, userMessage];
-    const updatedMemory = { ...memory };
-    if (currentStep.field) {
-      updatedMemory[currentStep.field] = userInput;
-    }
-
-    setMessages(updatedMessages);
-    setInput("");
-    setIsThinking(true);
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          messages: updatedMessages.map((m) => ({
-            role: m.sender === "user" ? "user" : "assistant",
-            content: m.text
-          })),
-          userInput
-        })
-      });
-
-      const data = await response.json();
-      const replyText = data.reply || "Sorry, something went wrong.";
-
-      const botMessage = {
-        sender: "bot",
-        text: replyText,
-        timestamp: new Date().toLocaleTimeString()
-      };
-
-      setMessages([...updatedMessages, botMessage]);
-      setMemory(updatedMemory);
-      setPhase(phase + 1);
-    } catch (err) {
-      console.error("Error calling GPT backend:", err);
-    } finally {
-      setIsThinking(false);
-    }
+  const runEstimate = async () => {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memory })
+    });
+    const data = await response.json();
+    setMessages(prev => [
+      ...prev,
+      { from: 'bot', text: "Okay, here's a quick summary of your move:" },
+      { from: 'bot', text: `From: ${memory.origin}\nTo: ${memory.destination}\nDate: ${memory.date}\nSpecial items: ${memory.specialItems || 'None listed'}` },
+      { from: 'bot', text: "Let me calculate your quote..." },
+      { from: 'bot', text: data.reply },
+      { from: 'bot', text: "Would you like to reserve your move with an $85 deposit?" },
+    ]);
   };
 
   return (
-    <ChatUI
-      messages={messages}
-      input={input}
-      options={currentStep.options || []}
-      isThinking={isThinking}
-      handleInputChange={handleInputChange}
-      handleUserInput={handleUserInput}
-    />
+    <div className={styles.chatContainer}>
+      <div className={styles.chatBox}>
+        {messages.map((msg, idx) => (
+          <div key={idx} className={msg.from === 'bot' ? styles.botBubble : styles.userBubble}>
+            {msg.text}
+            {msg.options && (
+              <div className={styles.buttonRow}>
+                {msg.options.map((option, i) => (
+                  <button key={i} className={styles.optionButton} onClick={() => handleUserInput(option)}>
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+      {stepIndex < chatSteps.length && chatSteps[stepIndex].type === 'text' && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (userInput.trim()) {
+              handleUserInput(userInput.trim());
+            }
+          }}
+          className={styles.inputForm}
+        >
+          <input
+            type="text"
+            placeholder={chatSteps[stepIndex].placeholder}
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            className={styles.textInput}
+          />
+          <button type="submit" className={styles.sendButton}>Send</button>
+        </form>
+      )}
+    </div>
   );
 }
