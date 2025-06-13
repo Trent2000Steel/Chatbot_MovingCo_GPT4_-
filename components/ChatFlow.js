@@ -193,14 +193,58 @@ export default function ChatFlow() {
     setInput(e.target.value);
   };
 
-  const handleUserInput = (userInput) => {
+  const handleUserInput = async (userInput) => {
     if (!userInput) return;
-    const updatedMessages = [
-      ...messages,
-      { sender: "user", text: userInput, timestamp: new Date().toLocaleTimeString() }
-    ];
 
+    const userMessage = {
+      sender: "user",
+      text: userInput,
+      timestamp: new Date().toLocaleTimeString()
+    };
+
+    const updatedMessages = [...messages, userMessage];
     const updatedMemory = { ...memory };
+    if (currentStep.field) {
+      updatedMemory[currentStep.field] = userInput;
+    }
+
+    setMessages(updatedMessages);
+    setInput("");
+    setIsThinking(true);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messages: updatedMessages.map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: m.text
+          })),
+          userInput
+        })
+      });
+
+      const data = await response.json();
+      const replyText = data.reply || "Sorry, something went wrong.";
+
+      const botMessage = {
+        sender: "bot",
+        text: replyText,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      setMessages([...updatedMessages, botMessage]);
+      setMemory(updatedMemory);
+      setPhase(phase + 1);
+    } catch (err) {
+      console.error("Error calling GPT backend:", err);
+    } finally {
+      setIsThinking(false);
+    }
+  };
     if (currentStep.field) {
       updatedMemory[currentStep.field] = userInput;
     }
