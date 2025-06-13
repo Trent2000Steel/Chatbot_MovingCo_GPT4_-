@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function useChatFlow() {
+export default function ChatFlow() {
   const [messages, setMessages] = useState([
     { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
   ]);
@@ -71,31 +71,39 @@ export default function useChatFlow() {
         break;
       case 7:
         updatedFormData.packing = userInput;
-        sendBotMessage("Any fragile or high-value items?", []);
+        sendBotMessage("Any fragile or high-value items?");
         newStep++;
         break;
       case 8:
         updatedFormData.special = userInput;
-        sendBotMessage(`Thanks! Here's what I’ve got:
-• From: ${updatedFormData.from}
-• To: ${updatedFormData.to}
-• Date: ${updatedFormData.date}
-• Place: ${updatedFormData.type} (${updatedFormData.size} bedrooms)
-• Packing: ${updatedFormData.packing}
-• Priority: ${updatedFormData.priority}
-• Special: ${updatedFormData.special}`, ["Run My Estimate"]);
+        sendBotMessage(\`Thanks! Here's what I’ve got:
+• From: \${updatedFormData.from}
+• To: \${updatedFormData.to}
+• Date: \${updatedFormData.date}
+• Place: \${updatedFormData.type} (\${updatedFormData.size} bedrooms)
+• Packing: \${updatedFormData.packing}
+• Priority: \${updatedFormData.priority}
+• Special: \${updatedFormData.special}\`, ["Run My Estimate"]);
         newStep++;
         break;
       case 9:
-        // Show typing dots then estimate
         setIsTyping(true);
-        setTimeout(() => {
-          setIsTyping(false);
-          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**.
-
-This is a live rate and may change, so let’s lock it in while it’s still active.");
-          setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
-        }, 2000);
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: messages.map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text })),
+              userInput: userInput
+            })
+          });
+          const data = await res.json();
+          sendBotMessage(data.reply || "Based on your info, here's a rough estimate.");
+        } catch (error) {
+          sendBotMessage("Sorry, something went wrong with the estimate.");
+        }
+        setIsTyping(false);
+        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
         newStep++;
         break;
       default:
@@ -106,13 +114,28 @@ This is a live rate and may change, so let’s lock it in while it’s still act
     setStep(newStep);
   };
 
-  return {
-    messages,
-    input,
-    setInput,
-    handleUserInput,
-    buttonOptions,
-    getPlaceholder,
-    isTyping
-  };
+  return (
+    <div className="chat-container">
+      <div className="messages">
+        {messages.map((msg, i) => (
+          <div key={i} className={msg.sender}>
+            {msg.text}
+          </div>
+        ))}
+        {isTyping && <div className="typing-indicator">...</div>}
+      </div>
+      <input
+        type="text"
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && handleUserInput()}
+        placeholder={getPlaceholder()}
+      />
+      <div className="options">
+        {buttonOptions.map((option, i) => (
+          <button key={i} onClick={() => handleUserInput(option)}>{option}</button>
+        ))}
+      </div>
+    </div>
+  );
 }
