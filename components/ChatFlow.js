@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -9,193 +9,110 @@ export default function ChatFlow() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [buttonOptions, setButtonOptions] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
 
   const getPlaceholder = () => {
     switch (step) {
-      case 1:
-      case 2:
-        return "City, State (e.g. Dallas, TX)";
-      case 3:
-        return "Move date (e.g. July 12)";
-      case 4:
-        return "Timing, cost, fragile items…";
-      case 8:
-        return "Piano, safe, artwork, etc.";
-      default:
-        return "";
+      case 1: return "City, State (e.g. Dallas, TX)";
+      case 2: return "City, State (e.g. Phoenix, AZ)";
+      case 3: return "Move date (e.g. June 25)";
+      case 4: return "What matters most? (e.g. timing, fragile items)";
+      case 8: return "Special items (e.g. piano, art)";
+      default: return "";
     }
   };
 
-  const handleUserInput = (customInput = null) => {
+  const sendBotMessage = (text, options = []) => {
+    setMessages(prev => [...prev, { sender: 'bot', text }]);
+    setButtonOptions(options);
+  };
+
+  const handleUserInput = async (customInput = null) => {
     const userInput = customInput || input.trim();
     if (!userInput) return;
 
-    const updatedMessages = [...messages, { sender: 'user', text: userInput }];
-    let newBotMessage = '';
+    setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
+    setInput('');
+    setButtonOptions([]);
+
     let newStep = step;
-    let updatedFormData = { ...formData };
-    let options = [];
+    const updatedFormData = { ...formData };
 
     switch (step) {
       case 1:
         updatedFormData.from = userInput;
-        newBotMessage = "Where to?";
+        sendBotMessage("Where to?");
         newStep++;
         break;
       case 2:
         updatedFormData.to = userInput;
-        newBotMessage = "What’s your move date?";
+        sendBotMessage("What’s your move date?");
         newStep++;
         break;
       case 3:
         updatedFormData.date = userInput;
-        newBotMessage = "What matters most to you about this move?";
+        sendBotMessage("What matters most to you about this move?");
         newStep++;
         break;
       case 4:
         updatedFormData.priority = userInput;
-        newBotMessage = "What type of place are you moving from?";
+        sendBotMessage("What type of place are you moving from?", ["House", "Apartment", "Storage Unit", "Other"]);
         newStep++;
-        options = ["House", "Apartment", "Storage Unit", "Other"];
         break;
       case 5:
-        updatedFormData.placeType = userInput;
-        newBotMessage = "And what size roughly?";
+        updatedFormData.type = userInput;
+        sendBotMessage("And how many bedrooms?", ["1", "2", "3", "4+"]);
         newStep++;
-        options = ["1-bedroom", "2-bedroom", "3-bedroom", "4+ bedrooms"];
         break;
       case 6:
         updatedFormData.size = userInput;
-        newBotMessage = "Do you want help with packing?";
+        sendBotMessage("Do you want packing included in the estimate?", ["Yes", "I'll pack myself"]);
         newStep++;
-        options = ["Yes", "I'll pack myself"];
         break;
       case 7:
         updatedFormData.packing = userInput;
-        newBotMessage = "Any fragile, heavy, or high-value items?";
+        sendBotMessage("Any fragile or high-value items?", []);
         newStep++;
         break;
       case 8:
         updatedFormData.special = userInput;
-        newBotMessage = `Great, here's your move summary:
-
-- From: ${updatedFormData.from}
-- To: ${updatedFormData.to}
-- Date: ${updatedFormData.date}
-- Priority: ${updatedFormData.priority}
-- Type: ${updatedFormData.placeType}, ${updatedFormData.size}
-- Packing: ${updatedFormData.packing}
-- Special items: ${updatedFormData.special}`;
+        sendBotMessage(`Thanks! Here's what I’ve got:
+• From: ${updatedFormData.from}
+• To: ${updatedFormData.to}
+• Date: ${updatedFormData.date}
+• Place: ${updatedFormData.type} (${updatedFormData.size} bedrooms)
+• Packing: ${updatedFormData.packing}
+• Priority: ${updatedFormData.priority}
+• Special: ${updatedFormData.special}`, ["Run My Estimate"]);
         newStep++;
-        options = ["Run My Estimate"];
         break;
       case 9:
-        newBotMessage = "Checking mover availability…
-Reviewing route data…
-Matching top-rated crews…";
-        newStep++;
-        break;
-      case 10:
-        const quote = "$2,150–$2,500";
-        newBotMessage = `Here’s your estimated price range: ${quote}
+        // Show typing dots then estimate
+        setIsTyping(true);
+        setTimeout(() => {
+          setIsTyping(false);
+          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**.
 
-Rates are live and may change. Ready to lock in your date with an $85 deposit?`;
+This is a live rate and may change, so let’s lock it in while it’s still active.");
+          setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        }, 2000);
         newStep++;
-        options = ["Yes, Reserve My Move", "I Have More Questions First"];
         break;
       default:
-        newBotMessage = "Want to move forward or ask more questions?";
-        options = ["Yes, Reserve My Move", "I Have More Questions First"];
+        break;
     }
 
-    setMessages([...updatedMessages, { sender: 'bot', text: newBotMessage }]);
-    setStep(newStep);
-    setInput('');
     setFormData(updatedFormData);
-    setButtonOptions(options);
+    setStep(newStep);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleUserInput();
+  return {
+    messages,
+    input,
+    setInput,
+    handleUserInput,
+    buttonOptions,
+    getPlaceholder,
+    isTyping
   };
-
-  return (
-    <div style={{
-      background: '#fffef8',
-      padding: '24px',
-      borderRadius: '16px',
-      border: '2px solid #e4b200',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-      maxWidth: '800px',
-      margin: '0 auto',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: '18px'
-    }}>
-      {messages.map((msg, idx) => (
-        <div key={idx} style={{
-          textAlign: msg.sender === 'user' ? 'right' : 'left',
-          margin: '12px 0'
-        }}>
-          <div style={{
-            display: 'inline-block',
-            backgroundColor: msg.sender === 'user' ? '#d0ebff' : '#f5f5f5',
-            color: '#000',
-            padding: '14px 18px',
-            borderRadius: '16px',
-            maxWidth: '75%',
-            whiteSpace: 'pre-line',
-            fontSize: '18px'
-          }}>{msg.text}</div>
-        </div>
-      ))}
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '16px' }}>
-        {buttonOptions.map((option, idx) => (
-          <button key={idx} onClick={() => handleUserInput(option)} style={{
-            padding: '12px 16px',
-            fontSize: '16px',
-            backgroundColor: '#1e70ff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '20px',
-            cursor: 'pointer'
-          }}>{option}</button>
-        ))}
-      </div>
-
-      {buttonOptions.length === 0 && (
-        <div style={{ display: 'flex', marginTop: '16px' }}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={getPlaceholder()}
-            style={{
-              flex: 1,
-              padding: '14px',
-              fontSize: '18px',
-              border: '1px solid #ccc',
-              borderRadius: '8px'
-            }}
-          />
-          <button
-            onClick={() => handleUserInput()}
-            style={{
-              marginLeft: '8px',
-              padding: '14px 18px',
-              backgroundColor: '#1e70ff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '18px',
-              cursor: 'pointer'
-            }}
-          >
-            Send
-          </button>
-        </div>
-      )}
-    </div>
-  );
 }
