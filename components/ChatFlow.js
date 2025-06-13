@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function ChatFlow() {
+export default function useChatFlow() {
   const [messages, setMessages] = useState([
     { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
   ]);
@@ -91,7 +91,9 @@ export default function ChatFlow() {
         setIsTyping(true);
         setTimeout(() => {
           setIsTyping(false);
-          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**. This is a live rate and may change, so let’s lock it in while it’s still active.");
+          sendBotMessage("Based on everything you shared, your estimated range is **$2,200–$3,100**.
+
+This is a live rate and may change, so let’s lock it in while it’s still active.");
           setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
         }, 2000);
         newStep++;
