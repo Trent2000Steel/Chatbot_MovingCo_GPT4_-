@@ -1,4 +1,3 @@
-
 import React from "react";
 
 export default function ChatUI({
@@ -18,10 +17,7 @@ export default function ChatUI({
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif" }}>
-      <div style={{
-        padding: "16px",
-        transition: "all 0.3s ease"
-      }}>
+      <div style={{ padding: "16px", transition: "all 0.3s ease" }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ marginBottom: "12px", textAlign: msg.sender === "user" ? "right" : "left" }}>
             <div

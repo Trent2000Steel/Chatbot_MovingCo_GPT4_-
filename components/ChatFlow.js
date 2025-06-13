@@ -1,75 +1,101 @@
+import chatSteps from './Chatsteps';
 
-import React, { useState, useEffect } from "react";
-import getChatMessage from "./Chatsteps";
-import ChatUI from "./ChatUI";
+export default async function ChatFlow(userInput, state = {}) {
+  const currentStep = state.step || 0;
+  const responses = [];
 
-export default function ChatFlow() {
-  const [phase, setPhase] = useState(1);
-  const [memory, setMemory] = useState({});
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [isThinking, setIsThinking] = useState(false);
+  // Step logic: use static steps first
+  if (currentStep < chatSteps.length) {
+    const step = chatSteps[currentStep];
+    responses.push({
+      text: step.text,
+      options: step.options || [],
+      placeholder: step.placeholder || "",
+    });
 
-  const currentStep = getChatMessage(phase, memory);
+    return {
+      responses,
+      state: { ...state, step: currentStep + 1 },
+    };
+  }
 
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          sender: "bot",
-          text: currentStep.message,
-          timestamp: new Date().toLocaleTimeString()
-        }
-      ]);
-    }
-  }, []);
+  // After all steps, trust recap
+  if (currentStep === chatSteps.length) {
+    const summary = `Great! Just to recap, you're moving from ${state.from || '[From]'} to ${state.to || '[To]'} on ${state.date || '[Date]'}.
+Type: ${state.size || '[Size]'} home.`;
+    responses.push({
+      text: summary + "\n\nReady to get your estimate?",
+      options: ['Yes, Run My Estimate'],
+    });
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
+    return {
+      responses,
+      state: { ...state, step: currentStep + 1 }
+    };
+  }
 
-  const handleUserInput = (userInput) => {
-    if (!userInput) return;
+  // Trust-building delay sequence
+  if (currentStep === chatSteps.length + 1) {
+    responses.push({ text: "Checking mover availability...", delay: 1000 });
+    responses.push({ text: "Reviewing recent route data...", delay: 1000 });
+    responses.push({ text: "Scanning for top-rated teams near you…", delay: 1000 });
 
-    const updatedMessages = [
-      ...messages,
-      { sender: "user", text: userInput, timestamp: new Date().toLocaleTimeString() }
-    ];
+    return {
+      responses,
+      state: { ...state, step: currentStep + 1 }
+    };
+  }
 
-    const updatedMemory = { ...memory };
-    if (currentStep.field) {
-      updatedMemory[currentStep.field] = userInput;
-    }
+  // Official Estimate (simulate GPT response)
+  if (currentStep === chatSteps.length + 2) {
+    const priceRange = "$2,300 – $3,100";
+    const reason = state.importance || "timing and trust";
+    const items = state.special || "TV, fragile boxes";
 
-    setMessages(updatedMessages);
-    setInput("");
-    setIsThinking(true);
+    const estimateText = `✅ Based on your move, your estimated flat rate is: **${priceRange}**
 
-    setTimeout(() => {
-      const nextPhase = phase + 1;
-      const nextStep = getChatMessage(nextPhase, updatedMemory);
-      const botMessage = nextStep.message || "Okay.";
+We factored in what matters to you most (${reason}) and made sure teams can handle your special items (${items}).
 
-      setMessages([
-        ...updatedMessages,
-        { sender: "bot", text: botMessage, timestamp: new Date().toLocaleTimeString() }
-      ]);
+📦 This is a live quote and may change if you wait too long.
 
-      setMemory(updatedMemory);
-      setPhase(nextPhase);
-      setIsThinking(false);
-    }, 600);
-  };
+Want to lock it in?`;
 
-  return (
-    <ChatUI
-      messages={messages}
-      input={input}
-      options={currentStep.options || []}
-      isThinking={isThinking}
-      handleInputChange={handleInputChange}
-      handleUserInput={handleUserInput}
-      placeholder={currentStep.placeholder}
-    />
-  );
+    responses.push({
+      text: estimateText,
+      options: ['Yes, Reserve My Move', 'I Have More Questions First'],
+    });
+
+    return {
+      responses,
+      state: { ...state, step: currentStep + 1 }
+    };
+  }
+
+  // Fallback responses if user has questions
+  if (currentStep === chatSteps.length + 3 && !state.fallbackCount) {
+    responses.push({
+      text: "Of course—ask me anything. I’m here to help, no pressure at all.",
+    });
+
+    return {
+      responses,
+      state: { ...state, fallbackCount: 1 },
+    };
+  }
+
+  if (currentStep === chatSteps.length + 3 && state.fallbackCount === 1) {
+    responses.push({
+      text: "Just keep in mind, rates are based on current fuel and driver availability. Let me know when you're ready.",
+      options: ['Reserve My Move', 'Email Me My Estimate'],
+    });
+
+    return {
+      responses,
+      state: { ...state, fallbackCount: 2 },
+    };
+  }
+
+  // End of flow
+  responses.push({ text: "Let me know what you'd like to do next!" });
+  return { responses, state };
 }
