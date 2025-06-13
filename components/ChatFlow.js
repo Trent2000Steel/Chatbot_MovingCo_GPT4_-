@@ -1,9 +1,9 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: "No forms, no waiting — I'll give you a real price range right now. Where are you moving from?" }
+    { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
   ]);
   const [input, setInput] = useState('');
   const [step, setStep] = useState(1);
@@ -46,7 +46,7 @@ export default function ChatFlow() {
         break;
       case 2:
         updatedFormData.to = userInput;
-        sendBotMessage("What's your move date?");
+        sendBotMessage("What’s your move date?");
         newStep++;
         break;
       case 3:
@@ -76,14 +76,16 @@ export default function ChatFlow() {
         break;
       case 8:
         updatedFormData.special = userInput;
-        sendBotMessage(\`Thanks! Here's what I've got:
-• From: \${updatedFormData.from}
-• To: \${updatedFormData.to}
-• Date: \${updatedFormData.date}
-• Place: \${updatedFormData.type} (\${updatedFormData.size} bedrooms)
-• Packing: \${updatedFormData.packing}
-• Priority: \${updatedFormData.priority}
-• Special: \${updatedFormData.special}\`, ["Run My Estimate"]);
+        const summary =
+          "Thanks! Here's what I've got:\n" +
+          "- From: " + updatedFormData.from + "\n" +
+          "- To: " + updatedFormData.to + "\n" +
+          "- Date: " + updatedFormData.date + "\n" +
+          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)\n" +
+          "- Packing: " + updatedFormData.packing + "\n" +
+          "- Priority: " + updatedFormData.priority + "\n" +
+          "- Special: " + updatedFormData.special;
+        sendBotMessage(summary, ["Run My Estimate"]);
         newStep++;
         break;
       case 9:
