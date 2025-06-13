@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import footer from './footer';
-import testimonialbar from './testimonialbar';
+import Footer from './footer';
+import TestimonialBar from './testimonialbar';
 
 export default function Layout({ children }) {
   return (
@@ -55,7 +55,7 @@ export default function Layout({ children }) {
 
       {/* TRUST TEXT + HAND ICON */}
       <section style={{ backgroundColor: '#fff', textAlign: 'center', padding: '30px 20px 10px' }}>
-        <div style={{ fontSize: '14px', color: '#bbb', marginBottom: '10px' }}>
+        <div style={{ fontSize: '14px', color: '#888', marginBottom: '10px' }}>
           Trusted by families in all 50 states
         </div>
         <div style={{ fontSize: '18px' }}>
@@ -69,7 +69,7 @@ export default function Layout({ children }) {
       </main>
 
       {/* TESTIMONIALS */}
-      <testimonialbar />
+      <TestimonialBar />
 
       {/* IMAGE 1 */}
       <div style={{ textAlign: 'center', marginTop: '40px' }}>
@@ -94,7 +94,7 @@ export default function Layout({ children }) {
       </div>
 
       {/* FOOTER */}
-      <footer />
+      <Footer />
     </div>
   );
 }
