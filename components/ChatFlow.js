@@ -253,19 +253,7 @@ export default function ChatFlow() {
     setInput("");
     setIsThinking(true);
 
-    setTimeout(() => {
-      const nextPhase = phase + 1;
-      const nextStep = getChatMessage(nextPhase, updatedMemory);
-      const botMessage = nextStep.message || "Okay.";
-      setMessages([
-        ...updatedMessages,
-        { sender: "bot", text: botMessage, timestamp: new Date().toLocaleTimeString() }
-      ]);
-      setMemory(updatedMemory);
-      setPhase(nextPhase);
-      setIsThinking(false);
-    }, 600);
-  };
+      };
 
   return (
     <ChatUI
