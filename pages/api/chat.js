@@ -48,6 +48,17 @@ export default async function handler(req, res) {
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a MovingCo sales assistant. The customer has provided the following:
+- What matters most: "${req.body.formData?.priority || 'N/A'}"
+- Special or fragile items: "${req.body.formData?.special || 'N/A'}"
+
+Use this to craft a confident, clear estimate response. Offer a realistic price range for long-distance moves, reference what matters most, and mention any important or fragile items they care about. Reassure them we coordinate with verified pros and include packing if selected. End with a soft urgency like “Rates are live and may change.” Never suggest contacting another company — you are the expert.`
+        },
+        ...messages
+      ],
       messages,
       temperature: 0.7
     });
