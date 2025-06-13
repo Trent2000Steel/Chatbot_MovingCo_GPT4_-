@@ -177,7 +177,7 @@ export default function ChatUI({
 // Flow logic
 
 import React, { useState } from "react";
-import getChatMessage from "./Chatsteps"; // fixed case to match actual file name
+ // fixed case to match actual file name
 import ChatUI from "./ChatUI";
 
 export default function ChatFlow() {
