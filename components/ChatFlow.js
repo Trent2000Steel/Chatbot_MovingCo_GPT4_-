@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -8,11 +8,6 @@ export default function ChatFlow() {
   const [input, setInput] = useState('');
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
-  const chatEndRef = useRef(null);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
 
   const handleUserInput = async () => {
     if (!input.trim()) return;
@@ -152,7 +147,6 @@ export default function ChatFlow() {
           Send
         </button>
       </div>
-      <div ref={chatEndRef} />
     </div>
   );
 }
