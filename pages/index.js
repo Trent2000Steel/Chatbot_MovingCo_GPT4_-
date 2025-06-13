@@ -1,86 +1,52 @@
 
 import Head from 'next/head';
-import Image from 'next/image';
-import ChatFlow from '../components/ChatFlow';
-import TestimonialBar from '../components/testimonialbar';
+import dynamic from 'next/dynamic';
 import Footer from '../components/footer';
+import TestimonialBar from '../components/testimonialbar';
+import ChatFlow from '../components/ChatFlow'; // Assuming ChatFlow is now non-async and in components
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div style={{
-      backgroundColor: '#f3f8fe',
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      padding: '20px 10px',
-      fontFamily: "'Inter', sans-serif",
-      position: 'relative',
-    }}>
+    <div style={{ backgroundColor: '#f0f4f8', fontFamily: '"Inter", sans-serif' }}>
       <Head>
-        <title>MovingCo — Get Your Flat Rate Quote</title>
-        <meta name="description" content="Chat now to get your real moving estimate — no forms, no waiting. Just clear pricing and concierge service." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>MovingCo | Trusted Long Distance Movers</title>
+        <meta name="description" content="Get a real price range in chat. No forms, no waiting. Reserve your move today." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div style={{
-        width: '100%',
-        maxWidth: '600px',
-        position: 'relative',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        marginBottom: '20px',
-      }}>
+      <header style={{ position: 'relative', width: '100%', height: 'auto' }}>
         <video
           autoPlay
           muted
           loop
           playsInline
-          style={{
-            width: '100%',
-            height: 'auto',
-            objectFit: 'cover',
-            display: 'block',
-          }}
+          style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
         >
           <source src="/videos/Hero.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
         <Image
-          src="/HeaderOverlay.png"
+          src="/Headeroverlay.PNG"
           alt="Overlay"
-          width={600}
-          height={200}
+          width={1920}
+          height={500}
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
-            height: 'auto',
+            height: '100%',
             objectFit: 'cover',
+            pointerEvents: 'none'
           }}
         />
-      </div>
+      </header>
 
-      <div style={{
-        maxWidth: '600px',
-        width: '100%',
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        overflow: 'hidden',
-        padding: '0',
-        display: 'flex',
-        flexDirection: 'column',
-        border: '1px solid #dce3eb'
-      }}>
+      <main style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        <TestimonialBar />
         <ChatFlow />
-      </div>
+      </main>
 
-      <TestimonialBar />
       <Footer />
     </div>
   );
