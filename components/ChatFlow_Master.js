@@ -56,6 +56,7 @@ export default function getChatMessage(phase, memory = {}) {
       return {
         message: String(`Okay — I’ve got your ${size || "[size]"} ${homeType || "[type]"} move from ${moveFrom || "[origin]"} to ${moveTo || "[destination]"} on ${moveDate || "[date]"}.`),
         delay: true,
+      };
     }
     case 11:
       return {
