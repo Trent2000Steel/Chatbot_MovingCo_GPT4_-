@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import getChatMessage from "./ChatSteps"; // fixed import
+import getChatMessage from "./Chatsteps"; // fixed case to match actual file name
 import ChatUI from "./ChatUI";
 
 export default function ChatFlow() {
