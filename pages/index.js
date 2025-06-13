@@ -58,7 +58,7 @@ export default function Home() {
         </div>
       </div>
 
-      <style jsx>{\`
+      <style jsx>{`
         @keyframes bounce {
           0%, 100% {
             transform: translateX(-50%) translateY(0);
@@ -67,7 +67,7 @@ export default function Home() {
             transform: translateX(-50%) translateY(8px);
           }
         }
-      \`}</style>
+      `}</style>
 
       {/* Trust message */}
       <div style={{
