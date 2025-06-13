@@ -51,12 +51,12 @@ export default function getChatMessage(phase, memory = {}) {
         message: String("Any fragile, heavy, or high-value items?"),
         field: "specialItems",
       };
-    case 10:
+    case 10: {
       const { size, homeType, moveFrom, moveTo, moveDate } = memory;
       return {
         message: String(`Okay — I’ve got your ${size || "[size]"} ${homeType || "[type]"} move from ${moveFrom || "[origin]"} to ${moveTo || "[destination]"} on ${moveDate || "[date]"}.`),
         delay: true,
-      };
+    }
     case 11:
       return {
         message: String("Let me run your quote real quick…"),
