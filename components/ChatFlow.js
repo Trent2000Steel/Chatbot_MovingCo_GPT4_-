@@ -118,45 +118,52 @@ export default function ChatFlow() {
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-header" />
-      <div className="messages">
-        {messages.map((msg, i) => (
-          <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
-            {msg.text}
-          </div>
-        ))}
-        {isTyping && <div className="typing-indicator">...</div>}
-      </div>
-      <div className="input-row">
-        <input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleUserInput()}
-          placeholder={getPlaceholder()}
-          className="chat-input"
-        />
-        <button className="send-btn" onClick={() => handleUserInput()}>Send</button>
-      </div>
-      <div className="options">
-        {buttonOptions.map((option, i) => (
-          <button key={i} className="pill-btn" onClick={() => handleUserInput(option)}>{option}</button>
-        ))}
+    <div className="chat-outer">
+      <div className="chat-container">
+        <div className="chat-header" />
+        <div className="messages">
+          {messages.map((msg, i) => (
+            <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
+              {msg.text}
+            </div>
+          ))}
+          {isTyping && <div className="typing-indicator">...</div>}
+        </div>
+        <div className="input-row">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleUserInput()}
+            placeholder={getPlaceholder()}
+            className="chat-input"
+          />
+          <button className="send-btn" onClick={() => handleUserInput()}>Send</button>
+        </div>
+        <div className="options">
+          {buttonOptions.map((option, i) => (
+            <button key={i} className="pill-btn" onClick={() => handleUserInput(option)}>{option}</button>
+          ))}
+        </div>
       </div>
 
       <style jsx>{`
+        .chat-outer {
+          width: 100%;
+          background: #ffffff;
+          padding: 0 0 48px 0;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+          margin-bottom: 40px;
+        }
         .chat-container {
-          background: #fff;
-          border-radius: 12px;
-          box-shadow: 0 0 20px rgba(0,0,0,0.05);
-          margin-top: 24px;
-          padding: 0;
-          overflow: hidden;
+          max-width: 800px;
+          margin: 0 auto;
         }
         .chat-header {
           height: 6px;
           background-color: #1a73e8;
+          border-top-left-radius: 12px;
+          border-top-right-radius: 12px;
         }
         .messages {
           padding: 20px;
