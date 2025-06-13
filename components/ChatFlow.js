@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import getChatMessage from "./Chatsteps"; // fixed case to match actual file name
+import getChatMessage from "./Chatsteps";
 import ChatUI from "./ChatUI";
 
 export default function ChatFlow() {
@@ -18,6 +18,7 @@ export default function ChatFlow() {
 
   const handleUserInput = (userInput) => {
     if (!userInput) return;
+
     const updatedMessages = [
       ...messages,
       { sender: "user", text: userInput, timestamp: new Date().toLocaleTimeString() }
@@ -36,10 +37,12 @@ export default function ChatFlow() {
       const nextPhase = phase + 1;
       const nextStep = getChatMessage(nextPhase, updatedMemory);
       const botMessage = nextStep.message || "Okay.";
+
       setMessages([
         ...updatedMessages,
         { sender: "bot", text: botMessage, timestamp: new Date().toLocaleTimeString() }
       ]);
+
       setMemory(updatedMemory);
       setPhase(nextPhase);
       setIsThinking(false);
@@ -54,6 +57,7 @@ export default function ChatFlow() {
       isThinking={isThinking}
       handleInputChange={handleInputChange}
       handleUserInput={handleUserInput}
+      placeholder={currentStep.placeholder}
     />
   );
 }
