@@ -120,7 +120,7 @@ export default function ChatFlow() {
     <div className="chat-container">
       <div className="messages">
         {messages.map((msg, i) => (
-          <div key={i} className={msg.sender}>
+          <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
             {msg.text}
           </div>
         ))}
@@ -132,12 +132,62 @@ export default function ChatFlow() {
         onChange={e => setInput(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && handleUserInput()}
         placeholder={getPlaceholder()}
+        className="chat-input"
       />
       <div className="options">
         {buttonOptions.map((option, i) => (
           <button key={i} onClick={() => handleUserInput(option)}>{option}</button>
         ))}
       </div>
+
+      <style jsx>{`
+        .chat-container {
+          background: #fff;
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 0 20px rgba(0,0,0,0.05);
+          margin-top: 20px;
+        }
+        .messages {
+          max-height: 250px;
+          overflow-y: auto;
+          margin-bottom: 12px;
+        }
+        .bubble {
+          padding: 10px 14px;
+          margin: 6px 0;
+          border-radius: 10px;
+          max-width: 90%;
+          word-wrap: break-word;
+        }
+        .bot {
+          background-color: #f1f1f1;
+          align-self: flex-start;
+        }
+        .user {
+          background-color: #cce5ff;
+          align-self: flex-end;
+        }
+        .chat-input {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          margin-bottom: 12px;
+        }
+        .options button {
+          background-color: #1e70ff;
+          color: white;
+          padding: 8px 12px;
+          margin: 4px;
+          border: none;
+          border-radius: 20px;
+          cursor: pointer;
+        }
+        .options button:hover {
+          background-color: #155ed8;
+        }
+      `}</style>
     </div>
   );
 }
