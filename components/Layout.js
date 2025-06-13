@@ -1,3 +1,4 @@
+
 import Head from 'next/head';
 import Image from 'next/image';
 import Footer from './footer';
@@ -24,22 +25,30 @@ export default function Layout({ children }) {
           <source src="/videos/Hero.mp4" type="video/mp4" />
         </video>
 
-        {/* Overlay with logo */}
-        <Image
-          src="/Headeroverlay.PNG"
-          alt="Overlay"
-          width={1920}
-          height={500}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            pointerEvents: 'none'
-          }}
-        />
+        {/* Responsive Overlay with logo */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          padding: '20px',
+          boxSizing: 'border-box',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          pointerEvents: 'none'
+        }}>
+          <Image
+            src="/Headeroverlay.PNG"
+            alt="Overlay"
+            width={600}
+            height={200}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </div>
 
         {/* Animated Arrow */}
         <div style={{
