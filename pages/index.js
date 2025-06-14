@@ -1,15 +1,16 @@
 
-import { useState } from 'react';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
-import Footer from '../components/footer';
-import TestimonialBar from '../components/testimonialbar';
-import ChatFlow from '../components/ChatFlow';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import Footer from './components/Footer';
+import TestimonialBar from './components/TestimonialBar';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const ChatFlow = dynamic(() => import('./components/ChatFlow'), { ssr: false });
+
 export default function Home() {
-  const [isChatOpen, setChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
     <div style={{ backgroundColor: '#f0f4f8', fontFamily: '"Inter", sans-serif' }}>
@@ -19,65 +20,59 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header style={{ position: 'relative', width: '100%', height: 'auto' }}>
+      {/* Hero Video Section */}
+      <header style={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}>
         <video
           autoPlay
           muted
           loop
           playsInline
-          style={{ width: '100%', height: 'auto', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         >
           <source src="/videos/Hero.mp4" type="video/mp4" />
         </video>
         <Image
           src="/Headeroverlay.PNG"
           alt="Overlay"
-          width={1920}
-          height={500}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            pointerEvents: 'none'
-          }}
+          layout="fill"
+          objectFit="contain"
         />
       </header>
 
-      <main style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-        <TestimonialBar />
+      {/* Trust Text + CTA */}
+      <div style={{ textAlign: 'center', marginTop: '16px' }}>
+        <div style={{ fontSize: '20px', color: '#888' }}>Trusted by families in all 50 states</div>
+        <div style={{ fontSize: '24px', marginTop: '8px' }}>
+          <span role="img" aria-label="wave">👋</span> Get a price right now in chat!
+        </div>
+      </div>
 
-        <AnimatePresence>
-          {!isChatOpen && (
-            <motion.div
-              key="chat-closed"
-              initial={{ scale: 1, opacity: 1 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => setChatOpen(true)}
-              style={{
-                cursor: 'pointer',
-                borderRadius: '16px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                overflow: 'hidden'
-              }}
-            >
-              <ChatFlow />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </main>
+      {/* Chat Box Preview */}
+      <div
+        onClick={() => setIsChatOpen(true)}
+        style={{
+          backgroundColor: '#fff',
+          borderRadius: '16px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          overflow: 'hidden',
+          padding: '16px',
+          margin: '32px auto',
+          width: '95%',
+          maxWidth: '500px',
+          borderTop: '4px solid #1e70ff',
+          cursor: 'pointer'
+        }}
+      >
+        Tap to chat with a Moving Concierge →
+      </div>
 
+      {/* Fullscreen Chat */}
       <AnimatePresence>
         {isChatOpen && (
           <motion.div
-            key="chat-open"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
             transition={{ duration: 0.4 }}
             style={{
               position: 'fixed',
@@ -85,32 +80,29 @@ export default function Home() {
               left: 0,
               width: '100vw',
               height: '100vh',
-              backgroundColor: 'white',
+              backgroundColor: '#ffffff',
               zIndex: 9999,
               display: 'flex',
               flexDirection: 'column'
             }}
           >
-            {/* Top bar */}
             <div style={{
               backgroundColor: '#1e70ff',
-              color: 'white',
+              color: '#fff',
               padding: '16px',
               display: 'flex',
               alignItems: 'center'
             }}>
-              <button onClick={() => setChatOpen(false)} style={{
-                fontSize: '1.5rem',
-                background: 'none',
+              <button onClick={() => setIsChatOpen(false)} style={{
+                background: 'transparent',
                 border: 'none',
-                color: 'white',
-                marginRight: '12px',
-                cursor: 'pointer'
-              }}>←</button>
-              MovingCo
+                color: '#fff',
+                fontSize: '18px',
+                cursor: 'pointer',
+                marginRight: '8px'
+              }}>← Back</button>
+              <span>MovingCo Chat</span>
             </div>
-
-            {/* Chat content */}
             <div style={{ flex: 1, overflowY: 'auto' }}>
               <ChatFlow />
             </div>
@@ -118,6 +110,26 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* Testimonials */}
+      <TestimonialBar />
+
+      {/* Full Width Images */}
+      <Image
+        src="/17029ECA-FD4F-4F7C-A085-91BBF0DFDFFB.png"
+        alt="Scene Image"
+        width={1920}
+        height={1080}
+        style={{ width: '100%', height: 'auto', display: 'block', marginTop: '40px' }}
+      />
+      <Image
+        src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png"
+        alt="Black Background Image"
+        width={1920}
+        height={1080}
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+
+      {/* Footer */}
       <Footer />
     </div>
   );
