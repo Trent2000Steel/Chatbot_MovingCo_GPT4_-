@@ -2,8 +2,8 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
-import Footer from './components/Footer';
-import TestimonialBar from './components/TestimonialBar';
+import Footer from './components/footer';
+import TestimonialBar from './components/testimonialbar';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
