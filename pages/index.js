@@ -93,16 +93,19 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
-            disabled
-            placeholder="City, State (e.g. Dallas, TX)"
-            style={{
-              flex: 1,
-              padding: '8px 12px',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              backgroundColor: '#f5f5f5',
-            }}
-          />
+  readOnly
+  placeholder="City, State (e.g. Dallas, TX)"
+  onFocus={() => setIsChatOpen(true)}
+  style={{
+    flex: 1,
+    padding: '8px 12px',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    cursor: 'text',
+    color: '#333',
+  }}
+/>
           <button style={{
             backgroundColor: '#1e70ff',
             color: '#fff',
