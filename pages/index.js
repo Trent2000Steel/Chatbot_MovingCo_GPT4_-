@@ -121,6 +121,7 @@ export default function Home() {
         height={1080}
         style={{ width: '100%', height: 'auto', display: 'block', marginTop: '40px' }}
       />
+      <div style={{ backgroundColor: "#111", padding: "20px 0" }}>
       <Image
         src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png"
         alt="Black Background Image"
@@ -128,6 +129,7 @@ export default function Home() {
         height={1080}
         style={{ width: '100%', height: 'auto', display: 'block' }}
       />
+    </div>
 
       {/* Footer */}
       <Footer />
