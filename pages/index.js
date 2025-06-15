@@ -4,13 +4,37 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import Footer from '../components/Footer';
 import TestimonialBar from '../components/TestimonialBar';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ChatFlow = dynamic(() => import('../components/ChatFlow'), { ssr: false });
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showPulse, setShowPulse] = useState(false);
+  const previewRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowPulse(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (previewRef.current) {
+      observer.observe(previewRef.current);
+    }
+
+    return () => {
+      if (previewRef.current) {
+        observer.unobserve(previewRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div style={{ backgroundColor: '#f0f4f8', fontFamily: '"Inter", sans-serif' }}>
@@ -49,6 +73,7 @@ export default function Home() {
 
       {/* Chat Box Preview */}
       <div
+        ref={previewRef}
         onClick={() => setIsChatOpen(true)}
         style={{
           backgroundColor: '#fff',
@@ -63,8 +88,46 @@ export default function Home() {
           cursor: 'pointer'
         }}
       >
-        Tap to chat with a Moving Concierge →
+        <div style={{ fontSize: '16px', color: '#555', marginBottom: '12px' }}>
+          No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?
+        </div>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input
+            disabled
+            placeholder="City, State (e.g. Dallas, TX)"
+            style={{
+              flex: 1,
+              padding: '8px 12px',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              backgroundColor: '#f5f5f5',
+            }}
+          />
+          <button style={{
+            backgroundColor: '#1e70ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '8px 16px',
+            cursor: 'pointer',
+            animation: showPulse ? 'pulse 3s ease-in-out infinite' : 'none'
+          }}>Send</button>
+        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes pulse {
+          0% {
+            box-shadow: 0 0 0 0 rgba(30, 112, 255, 0.4);
+          }
+          70% {
+            box-shadow: 0 0 0 10px rgba(30, 112, 255, 0);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(30, 112, 255, 0);
+          }
+        }
+      `}</style>
 
       {/* Fullscreen Chat */}
       <AnimatePresence>
@@ -122,14 +185,14 @@ export default function Home() {
         style={{ width: '100%', height: 'auto', display: 'block', marginTop: '40px' }}
       />
       <div style={{ backgroundColor: "#111", padding: "20px 0" }}>
-      <Image
-        src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png"
-        alt="Black Background Image"
-        width={1920}
-        height={1080}
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-    </div>
+        <Image
+          src="/7D69579A-E413-48C9-AEF6-EDF9E30A2ACC.png"
+          alt="Black Background Image"
+          width={1920}
+          height={1080}
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
+      </div>
 
       {/* Footer */}
       <Footer />
