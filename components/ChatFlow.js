@@ -1,179 +1,224 @@
 
-const chatFlow = [
-  {
-    id: "opening",
-    type: "auto",
-    message: "No forms, no waiting — I’ll give you a real price range right now.",
-    next: "fromLocation"
-  },
-  {
-    id: "fromLocation",
-    type: "text",
-    message: "Where are you moving from?",
-    placeholder: "City, State (e.g. Dallas, TX)",
-    next: "toLocation"
-  },
-  {
-    id: "toLocation",
-    type: "text",
-    message: "Where to?",
-    placeholder: "City, State (e.g. Phoenix, AZ)",
-    next: "moveDate"
-  },
-  {
-    id: "moveDate",
-    type: "text",
-    message: "What’s your move date?",
-    placeholder: "MM/DD/YYYY or say 'not sure yet'",
-    next: "priority"
-  },
-  {
-    id: "priority",
-    type: "text",
-    message: "What matters most to you about this move?",
-    placeholder: "Timing, cost, fragile items...",
-    next: "propertyType"
-  },
-  {
-    id: "propertyType",
-    type: "buttons",
-    message: "What type of place are you moving from?",
-    options: ["House", "Apartment", "Storage Unit", "Other"],
-    next: "propertySize"
-  },
-  {
-    id: "propertySize",
-    type: "text",
-    message: "And what size roughly?",
-    placeholder: "e.g. 2-bedroom, studio with patio...",
-    next: "access"
-  },
-  {
-    id: "access",
-    type: "buttons",
-    message: "Any stairs, elevators, or long walks to the truck?",
-    options: ["Stairs", "Elevator", "Long Walk", "Nope"],
-    next: "helpLevel"
-  },
-  {
-    id: "helpLevel",
-    type: "buttons",
-    message: "What help do you need?",
-    options: ["Load + Unload", "Include Packing", "Just Transport", "I'll explain"],
-    next: "specialItems"
-  },
-  {
-    id: "specialItems",
-    type: "text",
-    message: "Any fragile, heavy, or high-value items?",
-    placeholder: "TV, piano, safe, glass table, etc.",
-    next: "recapTrust"
-  },
-  {
-    id: "recapTrust",
-    type: "recap",
-    message: "Let’s recap your move before I run the estimate...",
-    next: "runEstimateButton"
-  },
-  {
-    id: "runEstimateButton",
-    type: "buttons",
-    message: "Everything look right?",
-    options: ["Run My Estimate"],
-    next: "trustBuild1"
-  },
-  {
-    id: "trustBuild1",
-    type: "auto",
-    message: "Checking mover availability for your route...",
-    delay: 1000,
-    next: "trustBuild2"
-  },
-  {
-    id: "trustBuild2",
-    type: "auto",
-    message: "Reviewing recent fuel pricing and mileage data...",
-    delay: 1200,
-    next: "trustBuild3"
-  },
-  {
-    id: "trustBuild3",
-    type: "auto",
-    message: "Filtering for top-rated crews (4.5 stars or higher)...",
-    delay: 1200,
-    next: "finalQuote"
-  },
-  {
-    id: "finalQuote",
-    type: "quote",
-    message: "Here’s your price range for the move.",
-    next: "quoteCTA"
-  },
-  {
-    id: "quoteCTA",
-    type: "buttons",
-    message: "Would you like to reserve your move?",
-    options: ["Yes, Reserve My Move", "I Have More Questions First"],
-    next: {
-      "Yes, Reserve My Move": "collectInfoStart",
-      "I Have More Questions First": "fallbackGPT1"
-    }
-  },
-  {
-    id: "fallbackGPT1",
-    type: "gpt",
-    message: "Of course—ask me anything and I’ll help however I can.",
-    next: "fallbackGPT2"
-  },
-  {
-    id: "fallbackGPT2",
-    type: "gpt",
-    message: "Still here with you—what else would you like to know?",
-    next: "finalFallback"
-  },
-  {
-    id: "finalFallback",
-    type: "buttons",
-    message: "When you’re ready, I can still help you reserve your move or email you a summary.",
-    options: ["Reserve My Move", "Email Me My Estimate"],
-    next: null
-  },
-  {
-    id: "collectInfoStart",
-    type: "text",
-    message: "Great! What’s your full name?",
-    next: "collectEmail"
-  },
-  {
-    id: "collectEmail",
-    type: "text",
-    message: "And your email address?",
-    next: "collectPhone"
-  },
-  {
-    id: "collectPhone",
-    type: "text",
-    message: "Phone number, just in case we need to reach you?",
-    next: "pickupAddress"
-  },
-  {
-    id: "pickupAddress",
-    type: "text",
-    message: "What’s the full pickup address?",
-    next: "deliveryAddress"
-  },
-  {
-    id: "deliveryAddress",
-    type: "text",
-    message: "What’s the full delivery address?",
-    next: "showStripe"
-  },
-  {
-    id: "showStripe",
-    type: "payment",
-    message: "Thanks! Tap below to reserve your move with an $85 refundable deposit.",
-    next: null
-  }
-];
+import { useState } from 'react';
 
-export default chatFlow;
+export default function ChatFlow() {
+  const [messages, setMessages] = useState([
+    { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
+  ]);
+  const [input, setInput] = useState('');
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({});
+  const [buttonOptions, setButtonOptions] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+
+  const getPlaceholder = () => {
+    switch (step) {
+      case 1: return "City, State (e.g. Dallas, TX)";
+      case 2: return "City, State (e.g. Phoenix, AZ)";
+      case 3: return "Move date (e.g. June 25)";
+      case 4: return "What matters most? (e.g. timing, fragile items)";
+      case 8: return "Special items (e.g. piano, art)";
+      default: return "";
+    }
+  };
+
+  const sendBotMessage = (text, options = []) => {
+    setMessages(prev => [...prev, { sender: 'bot', text }]);
+    setButtonOptions(options);
+  };
+
+  const handleUserInput = async (customInput = null) => {
+    const userInput = customInput || input.trim();
+    if (!userInput) return;
+
+    setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
+    setInput('');
+    setButtonOptions([]);
+
+    let newStep = step;
+    const updatedFormData = { ...formData };
+
+    switch (step) {
+      case 1:
+        updatedFormData.from = userInput;
+        sendBotMessage("Where to?");
+        newStep++;
+        break;
+      case 2:
+        updatedFormData.to = userInput;
+        sendBotMessage("What’s your move date?");
+        newStep++;
+        break;
+      case 3:
+        updatedFormData.date = userInput;
+        sendBotMessage("What matters most to you about this move?");
+        newStep++;
+        break;
+      case 4:
+        updatedFormData.priority = userInput;
+        sendBotMessage("What type of place are you moving from?", ["House", "Apartment", "Storage Unit", "Other"]);
+        newStep++;
+        break;
+      case 5:
+        updatedFormData.type = userInput;
+        sendBotMessage("And how many bedrooms?", ["1", "2", "3", "4+"]);
+        newStep++;
+        break;
+      case 6:
+        updatedFormData.size = userInput;
+        sendBotMessage("Do you want packing included in the estimate?", ["Yes", "I'll pack myself"]);
+        newStep++;
+        break;
+      case 7:
+        updatedFormData.packing = userInput;
+        sendBotMessage("Any fragile or high-value items?");
+        newStep++;
+        break;
+      case 8:
+        updatedFormData.special = userInput;
+        const summary =
+          "Thanks! Here's what I've got:\n" +
+          "- From: " + updatedFormData.from + "\n" +
+          "- To: " + updatedFormData.to + "\n" +
+          "- Date: " + updatedFormData.date + "\n" +
+          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)\n" +
+          "- Packing: " + updatedFormData.packing + "\n" +
+          "- Priority: " + updatedFormData.priority + "\n" +
+          "- Special: " + updatedFormData.special;
+        sendBotMessage(summary, ["Run My Estimate"]);
+        newStep++;
+        break;
+      case 9:
+        setIsTyping(true);
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: messages.map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text })),
+              userInput: userInput,
+              formData: formData
+            })
+          });
+          const data = await res.json();
+          sendBotMessage(data.reply || "Based on your info, here's a rough estimate.");
+        } catch (error) {
+          sendBotMessage("Sorry, something went wrong with the estimate.");
+        }
+        setIsTyping(false);
+        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        newStep++;
+        break;
+      default:
+        break;
+    }
+
+    setFormData(updatedFormData);
+    setStep(newStep);
+  };
+
+  return (
+    <div className="chat-outer">
+      <div className="chat-container">
+        <div className="chat-header" />
+        <div className="messages">
+          {messages.map((msg, i) => (
+            <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
+              {msg.text}
+            </div>
+          ))}
+          {isTyping && <div className="typing-indicator">...</div>}
+        </div>
+        <div className="input-row">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleUserInput()}
+            placeholder={getPlaceholder()}
+            className="chat-input"
+          />
+          <button className="send-btn" onClick={() => handleUserInput()}>Send</button>
+        </div>
+        <div className="options">
+          {buttonOptions.map((option, i) => (
+            <button key={i} className="pill-btn" onClick={() => handleUserInput(option)}>{option}</button>
+          ))}
+        </div>
+      </div>
+
+      <style jsx>{`
+        .chat-outer {
+          width: 100%;
+          background: #ffffff;
+          padding: 0 0 48px 0;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+          margin-bottom: 40px;
+        }
+        .chat-container {
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .chat-header {
+          height: 6px;
+          background-color: #1a73e8;
+          border-top-left-radius: 12px;
+          border-top-right-radius: 12px;
+        }
+        .messages {
+          padding: 20px;
+        }
+        .bubble {
+          padding: 12px 16px;
+          margin-bottom: 10px;
+          border-radius: 18px;
+          max-width: 90%;
+          word-wrap: break-word;
+          font-size: 15px;
+        }
+        .bot {
+          background-color: #f1f1f1;
+          align-self: flex-start;
+        }
+        .user {
+          background-color: #d2ebff;
+          align-self: flex-end;
+        }
+        .input-row {
+          display: flex;
+          padding: 16px;
+          border-top: 1px solid #eee;
+        }
+        .chat-input {
+          flex: 1;
+          padding: 14px;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          font-size: 16px;
+          margin-right: 12px;
+        }
+        .send-btn {
+          background-color: #1a73e8;
+          color: white;
+          border: none;
+          padding: 12px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+        }
+        .pill-btn {
+          background-color: #1a73e8;
+          color: white;
+          padding: 10px 18px;
+          margin: 4px;
+          border: none;
+          border-radius: 999px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        .pill-btn:hover, .send-btn:hover {
+          background-color: #155ab6;
+        }
+      `}</style>
+    </div>
+  );
+}
