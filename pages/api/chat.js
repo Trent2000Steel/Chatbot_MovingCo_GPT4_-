@@ -15,15 +15,14 @@ export default async function handler(req, res) {
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid request format' });
   }
-  }
 
   try {
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
       messages: [
-      {
-        role: 'system',
-        content: `You are a MovingCo sales assistant, trained to guide customers through long-distance moving estimates.
+        {
+          role: 'system',
+          content: `You are a MovingCo sales assistant, trained to guide customers through long-distance moving estimates.
 
 The customer provided:
 - What matters most: "${req.body.formData?.priority || 'N/A'}"
@@ -48,15 +47,15 @@ Begin your reply with this structure:
 End with a natural close that builds trust and gently invites them to continue. Do not ask for payment or personal information—you’ll be handing off to the system after this message.
 
 Keep it confident and human. Don’t oversell—just explain like a real concierge would. You’re the expert, and this is the beginning of their booking journey.`
-      },
-      ...messages
-    ],
-      messages,
+        },
+        ...messages
+      ],
       temperature: 0.7
     });
 
     const reply = completion.choices[0]?.message?.content || 'Something went wrong.';
     return res.status(200).json({ reply });
+
   } catch (error) {
     console.error('GPT error:', error);
     return res.status(500).json({ error: 'Internal error' });
