@@ -15,11 +15,6 @@ export default async function handler(req, res) {
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Invalid request format' });
   }
-
-   catch (error) {
-      console.error('Fallback GPT error:', error);
-      return res.status(500).json({ error: 'Internal fallback error' });
-    }
   }
 
   try {
