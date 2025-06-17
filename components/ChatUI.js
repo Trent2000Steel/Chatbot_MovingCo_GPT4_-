@@ -17,19 +17,27 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '100%',
+      height: '100vh',
       backgroundColor: '#fff',
       fontFamily: 'Inter, sans-serif',
-      paddingBottom: 'env(safe-area-inset-bottom)',
+      paddingTop: '64px',
+      paddingBottom: '120px',
+      overflow: 'hidden',
+      position: 'relative'
     }}>
-      {/* Top bar */}
+      {/* Fixed Top Bar */}
       <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
         backgroundColor: '#1e70ff',
         color: '#fff',
         padding: '16px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        zIndex: 1000
       }}>
         <button
           onClick={() => window.history.back()}
@@ -55,11 +63,12 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
         <div style={{ width: '60px' }}></div>
       </div>
 
-      {/* Messages */}
+      {/* Scrollable Messages */}
       <div style={{
         flexGrow: 1,
         overflowY: 'auto',
         padding: '1rem',
+        paddingTop: '0',
         WebkitOverflowScrolling: 'touch'
       }}>
         {messages.map((msg, i) => (
@@ -123,14 +132,16 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
         <div ref={bottomRef} />
       </div>
 
-      {/* Sticky input bar */}
+      {/* Fixed Input Bar */}
       <div style={{
-        position: 'sticky',
+        position: 'fixed',
         bottom: 0,
+        left: 0,
+        width: '100%',
         padding: '1rem env(safe-area-inset-left) calc(1.5rem + env(safe-area-inset-bottom)) env(safe-area-inset-right)',
         borderTop: '1px solid #ccc',
         backgroundColor: '#fff',
-        zIndex: 10,
+        zIndex: 1000,
         display: 'flex',
         gap: '0.75rem',
         alignItems: 'center'
