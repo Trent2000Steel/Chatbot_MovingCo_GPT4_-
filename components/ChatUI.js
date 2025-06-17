@@ -1,166 +1,170 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function ChatUI({ messages, inputValue, onChange, onSend, options, onOptionClick, placeholder, onBackClick }) {
+export default function ChatUI({
+  messages,
+  handleUserInput,
+  userInput,
+  setUserInput,
+  placeholder,
+  buttonOptions,
+  onBackClick
+}) {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  return (
-    <div style={styles.container}>
+  const formatTime = () => {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
+  return (
+    <div style={styles.chatContainer}>
       {/* Header */}
       <div style={styles.header}>
-        <button onClick={onBackClick} style={styles.backButton}>← Back</button>
+        <button onClick={onBackClick} style={styles.backBtn}>← Back</button>
         <img src="/Header.png" alt="Logo" style={styles.logo} />
       </div>
 
-      {/* Chat area */}
-      <div style={styles.chatBox}>
-        {messages.map((msg, index) => (
-          <div key={index} style={msg.role === 'user' ? styles.userBubbleWrapper : styles.botBubbleWrapper}>
-            <div style={msg.role === 'user' ? styles.userBubble : styles.botBubble}>
+      {/* Messages */}
+      <div style={styles.messagesWrapper}>
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            style={{
+              ...styles.messageGroup,
+              alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <div
+              style={{
+                ...styles.bubble,
+                backgroundColor: msg.sender === 'user' ? '#1e70ff' : '#f1f1f1',
+                color: msg.sender === 'user' ? 'white' : 'black',
+                borderRadius: msg.sender === 'user'
+                  ? '18px 18px 4px 18px'
+                  : '18px 18px 18px 4px'
+              }}
+            >
               {msg.text}
-              {msg.role === 'bot' && msg.options && (
-                <div style={styles.optionsContainer}>
-                  {msg.options.map((option, i) => (
-                    <button
-                      key={i}
-                      className="chat-option"
-                      style={styles.optionButton}
-                      onClick={() => onOptionClick(option)}
-                    >
-                      {option}
-                    </button>
+              {/* Bot Options */}
+              {msg.sender === 'bot' && idx === messages.length - 1 && buttonOptions.length > 0 && (
+                <div style={styles.options}>
+                  {buttonOptions.map((opt, i) => (
+                    <button key={i} style={styles.optionBtn} onClick={() => handleUserInput(opt)}>{opt}</button>
                   ))}
                 </div>
               )}
             </div>
-            <div style={styles.timestamp}>{msg.timestamp}</div>
+            <div style={styles.timestamp}>{formatTime()}</div>
           </div>
         ))}
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input area */}
-      <div style={styles.inputArea}>
+      {/* Input */}
+      <div style={styles.inputBar}>
         <input
           type="text"
-          value={inputValue}
-          onChange={onChange}
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleUserInput(userInput)}
           placeholder={placeholder}
           style={styles.input}
-          onKeyDown={(e) => e.key === 'Enter' && onSend()}
         />
-        <button onClick={onSend} style={styles.sendButton}>Send</button>
+        <button onClick={() => handleUserInput(userInput)} style={styles.sendBtn}>Send</button>
       </div>
-
     </div>
   );
 }
 
 const styles = {
-  container: {
+  chatContainer: {
+    width: '100vw',
+    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
-    height: '100vh',
-    fontFamily: 'Inter, sans-serif',
     backgroundColor: '#ffffff',
+    fontFamily: 'Inter, sans-serif',
   },
   header: {
     display: 'flex',
     alignItems: 'center',
     padding: '12px',
-    borderBottom: '1px solid #eee',
-    position: 'relative',
+    borderBottom: '1px solid #ddd',
   },
-  backButton: {
+  backBtn: {
     background: 'none',
     border: 'none',
     fontSize: '16px',
-    cursor: 'pointer',
     color: '#1e70ff',
+    cursor: 'pointer',
     marginRight: 'auto',
   },
   logo: {
-    height: '40px',
+    height: '36px',
     margin: '0 auto',
   },
-  chatBox: {
+  messagesWrapper: {
     flex: 1,
-    overflowY: 'auto',
     padding: '16px',
-    backgroundColor: '#f8f8f8',
+    overflowY: 'auto',
   },
-  userBubbleWrapper: {
+  messageGroup: {
     display: 'flex',
-    justifyContent: 'flex-end',
-    marginBottom: '8px',
     flexDirection: 'column',
-    alignItems: 'flex-end',
+    marginBottom: 14,
   },
-  botBubbleWrapper: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    marginBottom: '8px',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  userBubble: {
-    backgroundColor: '#d6ecff',
+  bubble: {
     padding: '12px 16px',
-    borderRadius: '20px',
-    maxWidth: '75%',
-  },
-  botBubble: {
-    backgroundColor: '#e5e5ea',
-    padding: '12px 16px',
-    borderRadius: '20px',
-    maxWidth: '75%',
+    fontSize: 15,
+    lineHeight: 1.4,
+    maxWidth: '80%',
+    wordBreak: 'break-word',
   },
   timestamp: {
     fontSize: '11px',
-    color: '#999',
+    color: '#888',
     marginTop: '4px',
   },
-  inputArea: {
+  options: {
     display: 'flex',
+    flexWrap: 'wrap',
+    marginTop: 10,
+    gap: '8px',
+  },
+  optionBtn: {
+    backgroundColor: '#1e70ff',
+    color: 'white',
+    padding: '6px 12px',
+    borderRadius: 999,
+    border: 'none',
+    fontSize: 14,
+    cursor: 'pointer',
+  },
+  inputBar: {
     padding: '12px',
     borderTop: '1px solid #ddd',
+    display: 'flex',
     backgroundColor: '#fff',
   },
   input: {
     flex: 1,
     padding: '10px 14px',
-    borderRadius: '999px',
+    fontSize: 15,
+    borderRadius: 999,
     border: '1px solid #ccc',
-    outline: 'none',
-    fontSize: '16px',
+    marginRight: 10,
   },
-  sendButton: {
-    marginLeft: '10px',
-    padding: '10px 16px',
+  sendBtn: {
     backgroundColor: '#1e70ff',
     color: 'white',
     border: 'none',
-    borderRadius: '999px',
+    borderRadius: 999,
+    padding: '10px 16px',
     fontWeight: 'bold',
     cursor: 'pointer',
-  },
-  optionsContainer: {
-    marginTop: '10px',
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '6px',
-  },
-  optionButton: {
-    backgroundColor: '#1e70ff',
-    color: 'white',
-    padding: '8px 14px',
-    border: 'none',
-    borderRadius: '999px',
-    cursor: 'pointer',
-    fontSize: '14px',
   },
 };
