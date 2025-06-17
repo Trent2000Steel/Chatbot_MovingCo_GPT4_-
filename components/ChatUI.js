@@ -64,7 +64,7 @@ export default function ChatUI({
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input lifted higher on screen */}
+      {/* Input Bar Fixed Higher */}
       <div style={styles.inputWrapper}>
         <div style={styles.inputBar}>
           <input
@@ -89,7 +89,8 @@ const styles = {
     height: '100vh',
     backgroundColor: '#ffffff',
     fontFamily: 'Inter, sans-serif',
-    position: 'relative'
+    position: 'relative',
+    WebkitTextSizeAdjust: '100%',
   },
   header: {
     display: 'flex',
@@ -150,24 +151,30 @@ const styles = {
     cursor: 'pointer',
   },
   inputWrapper: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: '25vh',
-    width: '100%',
+    left: 0,
+    right: 0,
     padding: '0 16px',
     backgroundColor: '#fff',
+    zIndex: 1001,
   },
   inputBar: {
     display: 'flex',
+    alignItems: 'center',
     borderTop: '1px solid #ddd',
     padding: '12px 0',
+    backgroundColor: '#fff',
   },
   input: {
     flex: 1,
     padding: '10px 14px',
-    fontSize: 15,
+    fontSize: 16,
     borderRadius: 999,
     border: '1px solid #ccc',
     marginRight: 10,
+    minWidth: 0,
+    WebkitTextSizeAdjust: '100%',
   },
   sendBtn: {
     backgroundColor: '#1e70ff',
@@ -177,5 +184,7 @@ const styles = {
     padding: '10px 16px',
     fontWeight: 'bold',
     cursor: 'pointer',
+    fontSize: 16,
+    whiteSpace: 'nowrap',
   },
 };
