@@ -26,7 +26,7 @@ export default function ChatUI({
       {/* Header */}
       <div style={styles.header}>
         <button onClick={onBackClick} style={styles.backBtn}>← Back</button>
-        <img src="/Header.png" alt="Logo" style={styles.logo} />
+        <div style={styles.logoText}>Moving<span style={{ color: '#bbdefb' }}>.Chat</span></div>
       </div>
 
       {/* Messages */}
@@ -50,7 +50,6 @@ export default function ChatUI({
               }}
             >
               {msg.text}
-              {/* Bot Options */}
               {msg.sender === 'bot' && idx === messages.length - 1 && buttonOptions.length > 0 && (
                 <div style={styles.options}>
                   {buttonOptions.map((opt, i) => (
@@ -83,30 +82,31 @@ export default function ChatUI({
 
 const styles = {
   chatContainer: {
-    width: '100vw',
-    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
+    height: '100vh',
     backgroundColor: '#ffffff',
     fontFamily: 'Inter, sans-serif',
   },
   header: {
     display: 'flex',
     alignItems: 'center',
-    padding: '12px',
-    borderBottom: '1px solid #ddd',
+    justifyContent: 'space-between',
+    padding: '12px 16px',
+    backgroundColor: '#1a73e8',
+    color: '#ffffff',
   },
   backBtn: {
     background: 'none',
     border: 'none',
     fontSize: '16px',
-    color: '#1e70ff',
+    color: '#ffffff',
     cursor: 'pointer',
-    marginRight: 'auto',
   },
-  logo: {
-    height: '36px',
-    margin: '0 auto',
+  logoText: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    color: '#ffffff',
   },
   messagesWrapper: {
     flex: 1,
@@ -146,10 +146,11 @@ const styles = {
     cursor: 'pointer',
   },
   inputBar: {
-    padding: '12px',
-    borderTop: '1px solid #ddd',
     display: 'flex',
+    padding: '12px 16px',
+    borderTop: '1px solid #ddd',
     backgroundColor: '#fff',
+    paddingBottom: 'env(safe-area-inset-bottom)',
   },
   input: {
     flex: 1,
