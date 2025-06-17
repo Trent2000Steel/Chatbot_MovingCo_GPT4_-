@@ -15,15 +15,15 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
 
   return (
     <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh',
       backgroundColor: '#fff',
-      fontFamily: 'Inter, sans-serif',
-      paddingTop: '64px',
-      paddingBottom: '120px',
-      overflow: 'hidden',
-      position: 'relative'
+      fontFamily: 'Inter, sans-serif'
     }}>
       {/* Fixed Top Bar */}
       <div style={{
@@ -65,10 +65,9 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
 
       {/* Scrollable Messages */}
       <div style={{
-        flexGrow: 1,
+        flex: 1,
         overflowY: 'auto',
-        padding: '1rem',
-        paddingTop: '0',
+        padding: '80px 1rem 140px',
         WebkitOverflowScrolling: 'touch'
       }}>
         {messages.map((msg, i) => (
