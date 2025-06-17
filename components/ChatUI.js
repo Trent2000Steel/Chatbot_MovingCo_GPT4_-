@@ -64,17 +64,19 @@ export default function ChatUI({
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input */}
-      <div style={styles.inputBar}>
-        <input
-          type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleUserInput(userInput)}
-          placeholder={placeholder}
-          style={styles.input}
-        />
-        <button onClick={() => handleUserInput(userInput)} style={styles.sendBtn}>Send</button>
+      {/* Input lifted higher on screen */}
+      <div style={styles.inputWrapper}>
+        <div style={styles.inputBar}>
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleUserInput(userInput)}
+            placeholder={placeholder}
+            style={styles.input}
+          />
+          <button onClick={() => handleUserInput(userInput)} style={styles.sendBtn}>Send</button>
+        </div>
       </div>
     </div>
   );
@@ -87,6 +89,7 @@ const styles = {
     height: '100vh',
     backgroundColor: '#ffffff',
     fontFamily: 'Inter, sans-serif',
+    position: 'relative'
   },
   header: {
     display: 'flex',
@@ -112,6 +115,7 @@ const styles = {
     flex: 1,
     padding: '16px',
     overflowY: 'auto',
+    paddingBottom: '30vh', // reserve room for lifted input
   },
   messageGroup: {
     display: 'flex',
@@ -145,12 +149,17 @@ const styles = {
     fontSize: 14,
     cursor: 'pointer',
   },
+  inputWrapper: {
+    position: 'absolute',
+    bottom: '25vh',
+    width: '100%',
+    padding: '0 16px',
+    backgroundColor: '#fff',
+  },
   inputBar: {
     display: 'flex',
-    padding: '12px 16px',
     borderTop: '1px solid #ddd',
-    backgroundColor: '#fff',
-    paddingBottom: 'env(safe-area-inset-bottom)',
+    padding: '12px 0',
   },
   input: {
     flex: 1,
