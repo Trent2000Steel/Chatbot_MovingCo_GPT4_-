@@ -151,25 +151,7 @@ export default function Home() {
               display: 'flex',
               flexDirection: 'column'
             }}
-          >
-            <div style={{
-              backgroundColor: '#1e70ff',
-              color: '#fff',
-              padding: '16px',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <button onClick={() => setIsChatOpen(false)} style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fff',
-                fontSize: '18px',
-                cursor: 'pointer',
-                marginRight: '8px'
-              }}>← Back</button>
-              <span>MovingCo Chat</span>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto' }}>
+          >            <div style={{ flex: 1, overflowY: 'auto' }}>
               <ChatFlow />
             </div>
           </motion.div>
