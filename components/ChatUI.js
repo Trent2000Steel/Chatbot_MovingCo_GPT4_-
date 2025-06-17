@@ -1,136 +1,166 @@
+import React, { useEffect, useRef } from 'react';
 
-import React from 'react';
+export default function ChatUI({ messages, inputValue, onChange, onSend, options, onOptionClick, placeholder, onBackClick }) {
+  const chatEndRef = useRef(null);
 
-const ChatUI = ({ messages, handleUserInput, userInput, setUserInput }) => {
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   return (
-    <div style={styles.chatContainer}>
-      <div style={styles.header}>MovingCo Chat</div>
+    <div style={styles.container}>
 
-      <div style={styles.messagesWrapper} id="messages-wrapper">
-        {messages.map((msg, idx) => (
-          <div key={idx} style={{ ...styles.messageGroup, alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-            <div style={{
-              ...styles.bubble,
-              backgroundColor: msg.sender === 'user' ? '#1e70ff' : '#f1f1f1',
-              color: msg.sender === 'user' ? 'white' : 'black',
-              borderRadius: msg.sender === 'user'
-                ? '18px 18px 4px 18px'
-                : '18px 18px 18px 4px'
-            }}>
+      {/* Header */}
+      <div style={styles.header}>
+        <button onClick={onBackClick} style={styles.backButton}>← Back</button>
+        <img src="/Header.png" alt="Logo" style={styles.logo} />
+      </div>
+
+      {/* Chat area */}
+      <div style={styles.chatBox}>
+        {messages.map((msg, index) => (
+          <div key={index} style={msg.role === 'user' ? styles.userBubbleWrapper : styles.botBubbleWrapper}>
+            <div style={msg.role === 'user' ? styles.userBubble : styles.botBubble}>
               {msg.text}
+              {msg.role === 'bot' && msg.options && (
+                <div style={styles.optionsContainer}>
+                  {msg.options.map((option, i) => (
+                    <button
+                      key={i}
+                      className="chat-option"
+                      style={styles.optionButton}
+                      onClick={() => onOptionClick(option)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            {msg.options && msg.options.length > 0 && (
-              <div style={styles.options}>
-                {msg.options.map((opt, i) => (
-                  <button key={i} style={styles.optionBtn} onClick={() => handleUserInput(opt)}>{opt}</button>
-                ))}
-              </div>
-            )}
+            <div style={styles.timestamp}>{msg.timestamp}</div>
           </div>
         ))}
-        <div id="bottom-anchor" />
+        <div ref={chatEndRef} />
       </div>
 
-      <div style={styles.inputBar}>
+      {/* Input area */}
+      <div style={styles.inputArea}>
         <input
           type="text"
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleUserInput(userInput)}
-          placeholder="Type your message..."
+          value={inputValue}
+          onChange={onChange}
+          placeholder={placeholder}
           style={styles.input}
+          onKeyDown={(e) => e.key === 'Enter' && onSend()}
         />
-        <button onClick={() => handleUserInput(userInput)} style={styles.sendBtn}>Send</button>
+        <button onClick={onSend} style={styles.sendButton}>Send</button>
       </div>
+
     </div>
   );
-};
+}
 
 const styles = {
-  chatContainer: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
+  container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'white',
+    height: '100vh',
     fontFamily: 'Inter, sans-serif',
-    zIndex: 1000,
-  },
-  header: {
-    height: 50,
-    padding: '0 16px',
-    fontWeight: 'bold',
-    fontSize: 17,
-    display: 'flex',
-    alignItems: 'center',
-    borderBottom: '1px solid #ddd',
     backgroundColor: '#ffffff',
   },
-  messagesWrapper: {
-    flex: 1,
-    marginTop: 0,
-    marginBottom: 60,
-    padding: '10px 12px',
-    overflowY: 'auto',
-  },
-  messageGroup: {
+  header: {
     display: 'flex',
-    flexDirection: 'column',
-    marginBottom: 12,
-    maxWidth: '100%',
+    alignItems: 'center',
+    padding: '12px',
+    borderBottom: '1px solid #eee',
+    position: 'relative',
   },
-  bubble: {
-    padding: '8px 14px',
-    maxWidth: '80%',
-    fontSize: 15,
-    lineHeight: 1.4,
-    wordBreak: 'break-word',
-  },
-  options: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    marginTop: 6,
-    gap: '8px',
-  },
-  optionBtn: {
-    padding: '6px 14px',
-    fontSize: 14,
-    borderRadius: 999,
-    backgroundColor: '#1e70ff',
-    color: 'white',
+  backButton: {
+    background: 'none',
     border: 'none',
+    fontSize: '16px',
     cursor: 'pointer',
+    color: '#1e70ff',
+    marginRight: 'auto',
   },
-  inputBar: {
-    position: 'fixed',
-    bottom: 0,
-    width: '100%',
-    padding: '8px 10px',
+  logo: {
+    height: '40px',
+    margin: '0 auto',
+  },
+  chatBox: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '16px',
+    backgroundColor: '#f8f8f8',
+  },
+  userBubbleWrapper: {
     display: 'flex',
-    backgroundColor: '#fff',
+    justifyContent: 'flex-end',
+    marginBottom: '8px',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  botBubbleWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    marginBottom: '8px',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  userBubble: {
+    backgroundColor: '#d6ecff',
+    padding: '12px 16px',
+    borderRadius: '20px',
+    maxWidth: '75%',
+  },
+  botBubble: {
+    backgroundColor: '#e5e5ea',
+    padding: '12px 16px',
+    borderRadius: '20px',
+    maxWidth: '75%',
+  },
+  timestamp: {
+    fontSize: '11px',
+    color: '#999',
+    marginTop: '4px',
+  },
+  inputArea: {
+    display: 'flex',
+    padding: '12px',
     borderTop: '1px solid #ddd',
-    zIndex: 1001,
+    backgroundColor: '#fff',
   },
   input: {
     flex: 1,
     padding: '10px 14px',
-    fontSize: 15,
-    borderRadius: 20,
+    borderRadius: '999px',
     border: '1px solid #ccc',
-    marginRight: 10,
+    outline: 'none',
+    fontSize: '16px',
   },
-  sendBtn: {
+  sendButton: {
+    marginLeft: '10px',
+    padding: '10px 16px',
     backgroundColor: '#1e70ff',
     color: 'white',
     border: 'none',
-    borderRadius: 20,
-    padding: '10px 16px',
+    borderRadius: '999px',
     fontWeight: 'bold',
     cursor: 'pointer',
   },
+  optionsContainer: {
+    marginTop: '10px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '6px',
+  },
+  optionButton: {
+    backgroundColor: '#1e70ff',
+    color: 'white',
+    padding: '8px 14px',
+    border: 'none',
+    borderRadius: '999px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
 };
-
-export default ChatUI;
