@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 
 export default function ChatUI({ messages, input, setInput, onSend, isTyping, buttonOptions }) {
@@ -7,14 +8,53 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const formatTime = (date) => {
+    const d = new Date(date);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
       backgroundColor: '#fff',
-      fontFamily: 'Inter, sans-serif'
+      fontFamily: 'Inter, sans-serif',
+      paddingBottom: 'env(safe-area-inset-bottom)',
     }}>
+      {/* Top bar */}
+      <div style={{
+        backgroundColor: '#1e70ff',
+        color: '#fff',
+        padding: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <button
+          onClick={() => window.history.back()}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#fff',
+            fontSize: '18px',
+            cursor: 'pointer',
+          }}
+        >
+          ← Back
+        </button>
+        <div style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          textAlign: 'center',
+        }}>
+          Moving<span style={{ fontWeight: '300' }}>.CO</span>
+        </div>
+        <div style={{ width: '60px' }}></div>
+      </div>
+
       {/* Messages */}
       <div style={{
         flexGrow: 1,
@@ -28,10 +68,11 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
             backgroundColor: msg.sender === 'user' ? '#d2ebff' : '#f1f1f1',
             borderRadius: '18px',
             padding: '12px 16px',
-            marginBottom: '12px',
+            marginBottom: '4px',
             maxWidth: '85%',
             fontSize: '1rem',
-            lineHeight: '1.5'
+            lineHeight: '1.5',
+            position: 'relative'
           }}>
             {msg.text}
             {msg.sender === 'bot' && msg.options && msg.options.length > 0 && (
@@ -55,32 +96,66 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
                 ))}
               </div>
             )}
+            <div style={{
+              fontSize: '0.75rem',
+              color: '#888',
+              marginTop: '4px',
+              textAlign: msg.sender === 'user' ? 'right' : 'left'
+            }}>
+              {formatTime(Date.now())}
+            </div>
           </div>
         ))}
-        {isTyping && <div style={{ fontSize: '1.25rem', color: '#999', paddingLeft: '12px' }}>...</div>}
+        {isTyping && (
+          <div style={{
+            backgroundColor: '#f1f1f1',
+            borderRadius: '18px',
+            padding: '12px 16px',
+            maxWidth: '60px',
+            marginBottom: '8px',
+            fontSize: '1.5rem',
+            color: '#999',
+            alignSelf: 'flex-start'
+          }}>
+            ...
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
-      {/* Sticky input */}
+      {/* Sticky input bar */}
       <div style={{
-        padding: '1rem',
+        position: 'sticky',
+        bottom: 0,
+        padding: '1rem env(safe-area-inset-left) calc(1.5rem + env(safe-area-inset-bottom)) env(safe-area-inset-right)',
         borderTop: '1px solid #ccc',
+        backgroundColor: '#fff',
+        zIndex: 10,
         display: 'flex',
-        backgroundColor: '#fff'
+        gap: '0.75rem',
+        alignItems: 'center'
       }}>
-        <input
-          type="text"
+        <textarea
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && onSend()}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              onSend();
+            }
+          }}
+          rows={1}
           placeholder="Type your message…"
           style={{
             flex: 1,
-            padding: '12px',
-            fontSize: '1rem',
+            padding: '16px',
+            fontSize: '1.05rem',
+            lineHeight: '1.4',
             borderRadius: '999px',
             border: '1px solid #ccc',
-            marginRight: '12px'
+            resize: 'none',
+            overflow: 'hidden',
+            maxHeight: '120px',
           }}
         />
         <button
@@ -90,9 +165,10 @@ export default function ChatUI({ messages, input, setInput, onSend, isTyping, bu
             color: '#fff',
             border: 'none',
             borderRadius: '999px',
-            padding: '12px 20px',
+            padding: '16px 24px',
             fontSize: '1rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            height: '56px'
           }}
         >
           Send
