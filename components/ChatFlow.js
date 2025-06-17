@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import ChatUI from './ChatUI';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -118,107 +119,14 @@ export default function ChatFlow() {
   };
 
   return (
-    <div className="chat-outer">
-      <div className="chat-container">
-        <div className="chat-header" />
-        <div className="messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={msg.sender === 'bot' ? 'bubble bot' : 'bubble user'}>
-              {msg.text}
-            </div>
-          ))}
-          {isTyping && <div className="typing-indicator">...</div>}
-        </div>
-        <div className="input-row">
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleUserInput()}
-            placeholder={getPlaceholder()}
-            className="chat-input"
-          />
-          <button className="send-btn" onClick={() => handleUserInput()}>Send</button>
-        </div>
-        <div className="options">
-          {buttonOptions.map((option, i) => (
-            <button key={i} className="pill-btn" onClick={() => handleUserInput(option)}>{option}</button>
-          ))}
-        </div>
-      </div>
-
-      <style jsx>{`
-        .chat-outer {
-          width: 100%;
-          background: #ffffff;
-          padding: 0 0 48px 0;
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-          margin-bottom: 40px;
-        }
-        .chat-container {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        .chat-header {
-          height: 6px;
-          background-color: #1a73e8;
-          border-top-left-radius: 12px;
-          border-top-right-radius: 12px;
-        }
-        .messages {
-          padding: 20px;
-        }
-        .bubble {
-          padding: 12px 16px;
-          margin-bottom: 10px;
-          border-radius: 18px;
-          max-width: 90%;
-          word-wrap: break-word;
-          font-size: 15px;
-        }
-        .bot {
-          background-color: #f1f1f1;
-          align-self: flex-start;
-        }
-        .user {
-          background-color: #d2ebff;
-          align-self: flex-end;
-        }
-        .input-row {
-          display: flex;
-          padding: 16px;
-          border-top: 1px solid #eee;
-        }
-        .chat-input {
-          flex: 1;
-          padding: 14px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 16px;
-          margin-right: 12px;
-        }
-        .send-btn {
-          background-color: #1a73e8;
-          color: white;
-          border: none;
-          padding: 12px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-        }
-        .pill-btn {
-          background-color: #1a73e8;
-          color: white;
-          padding: 10px 18px;
-          margin: 4px;
-          border: none;
-          border-radius: 999px;
-          cursor: pointer;
-          font-size: 14px;
-        }
-        .pill-btn:hover, .send-btn:hover {
-          background-color: #155ab6;
-        }
-      `}</style>
-    </div>
+    <ChatUI
+      messages={messages}
+      handleUserInput={handleUserInput}
+      userInput={input}
+      setUserInput={setInput}
+      placeholder={getPlaceholder()}
+      buttonOptions={buttonOptions}
+      onBackClick={() => window.location.reload()}
+    />
   );
 }
