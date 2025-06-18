@@ -84,6 +84,17 @@ export default function ChatFlow() {
         break;
       case 9:
         try {
+          if (input.toLowerCase().includes("email")) {
+            setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
+            setPlaceholder("Your Email");
+            newStep = 15;
+            break;
+          } else if (input.toLowerCase().includes("reserve")) {
+            setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+            setPlaceholder("Full Name");
+            newStep = 10;
+            break;
+          }
           const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
