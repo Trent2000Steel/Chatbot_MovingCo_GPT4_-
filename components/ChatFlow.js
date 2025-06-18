@@ -20,12 +20,7 @@ export default function ChatFlow() {
       case 4: return "What matters most? (e.g. timing, fragile items)";
       case 8: return "Special items (e.g. piano, art)";
       
-    if (step === 9) {
-      // Treat any user input as intent to proceed with booking
-      newStep = 10;
-      sendBotMessage("Great—what’s your full name?");
-      break;
-    }
+    
     default: return "";
     }
   };
@@ -38,6 +33,17 @@ export default function ChatFlow() {
   const handleUserInput = async (customInput = null) => {
     const userInput = customInput || input.trim();
     if (!userInput) return;
+    // Handle fallback after estimate
+    if (step === 9 && !["Yes, Reserve My Move", "Email Me the Estimate"].includes(userInput)) {
+      sendBotMessage("Great—what’s your full name?");
+      setStep(10);
+      return;
+    }
+    if (step === 15 && userInput === "Secure Payment") {
+      window.location.href = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+      return;
+    }
+
 
     setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
     setInput('');
@@ -114,7 +120,7 @@ export default function ChatFlow() {
           sendBotMessage("Sorry, something went wrong with the estimate.");
         }
         setIsTyping(false);
-        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        setButtonOptions(["Yes, Reserve My Move", "Email Me the Estimate"]);
         break;
       case 10:
         updatedFormData.name = userInput;
@@ -156,18 +162,9 @@ export default function ChatFlow() {
         updatedFormData.phone = userInput;
         sendBotMessage("Got it. I’ll send your estimate over shortly.");
         // Optional: Trigger Telegram webhook here
-        newStep++;
-        break;
-
-        newStep++;
         break;
       
-    if (step === 9) {
-      // Treat any user input as intent to proceed with booking
-      newStep = 10;
-      sendBotMessage("Great—what’s your full name?");
-      break;
-    }
+    
     default:
         break;
     }
