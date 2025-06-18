@@ -156,7 +156,10 @@ export default function ChatFlow() {
       case 16:
         updatedFormData.phoneOptional = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
-        newStep++;
+        newStep = 17;
+        break;
+      case 17:
+        break; // End of email flow — nothing more to do
         break;
       default:
         if (step === 9) {
