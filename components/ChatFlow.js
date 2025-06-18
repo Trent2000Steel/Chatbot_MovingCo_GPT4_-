@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import ChatUI from './ChatUI';
+import ChatUI from './ChatUI'; // NEW: import your separate UI component
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -18,46 +18,12 @@ export default function ChatFlow() {
       case 2: return "City, State (e.g. Phoenix, AZ)";
       case 3: return "Move date (e.g. June 25)";
       case 4: return "What matters most? (e.g. timing, fragile items)";
-      case 8: return "Special items (e.g. piano, art)";
-      
-    
-    default: return "";
-    }
-  };
-
-  const sendBotMessage = (text, options = []) => {
-    setMessages(prev => [...prev, { sender: 'bot', text }]);
-    setButtonOptions(options);
-  };
-
-  const handleUserInput = async (customInput = null) => {
-    const userInput = customInput || input.trim();
-    if (!userInput) return;
-    // Handle fallback after estimate
-    if (step === 9 && !["Yes, Reserve My Move", "Email Me the Estimate"].includes(userInput)) {
-      sendBotMessage("Great—what’s your full name?");
+      case 8:
+        updatedFormData.special = userInput;
+        sendBotMessage("Got everything I need. Click ‘Run My Estimate’ to see your price — it might take a few seconds while we check live rates.", ["Run My Estimate"]);
         setFormData(updatedFormData);
-      setStep(10);
-      return;
-    }
-    if (step === 15 && userInput === "Secure Payment") {
-      window.location.href = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
-      return;
-    }
-
-
-    setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
-    setInput('');
-    setButtonOptions([]);
-
-    let newStep = step;
-    const updatedFormData = { ...formData };
-
-    switch (step) {
-      case 1:
-        updatedFormData.from = userInput;
-        sendBotMessage("Where to?");
         newStep++;
+        break;
         break;
       case 2:
         updatedFormData.to = userInput;
@@ -93,8 +59,8 @@ export default function ChatFlow() {
         updatedFormData.special = userInput;
         sendBotMessage("Got everything I need. Click ‘Run My Estimate’ to see your price — it might take a few seconds while we check live rates.", ["Run My Estimate"]);
         setFormData(updatedFormData);
-        setFormData(updatedFormData);
         newStep++;
+        break;
         break;
       case 9:
         setIsTyping(true);
@@ -103,7 +69,10 @@ export default function ChatFlow() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              messages: messages.map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text })),
+              messages: messages.map(m => ({
+                role: m.sender === 'bot' ? 'assistant' : 'user',
+                content: m.text
+              })),
               userInput: userInput,
               formData: formData
             })
@@ -114,8 +83,10 @@ export default function ChatFlow() {
           sendBotMessage("Sorry, something went wrong with the estimate.");
         }
         setIsTyping(false);
-        setButtonOptions(["Yes, Reserve My Move", "Email Me the Estimate"]);
+        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        newStep++;
         break;
+      
       case 10:
         updatedFormData.name = userInput;
         sendBotMessage("And your best email?");
@@ -157,9 +128,8 @@ export default function ChatFlow() {
         sendBotMessage("Got it. I’ll send your estimate over shortly.");
         // Optional: Trigger Telegram webhook here
         break;
-      
-    
-    default:
+
+      default:
         break;
     }
 
@@ -167,15 +137,15 @@ export default function ChatFlow() {
     setStep(newStep);
   };
 
+  // ✅ NEW: clean handoff to ChatUI component
   return (
     <ChatUI
       messages={messages}
-      handleUserInput={handleUserInput}
-      userInput={input}
-      setUserInput={setInput}
-      placeholder={getPlaceholder()}
+      input={input}
+      setInput={setInput}
+      onSend={handleUserInput}
+      isTyping={isTyping}
       buttonOptions={buttonOptions}
-      onBackClick={() => window.location.reload()}
     />
   );
 }
