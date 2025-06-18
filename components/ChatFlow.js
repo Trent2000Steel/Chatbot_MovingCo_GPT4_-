@@ -83,25 +83,25 @@ export default function ChatFlow() {
         newStep++;
         break;
       
-case 9:
+case 9: {
   console.log("DEBUG: userInput =", input);
-
   const lowerInput = input.toLowerCase();
 
   if (lowerInput.includes("email")) {
     setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
     setPlaceholder("Your Email");
-    newStep = 15;
-    break;
+    setStep(15);
+    return;
   }
 
   if (lowerInput.includes("reserve")) {
     setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
     setPlaceholder("Full Name");
-    newStep = 10;
-    break;
+    setStep(10);
+    return;
   }
 
+  setIsTyping(true);
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -119,10 +119,11 @@ case 9:
   } catch (error) {
     setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
   }
-
+  setIsTyping(false);
   setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
   newStep++;
   break;
+}
 
           const res = await fetch('/api/chat', {
             method: 'POST',
