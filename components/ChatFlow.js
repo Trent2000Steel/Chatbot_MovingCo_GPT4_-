@@ -84,18 +84,24 @@ export default function ChatFlow() {
         break;
       
 case 9:
-  if (input === "Email Me My Estimate") {
+  console.log("DEBUG: userInput =", input);
+
+  const lowerInput = input.toLowerCase();
+
+  if (lowerInput.includes("email")) {
     setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
     setPlaceholder("Your Email");
     newStep = 15;
     break;
   }
-  if (input === "Yes, Reserve My Move") {
+
+  if (lowerInput.includes("reserve")) {
     setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
     setPlaceholder("Full Name");
     newStep = 10;
     break;
   }
+
   try {
     const res = await fetch('/api/chat', {
       method: 'POST',
@@ -113,6 +119,7 @@ case 9:
   } catch (error) {
     setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
   }
+
   setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
   newStep++;
   break;
@@ -178,10 +185,7 @@ case 9:
       case 16:
         updatedFormData.phoneOptional = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
-        newStep = 17;
-        break;
-      case 17:
-        break;
+        newStep++;
         break;
       default:
         if (step === 9) {
