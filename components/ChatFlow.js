@@ -19,7 +19,14 @@ export default function ChatFlow() {
       case 3: return "Move date (e.g. June 25)";
       case 4: return "What matters most? (e.g. timing, fragile items)";
       case 8: return "Special items (e.g. piano, art)";
-      default: return "";
+      
+    if (step === 9) {
+      // Treat any user input as intent to proceed with booking
+      newStep = 10;
+      sendBotMessage("Great—what’s your full name?");
+      break;
+    }
+    default: return "";
     }
   };
 
@@ -108,9 +115,60 @@ export default function ChatFlow() {
         }
         setIsTyping(false);
         setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        break;
+      case 10:
+        updatedFormData.name = userInput;
+        sendBotMessage("And your best email?");
         newStep++;
         break;
-      default:
+      case 11:
+        updatedFormData.email = userInput;
+        sendBotMessage("Mobile number for text updates.");
+        newStep++;
+        break;
+      case 12:
+        updatedFormData.phone = userInput;
+        sendBotMessage("What’s your pickup address?");
+        newStep++;
+        break;
+      case 13:
+        updatedFormData.pickupAddress = userInput;
+        sendBotMessage("And what’s the delivery address?", []);
+        newStep++;
+        break;
+      case 14:
+        updatedFormData.deliveryAddress = userInput;
+        sendBotMessage("Perfect. Ready to lock it in?", ["Secure Payment"]);
+        newStep++;
+        break;
+      case 15:
+        if (userInput === "Secure Payment") {
+          window.location.href = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
+          return;
+        }
+        break;
+      case 100:
+        updatedFormData.email = userInput;
+        sendBotMessage("Mobile number for text updates (optional).");
+        newStep++;
+        break;
+      case 101:
+        updatedFormData.phone = userInput;
+        sendBotMessage("Got it. I’ll send your estimate over shortly.");
+        // Optional: Trigger Telegram webhook here
+        newStep++;
+        break;
+
+        newStep++;
+        break;
+      
+    if (step === 9) {
+      // Treat any user input as intent to proceed with booking
+      newStep = 10;
+      sendBotMessage("Great—what’s your full name?");
+      break;
+    }
+    default:
         break;
     }
 
