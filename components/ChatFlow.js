@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import ChatUI from './ChatUI';
+import ChatUI from './ChatUI'; // NEW: import your separate UI component
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -19,31 +19,19 @@ export default function ChatFlow() {
       case 3: return "Move date (e.g. June 25)";
       case 4: return "What matters most? (e.g. timing, fragile items)";
       case 8: return "Special items (e.g. piano, art)";
-      
-    
-    default: return "";
+      default: return "";
     }
   };
 
+  // ✅ UPDATED: now injects options directly into message object
   const sendBotMessage = (text, options = []) => {
-    setMessages(prev => [...prev, { sender: 'bot', text }]);
-    setButtonOptions(options);
+    setMessages(prev => [...prev, { sender: 'bot', text, options }]);
+    setButtonOptions(options); // still used for possible external use
   };
 
   const handleUserInput = async (customInput = null) => {
     const userInput = customInput || input.trim();
     if (!userInput) return;
-    // Handle fallback after estimate
-    if (step === 9 && !["Yes, Reserve My Move", "Email Me the Estimate"].includes(userInput)) {
-      sendBotMessage("Great—what’s your full name?");
-      setStep(10);
-      return;
-    }
-    if (step === 15 && userInput === "Secure Payment") {
-      window.location.href = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
-      return;
-    }
-
 
     setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
     setInput('');
@@ -64,7 +52,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 3:
-        updatedFormData.date = userInput;
+        updatedFormData.moveDate = userInput;
         sendBotMessage("What matters most to you about this move?");
         newStep++;
         break;
@@ -94,7 +82,7 @@ export default function ChatFlow() {
           "Thanks! Here's what I've got:\n" +
           "- From: " + updatedFormData.from + "\n" +
           "- To: " + updatedFormData.to + "\n" +
-          "- Date: " + updatedFormData.date + "\n" +
+          "- Date: " + updatedFormData.moveDate + "\n" +
           "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)\n" +
           "- Packing: " + updatedFormData.packing + "\n" +
           "- Priority: " + updatedFormData.priority + "\n" +
@@ -109,7 +97,10 @@ export default function ChatFlow() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              messages: messages.map(m => ({ role: m.sender === 'bot' ? 'assistant' : 'user', content: m.text })),
+              messages: messages.map(m => ({
+                role: m.sender === 'bot' ? 'assistant' : 'user',
+                content: m.text
+              })),
               userInput: userInput,
               formData: formData
             })
@@ -120,56 +111,10 @@ export default function ChatFlow() {
           sendBotMessage("Sorry, something went wrong with the estimate.");
         }
         setIsTyping(false);
-        setButtonOptions(["Yes, Reserve My Move", "Email Me the Estimate"]);
-        break;
-      case 10:
-        updatedFormData.name = userInput;
-        sendBotMessage("And your best email?");
+        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
         newStep++;
         break;
-      case 11:
-        updatedFormData.email = userInput;
-        sendBotMessage("Mobile number for text updates.");
-        newStep++;
-        break;
-      case 12:
-        updatedFormData.phone = userInput;
-        sendBotMessage("What’s your pickup address?");
-        newStep++;
-        break;
-      case 13:
-        updatedFormData.pickupAddress = userInput;
-        sendBotMessage("And what’s the delivery address?", []);
-        newStep++;
-        break;
-      case 14:
-        updatedFormData.deliveryAddress = userInput;
-        sendBotMessage("Perfect. Ready to lock it in?", ["Secure Payment"]);
-        newStep++;
-        break;
-      case 15:
-        if (userInput === "Secure Payment") {
-          window.location.href = "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00";
-          return;
-        }
-        break;
-      case 100:
-        updatedFormData.email = userInput;
-        sendBotMessage("Mobile number for text updates (optional).");
-        newStep++;
-        break;
-      case 101:
-        updatedFormData.phone = userInput;
-        sendBotMessage("Got it. I’ll send your estimate over shortly.");
-        // Optional: Trigger Telegram webhook here
-        newStep++;
-        break;
-
-        newStep++;
-        break;
-      
-    
-    default:
+      default:
         break;
     }
 
@@ -177,15 +122,15 @@ export default function ChatFlow() {
     setStep(newStep);
   };
 
+  // ✅ NEW: clean handoff to ChatUI component
   return (
     <ChatUI
       messages={messages}
-      handleUserInput={handleUserInput}
-      userInput={input}
-      setUserInput={setInput}
-      placeholder={getPlaceholder()}
+      input={input}
+      setInput={setInput}
+      onSend={handleUserInput}
+      isTyping={isTyping}
       buttonOptions={buttonOptions}
-      onBackClick={() => window.location.reload()}
     />
   );
 }
