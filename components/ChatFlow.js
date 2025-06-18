@@ -36,6 +36,7 @@ export default function ChatFlow() {
     // Handle fallback after estimate
     if (step === 9 && !["Yes, Reserve My Move", "Email Me the Estimate"].includes(userInput)) {
       sendBotMessage("Great—what’s your full name?");
+        setFormData(updatedFormData);
       setStep(10);
       return;
     }
@@ -91,6 +92,8 @@ export default function ChatFlow() {
       case 8:
         updatedFormData.special = userInput;
         sendBotMessage("Got everything I need. Click ‘Run My Estimate’ to see your price — it might take a few seconds while we check live rates.", ["Run My Estimate"]);
+        setFormData(updatedFormData);
+        setFormData(updatedFormData);
         newStep++;
         break;
       case 9:
