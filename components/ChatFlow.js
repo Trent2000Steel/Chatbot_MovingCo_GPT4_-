@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import ChatUI from './ChatUI'; // NEW: import your separate UI component
+import ChatUI from './ChatUI';
 
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
@@ -19,14 +19,20 @@ export default function ChatFlow() {
       case 3: return "Move date (e.g. June 25)";
       case 4: return "What matters most? (e.g. timing, fragile items)";
       case 8: return "Special items (e.g. piano, art)";
+      case 10: return "Full Name";
+      case 11: return "Email Address";
+      case 12: return "Phone Number";
+      case 13: return "Pickup Address";
+      case 14: return "Delivery Address (or type 'I don’t know')";
+      case 15: return "Your Email";
+      case 16: return "Your Cell (optional)";
       default: return "";
     }
   };
 
-  // ✅ UPDATED: now injects options directly into message object
   const sendBotMessage = (text, options = []) => {
     setMessages(prev => [...prev, { sender: 'bot', text, options }]);
-    setButtonOptions(options); // still used for possible external use
+    setButtonOptions(options);
   };
 
   const handleUserInput = async (customInput = null) => {
@@ -52,7 +58,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 3:
-        updatedFormData.moveDate = userInput;
+        updatedFormData.date = userInput;
         sendBotMessage("What matters most to you about this move?");
         newStep++;
         break;
@@ -79,13 +85,20 @@ export default function ChatFlow() {
       case 8:
         updatedFormData.special = userInput;
         const summary =
-          "Thanks! Here's what I've got:\n" +
-          "- From: " + updatedFormData.from + "\n" +
-          "- To: " + updatedFormData.to + "\n" +
-          "- Date: " + updatedFormData.moveDate + "\n" +
-          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)\n" +
-          "- Packing: " + updatedFormData.packing + "\n" +
-          "- Priority: " + updatedFormData.priority + "\n" +
+          "Thanks! Here's what I've got:
+" +
+          "- From: " + updatedFormData.from + "
+" +
+          "- To: " + updatedFormData.to + "
+" +
+          "- Date: " + updatedFormData.date + "
+" +
+          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)
+" +
+          "- Packing: " + updatedFormData.packing + "
+" +
+          "- Priority: " + updatedFormData.priority + "
+" +
           "- Special: " + updatedFormData.special;
         sendBotMessage(summary, ["Run My Estimate"]);
         newStep++;
@@ -111,10 +124,52 @@ export default function ChatFlow() {
           sendBotMessage("Sorry, something went wrong with the estimate.");
         }
         setIsTyping(false);
-        setButtonOptions(["Yes, Reserve My Move", "I Have More Questions First"]);
+        sendBotMessage("Would you like to reserve your move or get the estimate by email?", ["Yes, Reserve My Move", "Email Me My Estimate"]);
+        newStep++;
+        break;
+      case 10:
+      case 999: // fallback catch-all
+        updatedFormData.name = userInput;
+        sendBotMessage("Great — what’s your email?");
+        newStep = 11;
+        break;
+      case 11:
+        updatedFormData.email = userInput;
+        sendBotMessage("And your phone number?");
+        newStep++;
+        break;
+      case 12:
+        updatedFormData.phone = userInput;
+        sendBotMessage("What’s the pickup address?");
+        newStep++;
+        break;
+      case 13:
+        updatedFormData.pickup = userInput;
+        sendBotMessage("And the delivery address? If you don’t have it yet, just say 'I don’t know.'");
+        newStep++;
+        break;
+      case 14:
+        updatedFormData.dropoff = userInput;
+        sendBotMessage("Perfect — you can pay your $85 deposit now to reserve your move:");
+        sendBotMessage("👉 [Pay Deposit Now](https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00)");
+        newStep++;
+        break;
+      case 15:
+        updatedFormData.emailOnly = userInput;
+        sendBotMessage("Would you like me to text it to you too?");
+        newStep++;
+        break;
+      case 16:
+        updatedFormData.phoneOptional = userInput;
+        sendBotMessage("Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime.");
         newStep++;
         break;
       default:
+        // fallback if user types text instead of clicking buttons at Step 9
+        if (step === 9) {
+          sendBotMessage("No problem — I’ll start the reservation process. What’s your full name?");
+          newStep = 10;
+        }
         break;
     }
 
@@ -122,7 +177,6 @@ export default function ChatFlow() {
     setStep(newStep);
   };
 
-  // ✅ NEW: clean handoff to ChatUI component
   return (
     <ChatUI
       messages={messages}
@@ -131,6 +185,7 @@ export default function ChatFlow() {
       onSend={handleUserInput}
       isTyping={isTyping}
       buttonOptions={buttonOptions}
+      getPlaceholder={getPlaceholder}
     />
   );
 }
