@@ -64,7 +64,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 3:
-        updatedFormData.date = userInput;
+        updatedFormData.moveDate = userInput;
         sendBotMessage("What matters most to you about this move?");
         newStep++;
         break;
