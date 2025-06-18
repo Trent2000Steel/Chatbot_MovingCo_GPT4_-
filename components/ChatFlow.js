@@ -84,22 +84,16 @@ export default function ChatFlow() {
         break;
       case 8:
         updatedFormData.special = userInput;
-        const summary =
-          "Thanks! Here's what I've got:
-" +
-          "- From: " + updatedFormData.from + "
-" +
-          "- To: " + updatedFormData.to + "
-" +
-          "- Date: " + updatedFormData.date + "
-" +
-          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)
-" +
-          "- Packing: " + updatedFormData.packing + "
-" +
-          "- Priority: " + updatedFormData.priority + "
-" +
-          "- Special: " + updatedFormData.special;
+        const summary = [
+          "Thanks! Here's what I've got:",
+          `- From: ${updatedFormData.from}`,
+          `- To: ${updatedFormData.to}`,
+          `- Date: ${updatedFormData.date}`,
+          `- Place: ${updatedFormData.type} (${updatedFormData.size} bedrooms)`,
+          `- Packing: ${updatedFormData.packing}`,
+          `- Priority: ${updatedFormData.priority}`,
+          `- Special: ${updatedFormData.special}`
+        ].join("\n");
         sendBotMessage(summary, ["Run My Estimate"]);
         newStep++;
         break;
@@ -128,7 +122,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 10:
-      case 999: // fallback catch-all
+      case 999:
         updatedFormData.name = userInput;
         sendBotMessage("Great — what’s your email?");
         newStep = 11;
@@ -165,7 +159,6 @@ export default function ChatFlow() {
         newStep++;
         break;
       default:
-        // fallback if user types text instead of clicking buttons at Step 9
         if (step === 9) {
           sendBotMessage("No problem — I’ll start the reservation process. What’s your full name?");
           newStep = 10;
