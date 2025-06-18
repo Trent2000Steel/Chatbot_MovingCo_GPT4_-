@@ -82,19 +82,41 @@ export default function ChatFlow() {
         setButtonOptions(["Run My Estimate"]);
         newStep++;
         break;
-      case 9:
-        if (input.toLowerCase().includes("email")) {
-          setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
-          setPlaceholder("Your Email");
-          newStep = 15;
-          break;
-        } else if (input.toLowerCase().includes("reserve")) {
-          setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
-          setPlaceholder("Full Name");
-          newStep = 10;
-          break;
-        }
-        try {
+      
+case 9:
+  if (input === "Email Me My Estimate") {
+    setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
+    setPlaceholder("Your Email");
+    newStep = 15;
+    break;
+  }
+  if (input === "Yes, Reserve My Move") {
+    setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+    setPlaceholder("Full Name");
+    newStep = 10;
+    break;
+  }
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: messages.map(m => ({
+          role: m.sender === 'bot' ? 'assistant' : 'user',
+          content: m.text
+        })),
+        formData: updatedFormData
+      })
+    });
+    const data = await res.json();
+    setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
+  } catch (error) {
+    setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
+  }
+  setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
+  newStep++;
+  break;
+
           const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -159,7 +181,7 @@ export default function ChatFlow() {
         newStep = 17;
         break;
       case 17:
-        break; // End of email flow
+        break;
         break;
       default:
         if (step === 9) {
