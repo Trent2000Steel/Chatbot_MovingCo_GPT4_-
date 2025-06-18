@@ -6,41 +6,18 @@ export default function ChatFlow() {
   const [messages, setMessages] = useState([
     { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
   ]);
-  const [input, setInput] = useState('');
+  const [userInput, setUserInput] = useState('');
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({});
   const [buttonOptions, setButtonOptions] = useState([]);
-  const [isTyping, setIsTyping] = useState(false);
-
-  const getPlaceholder = () => {
-    switch (step) {
-      case 1: return "City, State (e.g. Dallas, TX)";
-      case 2: return "City, State (e.g. Phoenix, AZ)";
-      case 3: return "Move date (e.g. June 25)";
-      case 4: return "What matters most? (e.g. timing, fragile items)";
-      case 8: return "Special items (e.g. piano, art)";
-      case 10: return "Full Name";
-      case 11: return "Email Address";
-      case 12: return "Phone Number";
-      case 13: return "Pickup Address";
-      case 14: return "Delivery Address (or type 'I don’t know')";
-      case 15: return "Your Email";
-      case 16: return "Your Cell (optional)";
-      default: return "";
-    }
-  };
-
-  const sendBotMessage = (text, options = []) => {
-    setMessages(prev => [...prev, { sender: 'bot', text, options }]);
-    setButtonOptions(options);
-  };
+  const [placeholder, setPlaceholder] = useState("City, State (e.g. Dallas, TX)");
 
   const handleUserInput = async (customInput = null) => {
-    const userInput = customInput || input.trim();
-    if (!userInput) return;
+    const input = customInput || userInput.trim();
+    if (!input) return;
 
-    setMessages(prev => [...prev, { sender: 'user', text: userInput }]);
-    setInput('');
+    setMessages(prev => [...prev, { sender: 'user', text: input }]);
+    setUserInput('');
     setButtonOptions([]);
 
     let newStep = step;
@@ -48,42 +25,49 @@ export default function ChatFlow() {
 
     switch (step) {
       case 1:
-        updatedFormData.from = userInput;
-        sendBotMessage("Where to?");
+        updatedFormData.from = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Where to?" }]);
+        setPlaceholder("City, State (e.g. Phoenix, AZ)");
         newStep++;
         break;
       case 2:
-        updatedFormData.to = userInput;
-        sendBotMessage("What’s your move date?");
+        updatedFormData.to = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "What’s your move date?" }]);
+        setPlaceholder("Move date (e.g. June 25)");
         newStep++;
         break;
       case 3:
-        updatedFormData.date = userInput;
-        sendBotMessage("What matters most to you about this move?");
+        updatedFormData.date = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "What matters most to you about this move?" }]);
+        setPlaceholder("What matters most? (e.g. timing, fragile items)");
         newStep++;
         break;
       case 4:
-        updatedFormData.priority = userInput;
-        sendBotMessage("What type of place are you moving from?", ["House", "Apartment", "Storage Unit", "Other"]);
+        updatedFormData.priority = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "What type of place are you moving from?" }]);
+        setButtonOptions(["House", "Apartment", "Storage Unit", "Other"]);
         newStep++;
         break;
       case 5:
-        updatedFormData.type = userInput;
-        sendBotMessage("And how many bedrooms?", ["1", "2", "3", "4+"]);
+        updatedFormData.type = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "And how many bedrooms?" }]);
+        setButtonOptions(["1", "2", "3", "4+"]);
         newStep++;
         break;
       case 6:
-        updatedFormData.size = userInput;
-        sendBotMessage("Do you want packing included in the estimate?", ["Yes", "I'll pack myself"]);
+        updatedFormData.size = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Do you want packing included in the estimate?" }]);
+        setButtonOptions(["Yes", "I'll pack myself"]);
         newStep++;
         break;
       case 7:
-        updatedFormData.packing = userInput;
-        sendBotMessage("Any fragile or high-value items?");
+        updatedFormData.packing = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Any fragile or high-value items?" }]);
+        setPlaceholder("Special items (e.g. piano, art)");
         newStep++;
         break;
       case 8:
-        updatedFormData.special = userInput;
+        updatedFormData.special = input;
         const summary = [
           "Thanks! Here's what I've got:",
           `- From: ${updatedFormData.from}`,
@@ -94,11 +78,11 @@ export default function ChatFlow() {
           `- Priority: ${updatedFormData.priority}`,
           `- Special: ${updatedFormData.special}`
         ].join("\n");
-        sendBotMessage(summary, ["Run My Estimate"]);
+        setMessages(prev => [...prev, { sender: 'bot', text: summary }]);
+        setButtonOptions(["Run My Estimate"]);
         newStep++;
         break;
       case 9:
-        setIsTyping(true);
         try {
           const res = await fetch('/api/chat', {
             method: 'POST',
@@ -108,59 +92,65 @@ export default function ChatFlow() {
                 role: m.sender === 'bot' ? 'assistant' : 'user',
                 content: m.text
               })),
-              userInput: userInput,
-              formData: formData
+              formData: updatedFormData
             })
           });
           const data = await res.json();
-          sendBotMessage(data.reply || "Based on your info, here's a rough estimate.");
+          setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
         } catch (error) {
-          sendBotMessage("Sorry, something went wrong with the estimate.");
+          setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
         }
-        setIsTyping(false);
-        sendBotMessage("Would you like to reserve your move or get the estimate by email?", ["Yes, Reserve My Move", "Email Me My Estimate"]);
+        setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
         newStep++;
         break;
       case 10:
-      case 999:
-        updatedFormData.name = userInput;
-        sendBotMessage("Great — what’s your email?");
-        newStep = 11;
+        updatedFormData.name = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Great — what’s your email?" }]);
+        setPlaceholder("Email Address");
+        newStep++;
         break;
       case 11:
-        updatedFormData.email = userInput;
-        sendBotMessage("And your phone number?");
+        updatedFormData.email = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "And your phone number?" }]);
+        setPlaceholder("Phone Number");
         newStep++;
         break;
       case 12:
-        updatedFormData.phone = userInput;
-        sendBotMessage("What’s the pickup address?");
+        updatedFormData.phone = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "What’s the pickup address?" }]);
+        setPlaceholder("Pickup Address");
         newStep++;
         break;
       case 13:
-        updatedFormData.pickup = userInput;
-        sendBotMessage("And the delivery address? If you don’t have it yet, just say 'I don’t know.'");
+        updatedFormData.pickup = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "And the delivery address? If you don’t have it yet, just say 'I don’t know.'" }]);
+        setPlaceholder("Delivery Address or say 'I don’t know'");
         newStep++;
         break;
       case 14:
-        updatedFormData.dropoff = userInput;
-        sendBotMessage("Perfect — you can pay your $85 deposit now to reserve your move:");
-        sendBotMessage("👉 [Pay Deposit Now](https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00)");
+        updatedFormData.dropoff = input;
+        setMessages(prev => [
+          ...prev,
+          { sender: 'bot', text: "Perfect — you can pay your $85 deposit now to reserve your move:" },
+          { sender: 'bot', text: "👉 [Pay Deposit Now](https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00)" }
+        ]);
         newStep++;
         break;
       case 15:
-        updatedFormData.emailOnly = userInput;
-        sendBotMessage("Would you like me to text it to you too?");
+        updatedFormData.emailOnly = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Would you like me to text it to you too?" }]);
+        setPlaceholder("Cell number (optional)");
         newStep++;
         break;
       case 16:
-        updatedFormData.phoneOptional = userInput;
-        sendBotMessage("Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime.");
+        updatedFormData.phoneOptional = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
         newStep++;
         break;
       default:
         if (step === 9) {
-          sendBotMessage("No problem — I’ll start the reservation process. What’s your full name?");
+          setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+          setPlaceholder("Full Name");
           newStep = 10;
         }
         break;
@@ -173,12 +163,12 @@ export default function ChatFlow() {
   return (
     <ChatUI
       messages={messages}
-      input={input}
-      setInput={setInput}
-      onSend={handleUserInput}
-      isTyping={isTyping}
+      handleUserInput={handleUserInput}
+      userInput={userInput}
+      setUserInput={setUserInput}
+      placeholder={placeholder}
       buttonOptions={buttonOptions}
-      getPlaceholder={getPlaceholder}
+      onBackClick={() => window.history.back()}
     />
   );
 }
