@@ -83,18 +83,18 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 9:
+        if (input.toLowerCase().includes("email")) {
+          setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
+          setPlaceholder("Your Email");
+          newStep = 15;
+          break;
+        } else if (input.toLowerCase().includes("reserve")) {
+          setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+          setPlaceholder("Full Name");
+          newStep = 10;
+          break;
+        }
         try {
-          if (input.toLowerCase().includes("email")) {
-            setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
-            setPlaceholder("Your Email");
-            newStep = 15;
-            break;
-          } else if (input.toLowerCase().includes("reserve")) {
-            setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
-            setPlaceholder("Full Name");
-            newStep = 10;
-            break;
-          }
           const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -159,7 +159,7 @@ export default function ChatFlow() {
         newStep = 17;
         break;
       case 17:
-        break; // End of email flow — nothing more to do
+        break; // End of email flow
         break;
       default:
         if (step === 9) {
