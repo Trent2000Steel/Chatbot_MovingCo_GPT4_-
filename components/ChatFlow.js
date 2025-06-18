@@ -90,16 +90,7 @@ export default function ChatFlow() {
         break;
       case 8:
         updatedFormData.special = userInput;
-        const summary =
-          "Thanks! Here's what I've got:\n" +
-          "- From: " + updatedFormData.from + "\n" +
-          "- To: " + updatedFormData.to + "\n" +
-          "- Date: " + updatedFormData.date + "\n" +
-          "- Place: " + updatedFormData.type + " (" + updatedFormData.size + " bedrooms)\n" +
-          "- Packing: " + updatedFormData.packing + "\n" +
-          "- Priority: " + updatedFormData.priority + "\n" +
-          "- Special: " + updatedFormData.special;
-        sendBotMessage(summary, ["Run My Estimate"]);
+        sendBotMessage("Got everything I need. Click ‘Run My Estimate’ to see your price — it might take a few seconds while we check live rates.", ["Run My Estimate"]);
         newStep++;
         break;
       case 9:
