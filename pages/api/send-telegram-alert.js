@@ -29,7 +29,19 @@ export default async function handler(req, res) {
     if (message) messageLines.push(`📝 Message: ${message}`);
 
   // ✅ NEW LIVE SESSION STAGE ALERTS
-  } else if (stage) {
+  
+  } else if (type === "live_chat") {
+    messageLines.push("🚨 LIVE CHAT FLOW STARTED", "—");
+    if (stage) messageLines.push(`🪜 Stage: ${stage}`);
+    if (from) messageLines.push(`📍 From: ${from}`);
+    if (to) messageLines.push(`📍 To: ${to}`);
+    if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
+    if (size) messageLines.push(`🏠 Size: ${size}`);
+    if (priority) messageLines.push(`🎯 Priority: ${priority}`);
+    if (packing) messageLines.push(`📦 Packing: ${packing}`);
+    if (specialItems) messageLines.push(`💎 Special Items: ${specialItems}`);
+
+} else if (stage) {
     messageLines.push(`📍 Chat Stage: ${stage}`, "—");
     if (name) messageLines.push(`🧾 Session: ${name}`);
     if (email) messageLines.push(`📧 Email: ${email}`);
