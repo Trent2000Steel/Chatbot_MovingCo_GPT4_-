@@ -1,3 +1,4 @@
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -20,14 +21,15 @@ export default async function handler(req, res) {
 
   const messageLines = [];
 
-  // Handle contact form
+  // ✅ Handle contact form separately (unchanged)
   if (type === "contact") {
     messageLines.push("📥 CONTACT REQUEST", "—");
     if (email) messageLines.push(`📧 Email: ${email}`);
     if (phone) messageLines.push(`📞 Phone: ${phone}`);
     if (message) messageLines.push(`📝 Message: ${message}`);
   } else {
-    const isEstimate = stage === "Estimate Viewed";
+    // ✅ Fix: recognize estimate stage properly
+    const isEstimate = stage === "Email Requested";
 
     if (isEstimate) {
       messageLines.push("📊 New Estimate Viewed", "—");
