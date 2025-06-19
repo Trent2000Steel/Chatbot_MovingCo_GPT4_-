@@ -24,15 +24,6 @@ export default function ChatFlow() {
     const updatedFormData = { ...formData };
 
     switch (step) {
-      case 9:
-        if (input === "Email Me My Estimate") {
-          setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s the best email to send your estimate to?" }]);
-          setPlaceholder("Email Address");
-          newStep = 91;
-          setStep(newStep);
-          return;
-        }
-
       case 1:
         updatedFormData.from = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Where to?" }]);
@@ -112,18 +103,7 @@ export default function ChatFlow() {
         setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
         newStep++;
         break;
-      case 91:
-        updatedFormData.emailOnly = input;
-        setMessages(prev => [...prev, { sender: 'bot', text: "Got it. Would you like a text message too?" }]);
-        setPlaceholder("Phone number (optional)");
-        newStep = 92;
-        break;
-      case 92:
-        updatedFormData.phoneOptional = input;
-        setMessages(prev => [...prev, { sender: 'bot', text: "All set — your estimate will be emailed shortly. If you have any questions later, just restart the chat." }]);
-        return;
-
-    case 10:
+      case 10:
         updatedFormData.name = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Great — what’s your email?" }]);
         setPlaceholder("Email Address");
