@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -21,14 +20,24 @@ export default async function handler(req, res) {
 
   const messageLines = [];
 
-  // ✅ Handle contact form separately (unchanged)
+  // ✅ CONTACT FORM
   if (type === "contact") {
     messageLines.push("📥 CONTACT REQUEST", "—");
     if (email) messageLines.push(`📧 Email: ${email}`);
     if (phone) messageLines.push(`📞 Phone: ${phone}`);
     if (message) messageLines.push(`📝 Message: ${message}`);
+
+  // ✅ EARLY EMAIL CAPTURE ALERT
+  } else if (type === "email_capture") {
+    messageLines.push("📨 EMAIL CAPTURED", "—");
+    if (name) messageLines.push(`👤 Name: ${name}`);
+    if (email) messageLines.push(`📧 Email: ${email}`);
+    if (origin) messageLines.push(`📍 From: ${origin}`);
+    if (destination) messageLines.push(`📍 To: ${destination}`);
+    if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
+
+  // ✅ FINAL RESERVATION & ESTIMATE LOGIC
   } else {
-    // ✅ Fix: recognize estimate stage properly
     const isEstimate = stage === "Email Requested";
 
     if (isEstimate) {
