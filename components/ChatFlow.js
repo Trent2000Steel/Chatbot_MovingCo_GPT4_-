@@ -12,12 +12,10 @@ export default function ChatFlow() {
   const [buttonOptions, setButtonOptions] = useState([]);
   const [placeholder, setPlaceholder] = useState("City, State (e.g. Dallas, TX)");
 
-  
   const handleUserInput = async (customInput = null) => {
     const input = customInput || userInput.trim();
     if (!input) return;
 
-    const cleanInput = input.toLowerCase().trim();
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
     setUserInput('');
     setButtonOptions([]);
@@ -25,23 +23,6 @@ export default function ChatFlow() {
     let newStep = step;
     const updatedFormData = { ...formData };
 
-    // EARLY BRANCHING FOR STEP 9 CTA
-    if (step === 9) {
-      if (cleanInput.includes("email")) {
-        setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
-        setPlaceholder("Email Address");
-        setStep(15);
-        return;
-      }
-      if (cleanInput.includes("reserve")) {
-        setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
-        setPlaceholder("Full Name");
-        setStep(10);
-        return;
-      }
-    }
-
-    // FALLBACK TO STEP SWITCHING
     switch (step) {
       case 1:
         updatedFormData.from = input;
@@ -115,9 +96,6 @@ export default function ChatFlow() {
             })
           });
           const data = await res.json();
-
-          updatedFormData.quote = data.reply;
-
           setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
         } catch (error) {
           setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
@@ -150,7 +128,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 14:
-        await fetch('/api/send-telegram-alert', {
+        await fetch('/api/telegram-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -176,63 +154,35 @@ export default function ChatFlow() {
         ]);
         newStep++;
         break;
-      
       case 15:
         updatedFormData.emailOnly = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Would you like me to text it to you too?" }]);
-        setButtonOptions(["Yes, text me too", "No thanks, just email it"]);
+        setPlaceholder("Cell number (optional)");
         newStep++;
         break;
-
-      
       case 16:
-        if (input.toLowerCase().includes("no thanks")) {
-          await fetch('/api/send-telegram-alert', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'emailOnly',
-              stage: 'Email Requested',
-              name: updatedFormData.name,
-              email: updatedFormData.emailOnly || updatedFormData.email,
-              phone: null,
-              moveDate: updatedFormData.date,
-              origin: updatedFormData.from,
-              destination: updatedFormData.to,
-              size: updatedFormData.size,
-              specialItems: updatedFormData.special,
-              quote: updatedFormData.quote
-            })
-          });
+        await fetch('/api/telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'emailOnly',
+            stage: 'Email Requested',
+            name: updatedFormData.name,
+            email: updatedFormData.emailOnly || updatedFormData.email,
+            phone: updatedFormData.phoneOptional,
+            moveDate: updatedFormData.date,
+            origin: updatedFormData.from,
+            destination: updatedFormData.to,
+            size: updatedFormData.size,
+            specialItems: updatedFormData.special,
+            quote: updatedFormData.quote
+          })
+        });
 
-          setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
-          newStep++;
-        } else {
-          updatedFormData.phoneOptional = input;
-
-          await fetch('/api/send-telegram-alert', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              type: 'emailOnly',
-              stage: 'Email Requested',
-              name: updatedFormData.name,
-              email: updatedFormData.emailOnly || updatedFormData.email,
-              phone: updatedFormData.phoneOptional,
-              moveDate: updatedFormData.date,
-              origin: updatedFormData.from,
-              destination: updatedFormData.to,
-              size: updatedFormData.size,
-              specialItems: updatedFormData.special,
-              quote: updatedFormData.quote
-            })
-          });
-
-          setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
-          newStep++;
-        }
+        updatedFormData.phoneOptional = input;
+        setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
+        newStep++;
         break;
-
       default:
         if (step === 9) {
           setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
