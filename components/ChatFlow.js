@@ -96,6 +96,9 @@ export default function ChatFlow() {
             })
           });
           const data = await res.json();
+
+          updatedFormData.quote = data.reply;
+
           setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
         } catch (error) {
           setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
