@@ -1,3 +1,4 @@
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -20,42 +21,25 @@ export default async function handler(req, res) {
 
   const messageLines = [];
 
-  // ✅ CONTACT FORM
+  // ✅ CONTACT FORM ONLY
   if (type === "contact") {
     messageLines.push("📥 CONTACT REQUEST", "—");
     if (email) messageLines.push(`📧 Email: ${email}`);
     if (phone) messageLines.push(`📞 Phone: ${phone}`);
     if (message) messageLines.push(`📝 Message: ${message}`);
 
-  // ✅ EARLY EMAIL CAPTURE ALERT
-  } else if (type === "email_capture") {
-    messageLines.push("📨 EMAIL CAPTURED", "—");
-    if (name) messageLines.push(`👤 Name: ${name}`);
+  // ✅ NEW LIVE SESSION STAGE ALERTS
+  } else if (stage) {
+    messageLines.push(`📍 Chat Stage: ${stage}`, "—");
+    if (name) messageLines.push(`🧾 Session: ${name}`);
     if (email) messageLines.push(`📧 Email: ${email}`);
-    if (origin) messageLines.push(`📍 From: ${origin}`);
-    if (destination) messageLines.push(`📍 To: ${destination}`);
-    if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
-
-  // ✅ FINAL RESERVATION & ESTIMATE LOGIC
-  } else {
-    const isEstimate = stage === "Email Requested";
-
-    if (isEstimate) {
-      messageLines.push("📊 New Estimate Viewed", "—");
-    } else {
-      messageLines.push("✅ MOVE RESERVED!", "—");
-      if (name) messageLines.push(`👤 Name: ${name}`);
-      if (phone) messageLines.push(`📞 Phone: ${phone}`);
-      if (email) messageLines.push(`📧 Email: ${email}`);
-      messageLines.push(""); // spacing
-    }
-
+    if (phone) messageLines.push(`📞 Phone: ${phone}`);
     if (moveDate) messageLines.push(`📦 Move Date: ${moveDate}`);
     if (origin) messageLines.push(`📍 From: ${origin}`);
     if (destination) messageLines.push(`📍 To: ${destination}`);
     if (size) messageLines.push(`🏠 Size: ${size}`);
     if (specialItems) messageLines.push(`🎯 Special Items: ${specialItems}`);
-    if (quote) messageLines.push(isEstimate ? `\n💬 Quote: ${quote}` : `\n💸 Accepted Quote: ${quote}`);
+    if (quote) messageLines.push(`💬 Quote: ${quote}`);
   }
 
   const finalMessage = messageLines.join("\n");
