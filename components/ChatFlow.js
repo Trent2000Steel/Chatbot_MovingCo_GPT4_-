@@ -132,7 +132,7 @@ export default function ChatFlow() {
         setMessages(prev => [
           ...prev,
           { sender: 'bot', text: "Perfect — you can pay your $85 deposit now to reserve your move:" },
-          { sender: 'bot', text: "👉 [Pay Deposit Now](https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00)" }
+          { sender: 'bot', text: "https://buy.stripe.com/eVqbJ23Px8yx4Ab2aUenS00" }
         ]);
         newStep++;
         break;

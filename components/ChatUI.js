@@ -49,7 +49,24 @@ export default function ChatUI({
                   : '18px 18px 18px 4px'
               }}
             >
-              {msg.text}
+              {msg.text.startsWith('https://') ? (
+  <a
+    href={msg.text}
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{
+      display: 'inline-block',
+      padding: '10px 20px',
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      textDecoration: 'none',
+      borderRadius: '5px',
+      fontWeight: 'bold'
+    }}
+  >
+    Pay $85 Deposit
+  </a>
+) : msg.text}
               {msg.sender === 'bot' && idx === messages.length - 1 && buttonOptions.length > 0 && (
                 <div style={styles.options}>
                   {buttonOptions.map((opt, i) => (
