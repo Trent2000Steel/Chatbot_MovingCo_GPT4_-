@@ -70,7 +70,7 @@ export default function ChatUI({
               {msg.sender === 'bot' && idx === messages.length - 1 && buttonOptions.length > 0 && (
                 <div style={styles.options}>
                   {buttonOptions.map((opt, i) => (
-                    <button key={i} style={styles.optionBtn} onClick={() => handleUserInput(opt)}>{opt}</button>
+                    <button key={i} style={styles.optionBtn} onClick={() => (typeof opt === "string" ? handleUserInput(opt) : opt.action())}>{typeof opt === "string" ? opt : opt.label}</button>
                   ))}
                 </div>
               )}
