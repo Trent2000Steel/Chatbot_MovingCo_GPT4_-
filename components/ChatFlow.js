@@ -14,6 +14,23 @@ export default function ChatFlow() {
 
   const handleUserInput = async (customInput = null) => {
     const input = customInput || userInput.trim();
+
+    if (step === 9 && input === "Email Me My Estimate") {
+      setMessages(prev => [...prev, { sender: 'user', text: input }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
+      setPlaceholder("Email Address");
+      setStep(15);
+      return;
+    }
+
+    if (step === 9 && input === "Yes, Reserve My Move") {
+      setMessages(prev => [...prev, { sender: 'user', text: input }]);
+      setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+      setPlaceholder("Full Name");
+      setStep(10);
+      return;
+    }
+
     if (!input) return;
 
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
