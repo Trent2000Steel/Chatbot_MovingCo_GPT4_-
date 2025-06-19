@@ -49,9 +49,7 @@ export default function ChatUI({
                   : '18px 18px 18px 4px'
               }}
             >
-              msg.isHTML
-        ? <span dangerouslySetInnerHTML={{ __html: msg.text }} />
-        : msg.text
+              {msg.text}
               {msg.sender === 'bot' && idx === messages.length - 1 && buttonOptions.length > 0 && (
                 <div style={styles.options}>
                   {buttonOptions.map((opt, i) => (
