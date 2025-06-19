@@ -1,9 +1,11 @@
 
 import { useState } from 'react';
 import ChatUI from './ChatUI';
+import { v4 as uuidv4 } from 'uuid';
+
 
   const sessionId = uuidv4();
-  export default function ChatFlow() {
+export default function ChatFlow() {
   const [messages, setMessages] = useState([
     { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
   ]);
@@ -12,6 +14,23 @@ import ChatUI from './ChatUI';
   const [formData, setFormData] = useState({});
   const [buttonOptions, setButtonOptions] = useState([]);
   const [placeholder, setPlaceholder] = useState("City, State (e.g. Dallas, TX)");
+
+  
+  async function sendTelegramAlert(stageLabel) {
+    try {
+      await fetch('/api/send-telegram-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'chat_event',
+          stage: stageLabel,
+          sessionId
+        })
+      });
+    } catch (err) {
+      console.error("Failed to send Telegram alert", err);
+    }
+  }
 
   const handleUserInput = async (customInput = null) => {
     const input = customInput || userInput.trim();
@@ -38,6 +57,7 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 3:
+        await sendTelegramAlert('Step 3 - Move Date Collected');
         updatedFormData.date = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "What matters most to you about this move?" }]);
         setPlaceholder("What matters most? (e.g. timing, fragile items)");
@@ -50,6 +70,7 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 5:
+        await sendTelegramAlert('Step 5 - Location Type and Size Collected');
         updatedFormData.type = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "And how many bedrooms?" }]);
         setButtonOptions(["1", "2", "3", "4+"]);
@@ -62,33 +83,15 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 7:
+        await sendTelegramAlert('Step 7 - Help Type Chosen');
         updatedFormData.packing = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Any fragile or high-value items?" }]);
         setPlaceholder("Special items (e.g. piano, art)");
         newStep++;
         break;
       case 8:
-
-            // ✅ Trigger 1: After special items collected
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: "event",
-          stage: "Step 8",
-          sessionId,
-          name: fullName || undefined,
-          email: email || undefined,
-          phone: phone || undefined,
-          moveDate,
-          origin,
-          destination,
-          size,
-          specialItems,
-          quote
-        }),
-      });
-            updatedFormData.special = input;
+        await sendTelegramAlert('Step 8 - Special Items Collected');
+        updatedFormData.special = input;
         const summary = [
           "Thanks! Here's what I've got:",
           `- From: ${updatedFormData.from}`,
@@ -131,27 +134,7 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 11:
-
-            // ✅ Trigger 2: After user confirms quote (before CTA)
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: "event",
-          stage: "Step 11",
-          sessionId,
-          name: fullName || undefined,
-          email: email || undefined,
-          phone: phone || undefined,
-          moveDate,
-          origin,
-          destination,
-          size,
-          specialItems,
-          quote
-        }),
-      });
-            updatedFormData.email = input;
+        updatedFormData.email = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "And your phone number?" }]);
         setPlaceholder("Phone Number");
         newStep++;
@@ -163,53 +146,13 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 13:
-
-            // ✅ Trigger 3: After user clicks 'Reserve My Move' and enters full name
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: "event",
-          stage: "Step 13",
-          sessionId,
-          name: fullName || undefined,
-          email: email || undefined,
-          phone: phone || undefined,
-          moveDate,
-          origin,
-          destination,
-          size,
-          specialItems,
-          quote
-        }),
-      });
-            updatedFormData.pickup = input;
+        updatedFormData.pickup = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "And the delivery address? If you don’t have it yet, just say 'I don’t know.'" }]);
         setPlaceholder("Delivery Address or say 'I don’t know'");
         newStep++;
         break;
       case 14:
-
-            // ✅ Trigger 4: After user provides email and phone
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: "event",
-          stage: "Step 14",
-          sessionId,
-          name: fullName || undefined,
-          email: email || undefined,
-          phone: phone || undefined,
-          moveDate,
-          origin,
-          destination,
-          size,
-          specialItems,
-          quote
-        }),
-      });
-            updatedFormData.dropoff = input;
+        updatedFormData.dropoff = input;
         setMessages(prev => [
           ...prev,
           { sender: 'bot', text: "Perfect — you can pay your $85 deposit now to reserve your move:" },
@@ -218,27 +161,7 @@ import ChatUI from './ChatUI';
         newStep++;
         break;
       case 15:
-
-            // ✅ Trigger 5: After payment (Stripe flow entered)
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: "event",
-          stage: "Step 15",
-          sessionId,
-          name: fullName || undefined,
-          email: email || undefined,
-          phone: phone || undefined,
-          moveDate,
-          origin,
-          destination,
-          size,
-          specialItems,
-          quote
-        }),
-      });
-            updatedFormData.emailOnly = input;
+        updatedFormData.emailOnly = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Would you like me to text it to you too?" }]);
         setPlaceholder("Cell number (optional)");
         newStep++;
