@@ -80,23 +80,6 @@ export default function ChatFlow() {
         ].join("\n");
         setMessages(prev => [...prev, { sender: 'bot', text: summary }]);
         setButtonOptions(["Run My Estimate"]);
-      // 🟦 Send Telegram Notification at Recap
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'live_chat',
-          stage: 'Recap Trigger',
-          from: updatedFormData.from,
-          to: updatedFormData.to,
-          moveDate: updatedFormData.date,
-          size: updatedFormData.size,
-          priority: updatedFormData.priority,
-          packing: updatedFormData.packing,
-          specialItems: updatedFormData.special
-        })
-      });
-
         newStep++;
         break;
       case 9:
@@ -113,6 +96,9 @@ export default function ChatFlow() {
             })
           });
           const data = await res.json();
+
+          updatedFormData.quote = data.reply;
+
           setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
         } catch (error) {
           setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
@@ -145,6 +131,24 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 14:
+        await fetch('/api/send-telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'reservation',
+            stage: 'Reservation Started',
+            name: updatedFormData.name,
+            email: updatedFormData.email,
+            phone: updatedFormData.phone,
+            moveDate: updatedFormData.date,
+            origin: updatedFormData.from,
+            destination: updatedFormData.to,
+            size: updatedFormData.size,
+            specialItems: updatedFormData.special,
+            quote: updatedFormData.quote
+          })
+        });
+
         updatedFormData.dropoff = input;
         setMessages(prev => [
           ...prev,
@@ -160,6 +164,24 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 16:
+        await fetch('/api/send-telegram-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'emailOnly',
+            stage: 'Email Requested',
+            name: updatedFormData.name,
+            email: updatedFormData.emailOnly || updatedFormData.email,
+            phone: updatedFormData.phoneOptional,
+            moveDate: updatedFormData.date,
+            origin: updatedFormData.from,
+            destination: updatedFormData.to,
+            size: updatedFormData.size,
+            specialItems: updatedFormData.special,
+            quote: updatedFormData.quote
+          })
+        });
+
         updatedFormData.phoneOptional = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
         newStep++;
