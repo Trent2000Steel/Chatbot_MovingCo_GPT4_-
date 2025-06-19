@@ -1,10 +1,7 @@
 
 import { useState } from 'react';
 import ChatUI from './ChatUI';
-import { v4 as uuidv4 } from 'uuid';
 
-
-  const sessionId = uuidv4();
 export default function ChatFlow() {
   const [messages, setMessages] = useState([
     { sender: 'bot', text: "No forms, no waiting — I’ll give you a real price range right now. Where are you moving from?" }
@@ -14,23 +11,6 @@ export default function ChatFlow() {
   const [formData, setFormData] = useState({});
   const [buttonOptions, setButtonOptions] = useState([]);
   const [placeholder, setPlaceholder] = useState("City, State (e.g. Dallas, TX)");
-
-  
-  async function sendTelegramAlert(stageLabel) {
-    try {
-      await fetch('/api/send-telegram-alert', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'chat_event',
-          stage: stageLabel,
-          sessionId
-        })
-      });
-    } catch (err) {
-      console.error("Failed to send Telegram alert", err);
-    }
-  }
 
   const handleUserInput = async (customInput = null) => {
     const input = customInput || userInput.trim();
@@ -57,7 +37,6 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 3:
-        await sendTelegramAlert('Step 3 - Move Date Collected');
         updatedFormData.date = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "What matters most to you about this move?" }]);
         setPlaceholder("What matters most? (e.g. timing, fragile items)");
@@ -70,7 +49,6 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 5:
-        await sendTelegramAlert('Step 5 - Location Type and Size Collected');
         updatedFormData.type = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "And how many bedrooms?" }]);
         setButtonOptions(["1", "2", "3", "4+"]);
@@ -83,14 +61,12 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 7:
-        await sendTelegramAlert('Step 7 - Help Type Chosen');
         updatedFormData.packing = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Any fragile or high-value items?" }]);
         setPlaceholder("Special items (e.g. piano, art)");
         newStep++;
         break;
       case 8:
-        await sendTelegramAlert('Step 8 - Special Items Collected');
         updatedFormData.special = input;
         const summary = [
           "Thanks! Here's what I've got:",
