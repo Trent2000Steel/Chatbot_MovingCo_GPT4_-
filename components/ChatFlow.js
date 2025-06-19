@@ -80,6 +80,23 @@ export default function ChatFlow() {
         ].join("\n");
         setMessages(prev => [...prev, { sender: 'bot', text: summary }]);
         setButtonOptions(["Run My Estimate"]);
+      // 🟦 Send Telegram Notification at Recap
+      await fetch('/api/send-telegram-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'live_chat',
+          stage: 'Recap Trigger',
+          from: updatedFormData.from,
+          to: updatedFormData.to,
+          moveDate: updatedFormData.date,
+          size: updatedFormData.size,
+          priority: updatedFormData.priority,
+          packing: updatedFormData.packing,
+          specialItems: updatedFormData.special
+        })
+      });
+
         newStep++;
         break;
       case 9:
