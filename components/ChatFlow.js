@@ -131,7 +131,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 14:
-        await fetch('/api/telegram-alert', {
+        await fetch('/api/send-telegram-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -164,7 +164,7 @@ export default function ChatFlow() {
         newStep++;
         break;
       case 16:
-        await fetch('/api/telegram-alert', {
+        await fetch('/api/send-telegram-alert', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
