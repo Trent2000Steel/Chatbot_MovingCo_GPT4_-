@@ -12,27 +12,12 @@ export default function ChatFlow() {
   const [buttonOptions, setButtonOptions] = useState([]);
   const [placeholder, setPlaceholder] = useState("City, State (e.g. Dallas, TX)");
 
+  
   const handleUserInput = async (customInput = null) => {
     const input = customInput || userInput.trim();
-
-    if (step === 9 && input === "Email Me My Estimate") {
-      setMessages(prev => [...prev, { sender: 'user', text: input }]);
-      setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
-      setPlaceholder("Email Address");
-      setStep(15);
-      return;
-    }
-
-    if (step === 9 && input === "Yes, Reserve My Move") {
-      setMessages(prev => [...prev, { sender: 'user', text: input }]);
-      setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
-      setPlaceholder("Full Name");
-      setStep(10);
-      return;
-    }
-
     if (!input) return;
 
+    const cleanInput = input.toLowerCase().trim();
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
     setUserInput('');
     setButtonOptions([]);
@@ -40,6 +25,23 @@ export default function ChatFlow() {
     let newStep = step;
     const updatedFormData = { ...formData };
 
+    // EARLY BRANCHING FOR STEP 9 CTA
+    if (step === 9) {
+      if (cleanInput.includes("email")) {
+        setMessages(prev => [...prev, { sender: 'bot', text: "Sure — what’s your email?" }]);
+        setPlaceholder("Email Address");
+        setStep(15);
+        return;
+      }
+      if (cleanInput.includes("reserve")) {
+        setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
+        setPlaceholder("Full Name");
+        setStep(10);
+        return;
+      }
+    }
+
+    // FALLBACK TO STEP SWITCHING
     switch (step) {
       case 1:
         updatedFormData.from = input;
@@ -174,35 +176,63 @@ export default function ChatFlow() {
         ]);
         newStep++;
         break;
+      
       case 15:
         updatedFormData.emailOnly = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Would you like me to text it to you too?" }]);
-        setPlaceholder("Cell number (optional)");
+        setButtonOptions(["Yes, text me too", "No thanks, just email it"]);
         newStep++;
         break;
-      case 16:
-        await fetch('/api/send-telegram-alert', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'emailOnly',
-            stage: 'Email Requested',
-            name: updatedFormData.name,
-            email: updatedFormData.emailOnly || updatedFormData.email,
-            phone: updatedFormData.phoneOptional,
-            moveDate: updatedFormData.date,
-            origin: updatedFormData.from,
-            destination: updatedFormData.to,
-            size: updatedFormData.size,
-            specialItems: updatedFormData.special,
-            quote: updatedFormData.quote
-          })
-        });
 
-        updatedFormData.phoneOptional = input;
-        setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
-        newStep++;
+      
+      case 16:
+        if (input.toLowerCase().includes("no thanks")) {
+          await fetch('/api/send-telegram-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'emailOnly',
+              stage: 'Email Requested',
+              name: updatedFormData.name,
+              email: updatedFormData.emailOnly || updatedFormData.email,
+              phone: null,
+              moveDate: updatedFormData.date,
+              origin: updatedFormData.from,
+              destination: updatedFormData.to,
+              size: updatedFormData.size,
+              specialItems: updatedFormData.special,
+              quote: updatedFormData.quote
+            })
+          });
+
+          setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
+          newStep++;
+        } else {
+          updatedFormData.phoneOptional = input;
+
+          await fetch('/api/send-telegram-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'emailOnly',
+              stage: 'Email Requested',
+              name: updatedFormData.name,
+              email: updatedFormData.emailOnly || updatedFormData.email,
+              phone: updatedFormData.phoneOptional,
+              moveDate: updatedFormData.date,
+              origin: updatedFormData.from,
+              destination: updatedFormData.to,
+              size: updatedFormData.size,
+              specialItems: updatedFormData.special,
+              quote: updatedFormData.quote
+            })
+          });
+
+          setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
+          newStep++;
+        }
         break;
+
       default:
         if (step === 9) {
           setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
