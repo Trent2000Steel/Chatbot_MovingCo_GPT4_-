@@ -1,5 +1,5 @@
 import { OpenAI } from 'openai';
-import { tapMessage } from '../../utils/MessageTap.js';
+import { tapMessage } from '../../utils/TapUserResponse.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
