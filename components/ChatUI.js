@@ -1,4 +1,3 @@
-import { tapUserResponse } from '../utils/TapUserResponse';
 
 import React, { useEffect, useRef } from 'react';
 
