@@ -11,6 +11,7 @@ export default async function handler(req, res) {
   }
 
   await tapMessage(req.body); // ✅ Telegram backup line
+  console.log('✅ tapMessage ran');
 
   const { messages, mode } = req.body;
 
