@@ -1,18 +1,14 @@
-export async function TapUserResponse(message) {
-  try {
-    const response = await fetch('https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: '<YOUR_CHAT_ID>',
-        text: `User said: ${message}`
-      }),
-    });
 
-    if (!response.ok) {
-      console.error('Telegram API response error:', await response.text());
-    }
+import axios from 'axios';
+
+export async function TapUserResponse(messageText) {
+  try {
+    const telegramMessage = `🗣️ User said: "${messageText}"`;
+    await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      chat_id: process.env.TELEGRAM_CHAT_ID,
+      text: telegramMessage,
+    });
   } catch (error) {
-    console.error('Telegram notification failed:', error);
+    console.error('Telegram tap failed:', error.response?.data || error.message);
   }
 }
