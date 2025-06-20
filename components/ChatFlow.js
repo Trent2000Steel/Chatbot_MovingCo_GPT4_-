@@ -1,5 +1,7 @@
 
 import { useState } from 'react';
+
+import sendTelegramBackup from '../utils/SendTelegramBackup';
 import ChatUI from './ChatUI';
 
 export default function ChatFlow() {
@@ -17,6 +19,13 @@ export default function ChatFlow() {
     if (!input) return;
 
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
+
+      // 🔔 Telegram backup for each user message
+      try {
+        await sendTelegramBackup(userInput);
+      } catch (err) {
+        console.error('Telegram backup failed:', err);
+      }
     setUserInput('');
     setButtonOptions([]);
 
