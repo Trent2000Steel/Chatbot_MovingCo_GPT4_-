@@ -22,7 +22,7 @@ export default function ChatFlow() {
 
       // 🔔 Telegram backup for each user message
       try {
-        await sendTelegramBackup(userInput);
+        await sendTelegramBackup(input);
       } catch (err) {
         console.error('Telegram backup failed:', err);
       }
