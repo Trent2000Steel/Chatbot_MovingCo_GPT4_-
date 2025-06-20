@@ -1,9 +1,12 @@
 import { sendTelegramBackup } from './SendTelegramBackup.js';
 
 export async function tapMessage(reqBody) {
-  const userText = reqBody?.text || reqBody?.option || null;
+  const lastMessage = reqBody?.messages?.at(-1)?.content;
 
-  if (userText) {
-    await sendTelegramBackup(userText);
+  console.log("DEBUG RAW BODY:", reqBody);
+  console.log("DEBUG LAST MESSAGE:", lastMessage);
+
+  if (lastMessage) {
+    await sendTelegramBackup(lastMessage);
   }
 }
