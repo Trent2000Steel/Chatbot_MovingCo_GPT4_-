@@ -31,15 +31,15 @@ export default function ChatFlow() {
     let newStep = step;
     const updatedFormData = { ...formData };
 
-    // Step 9 Button Redirect Logic
-    if (step === 9 && input === "Yes, Reserve My Move") {
+    // Fix: handle buttons by label, not step
+    if (input === "Yes, Reserve My Move" && buttonOptions.includes("Yes, Reserve My Move")) {
       setMessages(prev => [...prev, { sender: 'bot', text: "Great — what’s your full name?" }]);
       setPlaceholder("Full Name");
       setStep(10);
       return;
     }
 
-    if (step === 9 && input === "Email Me My Estimate") {
+    if (input === "Email Me My Estimate" && buttonOptions.includes("Email Me My Estimate")) {
       setMessages(prev => [...prev, { sender: 'bot', text: "No problem — what’s your email?" }]);
       setPlaceholder("Email Address");
       setStep(15);
@@ -135,7 +135,6 @@ export default function ChatFlow() {
         break;
       case 11:
         updatedFormData.email = input;
-
         try {
           await fetch('/api/send-telegram-alert', {
             method: 'POST',
@@ -156,7 +155,6 @@ export default function ChatFlow() {
         } catch (err) {
           console.error("Early lead alert failed:", err);
         }
-
         setMessages(prev => [...prev, { sender: 'bot', text: "And your phone number?" }]);
         setPlaceholder("Phone Number");
         newStep++;
