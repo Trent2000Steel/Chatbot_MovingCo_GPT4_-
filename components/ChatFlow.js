@@ -31,7 +31,7 @@ export default function ChatFlow() {
     let newStep = step;
     const updatedFormData = { ...formData };
 
-    // Injected name prompt logic from step 9
+    // Step 9 Button Redirect Logic
     if (step === 9 && input === "Yes, Reserve My Move") {
       setMessages(prev => [...prev, { sender: 'bot', text: "Great — what’s your full name?" }]);
       setPlaceholder("Full Name");
@@ -102,11 +102,30 @@ export default function ChatFlow() {
           `- Special: ${updatedFormData.special}`
         ].join("\n");
         setMessages(prev => [...prev, { sender: 'bot', text: summary }]);
-        setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
+        setButtonOptions(["Run My Estimate"]);
         newStep++;
         break;
       case 9:
-        // never used now due to above redirect logic
+        try {
+          const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              messages: messages.map(m => ({
+                role: m.sender === 'bot' ? 'assistant' : 'user',
+                content: m.text
+              })),
+              formData: updatedFormData
+            })
+          });
+          const data = await res.json();
+          updatedFormData.quote = data.reply;
+          setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
+        } catch (error) {
+          setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
+        }
+        setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
+        newStep++;
         break;
       case 10:
         updatedFormData.name = input;
