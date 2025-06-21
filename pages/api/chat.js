@@ -1,6 +1,5 @@
-
 import { OpenAI } from 'openai';
-import { tapMessage } from '../../utils/TapUserResponse.js';
+// Telegram import removed for Vercel logging
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -11,16 +10,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { messages, mode, formData } = req.body;
+  console.log("Incoming user message:", req.body); // ✅ Telegram backup line
 
-  // Run Telegram tap
-  try {
-    const lastUserMessage = messages?.filter(m => m.role === 'user').pop()?.content;
-    if (lastUserMessage) {
-      await tapMessage(lastUserMessage);
-    }
-  } catch (err) {
-    console.error('Telegram tap error:', err);
+  const { messages, mode } = req.body;
+
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'Invalid request format' });
   }
 
   const isFollowup = mode === 'followup';
@@ -28,12 +23,12 @@ export default async function handler(req, res) {
 You are a MovingCo sales assistant continuing to assist a customer who already received their price estimate.
 
 The customer provided:
-- Moving from: "${formData?.from || 'N/A'}"
-- Moving to: "${formData?.to || 'N/A'}"
-- Type and size: "${formData?.size || 'N/A'}"
-- Move date: "${formData?.moveDate || 'N/A'}"
-- What matters most: "${formData?.priority || 'N/A'}"
-- Special or fragile items: "${formData?.special || 'N/A'}"
+- Moving from: "\${req.body.formData?.from || 'N/A'}"
+- Moving to: "\${req.body.formData?.to || 'N/A'}"
+- Type and size: "\${req.body.formData?.size || 'N/A'}"
+- Move date: "\${req.body.formData?.moveDate || 'N/A'}"
+- What matters most: "\${req.body.formData?.priority || 'N/A'}"
+- Special or fragile items: "\${req.body.formData?.special || 'N/A'}"
 
 Your job is to answer short follow-up questions clearly and helpfully. Be warm, professional, and brief. If the customer says anything like “yes,” “sounds good,” or “I’m ready,” simply confirm and let the system take over booking.
 
@@ -56,12 +51,12 @@ Keep the tone steady and helpful. Never repeat yourself.
 You are a MovingCo sales assistant. The customer is requesting a price estimate for their upcoming move.
 
 The customer provided:
-- Moving from: "${formData?.from || 'N/A'}"
-- Moving to: "${formData?.to || 'N/A'}"
-- Type and size: "${formData?.size || 'N/A'}"
-- Move date: "${formData?.moveDate || 'N/A'}"
-- What matters most: "${formData?.priority || 'N/A'}"
-- Special or fragile items: "${formData?.special || 'N/A'}"
+- Moving from: "\${req.body.formData?.from || 'N/A'}"
+- Moving to: "\${req.body.formData?.to || 'N/A'}"
+- Type and size: "\${req.body.formData?.size || 'N/A'}"
+- Move date: "\${req.body.formData?.moveDate || 'N/A'}"
+- What matters most: "\${req.body.formData?.priority || 'N/A'}"
+- Special or fragile items: "\${req.body.formData?.special || 'N/A'}"
 
 We use the MoveSafe Method™—our signature process that includes:
 - Flat-rate pricing approved by a human review board
