@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-
 import sendTelegramBackup from '../utils/SendTelegramBackup';
 import ChatUI from './ChatUI';
 
@@ -20,12 +19,12 @@ export default function ChatFlow() {
 
     setMessages(prev => [...prev, { sender: 'user', text: input }]);
 
-      // 🔔 Telegram backup for each user message
-      try {
-        await sendTelegramBackup(input);
-      } catch (err) {
-        console.error('Telegram backup failed:', err);
-      }
+    try {
+      await sendTelegramBackup(input);
+    } catch (err) {
+      console.error('Telegram backup failed:', err);
+    }
+
     setUserInput('');
     setButtonOptions([]);
 
@@ -105,9 +104,7 @@ export default function ChatFlow() {
             })
           });
           const data = await res.json();
-
           updatedFormData.quote = data.reply;
-
           setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
         } catch (error) {
           setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
@@ -123,6 +120,28 @@ export default function ChatFlow() {
         break;
       case 11:
         updatedFormData.email = input;
+
+        try {
+          await fetch('/api/send-telegram-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'leadCaptured',
+              stage: 'Email Collected',
+              name: updatedFormData.name,
+              email: updatedFormData.email,
+              moveDate: updatedFormData.date,
+              origin: updatedFormData.from,
+              destination: updatedFormData.to,
+              size: updatedFormData.size,
+              specialItems: updatedFormData.special,
+              quote: updatedFormData.quote
+            })
+          });
+        } catch (err) {
+          console.error("Early lead alert failed:", err);
+        }
+
         setMessages(prev => [...prev, { sender: 'bot', text: "And your phone number?" }]);
         setPlaceholder("Phone Number");
         newStep++;
