@@ -31,6 +31,21 @@ export default function ChatFlow() {
     let newStep = step;
     const updatedFormData = { ...formData };
 
+    // Injected name prompt logic from step 9
+    if (step === 9 && input === "Yes, Reserve My Move") {
+      setMessages(prev => [...prev, { sender: 'bot', text: "Great — what’s your full name?" }]);
+      setPlaceholder("Full Name");
+      setStep(10);
+      return;
+    }
+
+    if (step === 9 && input === "Email Me My Estimate") {
+      setMessages(prev => [...prev, { sender: 'bot', text: "No problem — what’s your email?" }]);
+      setPlaceholder("Email Address");
+      setStep(15);
+      return;
+    }
+
     switch (step) {
       case 1:
         updatedFormData.from = input;
@@ -87,30 +102,11 @@ export default function ChatFlow() {
           `- Special: ${updatedFormData.special}`
         ].join("\n");
         setMessages(prev => [...prev, { sender: 'bot', text: summary }]);
-        setButtonOptions(["Run My Estimate"]);
+        setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
         newStep++;
         break;
       case 9:
-        try {
-          const res = await fetch('/api/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              messages: messages.map(m => ({
-                role: m.sender === 'bot' ? 'assistant' : 'user',
-                content: m.text
-              })),
-              formData: updatedFormData
-            })
-          });
-          const data = await res.json();
-          updatedFormData.quote = data.reply;
-          setMessages(prev => [...prev, { sender: 'bot', text: data.reply || "Here’s a rough estimate based on your info." }]);
-        } catch (error) {
-          setMessages(prev => [...prev, { sender: 'bot', text: "Sorry, something went wrong with the estimate." }]);
-        }
-        setButtonOptions(["Yes, Reserve My Move", "Email Me My Estimate"]);
-        newStep++;
+        // never used now due to above redirect logic
         break;
       case 10:
         updatedFormData.name = input;
@@ -213,13 +209,6 @@ export default function ChatFlow() {
         updatedFormData.phoneOptional = input;
         setMessages(prev => [...prev, { sender: 'bot', text: "Perfect — I’ll email your estimate shortly. If you ever need help, you can restart the chat anytime." }]);
         newStep++;
-        break;
-      default:
-        if (step === 9) {
-          setMessages(prev => [...prev, { sender: 'bot', text: "No problem — I’ll start the reservation process. What’s your full name?" }]);
-          setPlaceholder("Full Name");
-          newStep = 10;
-        }
         break;
     }
 
