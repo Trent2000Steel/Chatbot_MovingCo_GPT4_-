@@ -74,7 +74,22 @@ export default function Home() {
       {/* Chat Box Preview */}
       <div
         ref={previewRef}
-        onClick={() => setIsChatOpen(true)}
+        onClick={() => {
+  setIsChatOpen(true);
+
+  // Google Analytics 4 tracking
+  if (typeof gtag === 'function') {
+    gtag('event', 'chat_opened', {
+      event_category: 'Engagement',
+      event_label: 'Chat box opened from homepage',
+    });
+  }
+
+  // Hotjar custom event
+  if (typeof hj === 'function') {
+    hj('event', 'chat_box_opened');
+  }
+}}
         style={{
           backgroundColor: '#fff',
           borderRadius: '16px',
