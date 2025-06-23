@@ -51,6 +51,7 @@ export default function Home() {
           muted
           loop
           playsInline
+          poster="/poster.jpg"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         >
           <source src="/videos/Hero.mp4" type="video/mp4" />
